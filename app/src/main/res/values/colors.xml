@@ -7,4 +7,16 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="medium_turquoise">#53CFDA</color>
+    <color name="sugar_cane">#EFF2E6</color>
+    <color name="tickle_me_pink">#FF7994</color>
+    <color name="tangerine_orange">#FFC900</color>
+    <color name="golden_yellow">#FFED00</color>
+    <color name="tangerine">#FF8860</color>
+    <color name="wild_watermelon">#FF5768</color>
+    <color name="apple_green">#D6E8D9</color>
+    <color name="light_pink">#F1C9C2</color>
+    <color name="electric_lime">#CFF800</color>
+
 </resources>
