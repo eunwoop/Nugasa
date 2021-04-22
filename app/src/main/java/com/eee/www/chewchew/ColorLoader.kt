@@ -14,17 +14,19 @@ class ColorLoader private constructor(context: Context) {
         }
 
         private fun loadColor(context: Context) {
-            mColorList.add(context.resources.getColor(R.color.medium_turquoise))
-            mColorList.add(context.resources.getColor(R.color.sugar_cane))
-            mColorList.add( context.resources.getColor(R.color.tickle_me_pink))
-            mColorList.add(context.resources.getColor(R.color.tangerine_orange))
-            mColorList.add(context.resources.getColor(R.color.golden_yellow))
+            with(mColorList) {
+                add(context.resources.getColor(R.color.medium_turquoise))
+                add(context.resources.getColor(R.color.sugar_cane))
+                add( context.resources.getColor(R.color.tickle_me_pink))
+                add(context.resources.getColor(R.color.tangerine_orange))
+                add(context.resources.getColor(R.color.golden_yellow))
 
-            mColorList.add(context.resources.getColor(R.color.tangerine))
-            mColorList.add(context.resources.getColor(R.color.wild_watermelon))
-            mColorList.add(context.resources.getColor(R.color.apple_green))
-            mColorList.add(context.resources.getColor(R.color.light_pink))
-            mColorList.add(context.resources.getColor(R.color.electric_lime))
+                add(context.resources.getColor(R.color.tangerine))
+                add(context.resources.getColor(R.color.wild_watermelon))
+                add(context.resources.getColor(R.color.apple_green))
+                add(context.resources.getColor(R.color.light_pink))
+                add(context.resources.getColor(R.color.electric_lime))
+            }
         }
     }
 
