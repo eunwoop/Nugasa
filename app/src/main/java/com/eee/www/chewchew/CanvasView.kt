@@ -78,10 +78,7 @@ class CanvasView(context: Context?) : View(context) {
                         } as ArrayList<Int>?)!!
                     }
                     addNewCoord(event, pointerIndex, pointerId)
-                    if (mHandler.hasMessages(MESSAGE_PICK)) {
-                        mHandler.removeMessages(MESSAGE_PICK)
-                    }
-                    mHandler.sendEmptyMessageDelayed(MESSAGE_PICK, WAITING_TIME)
+                    triggerSelect()
                     invalidate()
                 }
                 MotionEvent.ACTION_MOVE -> {
@@ -91,6 +88,7 @@ class CanvasView(context: Context?) : View(context) {
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP,
                 MotionEvent.ACTION_POINTER_2_UP, MotionEvent.ACTION_POINTER_3_UP -> {
                     removeCoord(event, pointerIndex, pointerId)
+                    triggerSelect()
                     invalidate()
                 }
             }
@@ -147,6 +145,13 @@ class CanvasView(context: Context?) : View(context) {
 
     private fun isFingerSelected() : Boolean {
         return !mSelected.isEmpty()
+    }
+
+    private fun triggerSelect() {
+        if (mHandler.hasMessages(MESSAGE_PICK)) {
+            mHandler.removeMessages(MESSAGE_PICK)
+        }
+        mHandler.sendEmptyMessageDelayed(MESSAGE_PICK, WAITING_TIME)
     }
 
     private fun printPointerMap() {
