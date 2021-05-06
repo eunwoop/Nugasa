@@ -6,7 +6,6 @@ import android.os.Bundle
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val view = CanvasView(this)
-        setContentView(view)
+        setContentView(R.layout.activity_main)
     }
 }

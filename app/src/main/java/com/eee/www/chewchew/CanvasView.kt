@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.*
 import android.os.Handler
 import android.os.Looper
+import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
@@ -14,7 +15,7 @@ import com.eee.www.chewchew.CanvasView.CanvasViewConstants.TAG
 import com.eee.www.chewchew.CanvasView.CanvasViewConstants.WAITING_TIME
 import java.lang.IllegalArgumentException
 
-class CanvasView(context: Context?) : View(context) {
+class CanvasView : View {
     object CanvasViewConstants {
         const val TAG = "CanvasView"
         const val MAX_TOUCH = 10
@@ -39,6 +40,10 @@ class CanvasView(context: Context?) : View(context) {
         mColorList = (context?.let { ColorLoader.getInstance(it).getColorList() }
                 as ArrayList<Int>?)!!
     }
+
+    constructor(context: Context) : super(context)
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
     override fun onDraw(canvas: Canvas) {
         val paint = Paint()
