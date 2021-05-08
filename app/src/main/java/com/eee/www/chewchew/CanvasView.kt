@@ -8,6 +8,7 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import androidx.lifecycle.MutableLiveData
 import com.eee.www.chewchew.CanvasView.CanvasViewConstants.CIRCLE_SIZE
 import com.eee.www.chewchew.CanvasView.CanvasViewConstants.MAX_TOUCH
 import com.eee.www.chewchew.CanvasView.CanvasViewConstants.MESSAGE_PICK
@@ -24,6 +25,8 @@ class CanvasView : View {
 
         const val MESSAGE_PICK = 0
     }
+
+    val fingerPressed = MutableLiveData<Boolean>()
 
     private var mTouchPointMap = mutableMapOf<Int, PointF>()
     private var mColorList = arrayListOf<Int>()
@@ -109,6 +112,7 @@ class CanvasView : View {
         }
         if (mTouchPointMap[pointerId] == null) {
             mTouchPointMap[pointerId] = PointF(event.getX(pointerId), event.getY(pointerId))
+            fingerPressed.value = true
         }
     }
 
@@ -130,6 +134,7 @@ class CanvasView : View {
         mTouchPointMap.remove(pointerId)
         if (mTouchPointMap.isEmpty()) {
             mSelected.clear()
+            fingerPressed.value = false
         }
     }
 
