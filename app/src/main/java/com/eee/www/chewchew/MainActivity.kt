@@ -30,6 +30,9 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             })
+        viewModel.fingerCount.observe(
+            this,
+            Observer { fingerCount -> canvasView.fingerCount = fingerCount })
     }
 
     private fun initCountPicker() {

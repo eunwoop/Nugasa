@@ -27,13 +27,14 @@ class CanvasView : View {
     }
 
     val fingerPressed = MutableLiveData<Boolean>()
+    var fingerCount = 1
 
     private var mTouchPointMap = mutableMapOf<Int, PointF>()
     private var mColorList = arrayListOf<Int>()
     private var mSelected = arrayListOf<Int>()
     private var mHandler = Handler(Looper.getMainLooper(), Handler.Callback {
         if (it.what == MESSAGE_PICK) {
-            pickN(1)
+            pickN(fingerCount)
             return@Callback true
         }
         return@Callback false
@@ -142,26 +143,27 @@ class CanvasView : View {
         if (mTouchPointMap.isEmpty()) {
             return
         }
-        val pickNum = if (n > mTouchPointMap.size) mTouchPointMap.size else n
         for (i in 0 until mTouchPointMap.size) {
             mSelected.add(i)
         }
         mSelected.shuffle()
-        for (i in 0 until (mTouchPointMap.size - pickNum)) {
+        for (i in 0 until (mTouchPointMap.size - n)) {
             mSelected.removeAt(0)
         }
         invalidate()
     }
 
     private fun isFingerSelected() : Boolean {
-        return !mSelected.isEmpty()
+        return mSelected.isNotEmpty()
     }
 
     private fun triggerSelect() {
         if (mHandler.hasMessages(MESSAGE_PICK)) {
             mHandler.removeMessages(MESSAGE_PICK)
         }
-        mHandler.sendEmptyMessageDelayed(MESSAGE_PICK, WAITING_TIME)
+        if (mTouchPointMap.size > fingerCount) {
+            mHandler.sendEmptyMessageDelayed(MESSAGE_PICK, WAITING_TIME)
+        }
     }
 
     private fun printPointerMap() {
