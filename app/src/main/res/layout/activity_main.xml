@@ -14,7 +14,7 @@
         android:translationZ="2dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        max="10"
+        max="5"
         min="1" />
 
     <com.eee.www.chewchew.CanvasView
