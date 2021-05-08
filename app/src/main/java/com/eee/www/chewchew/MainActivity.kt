@@ -24,9 +24,9 @@ class MainActivity : AppCompatActivity() {
             Observer { fingerPressed ->
                 countPicker.apply {
                     if (fingerPressed) {
-                        fadeOut()
+                        disable()
                     } else {
-                        fadeIn()
+                        enable()
                     }
                 }
             })

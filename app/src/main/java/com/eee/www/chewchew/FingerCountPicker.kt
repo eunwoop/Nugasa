@@ -5,11 +5,13 @@ import android.animation.AnimatorListenerAdapter
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
+import android.view.ViewPropertyAnimator
 import android.widget.NumberPicker
 
 class FingerCountPicker : NumberPicker {
 
     private val animationTime = resources.getInteger(R.integer.pickerAnimTime).toLong()
+    private var animation: ViewPropertyAnimator = fadeInAnimator()
 
     constructor(context: Context) : super(context)
 
@@ -32,29 +34,32 @@ class FingerCountPicker : NumberPicker {
         }
     }
 
-    fun fadeIn() {
+    fun enable() {
         isEnabled = true
 
         alpha = 0f
         visibility = View.VISIBLE
-        animate().alpha(1f)
-            .setDuration(animationTime)
-            .setListener(object : AnimatorListenerAdapter() {
-                override fun onAnimationEnd(animation: Animator) {
-                    visibility = View.VISIBLE
-                }
-            })
+        animation = animation.apply {
+            setListener(null)
+            fadeInAnimator()
+        }
     }
 
-    fun fadeOut() {
+    private fun fadeInAnimator() = animate().alpha(1f)
+        .setDuration(animationTime)
+        .setListener(null)
+
+    fun disable() {
         isEnabled = false
 
-        animate().alpha(0f)
-            .setDuration(animationTime)
-            .setListener(object : AnimatorListenerAdapter() {
-                override fun onAnimationEnd(animation: Animator) {
-                    visibility = View.GONE
-                }
-            })
+        animation = fadeOutAnimator()
     }
+
+    private fun fadeOutAnimator() = animate().alpha(0f)
+        .setDuration(animationTime)
+        .setListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator) {
+                visibility = View.GONE
+            }
+        })
 }
