@@ -6,11 +6,13 @@ import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
 import android.util.Log
+import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
 import com.eee.www.chewchew.CanvasView.CanvasViewConstants.CIRCLE_SIZE
 import com.eee.www.chewchew.CanvasView.CanvasViewConstants.MAX_TOUCH
 import com.eee.www.chewchew.CanvasView.CanvasViewConstants.MESSAGE_PICK
+import com.eee.www.chewchew.CanvasView.CanvasViewConstants.SELECTED_CIRCLE_SIZE
 import com.eee.www.chewchew.CanvasView.CanvasViewConstants.TAG
 import com.eee.www.chewchew.CanvasView.CanvasViewConstants.WAITING_TIME
 import java.lang.IllegalArgumentException
@@ -19,7 +21,8 @@ class CanvasView : View {
     object CanvasViewConstants {
         const val TAG = "CanvasView"
         const val MAX_TOUCH = 10
-        const val CIRCLE_SIZE = 100
+        const val CIRCLE_SIZE = 50
+        const val SELECTED_CIRCLE_SIZE = 100
         const val WAITING_TIME = 3000L
 
         const val MESSAGE_PICK = 0
@@ -28,6 +31,7 @@ class CanvasView : View {
     private var mTouchPointMap = mutableMapOf<Int, PointF>()
     private var mColorList = arrayListOf<Int>()
     private var mSelected = arrayListOf<Int>()
+    private var mContext : Context? = context;
     private var mHandler = Handler(Looper.getMainLooper(), Handler.Callback {
         if (it.what == MESSAGE_PICK) {
             pickN(1)
@@ -55,7 +59,8 @@ class CanvasView : View {
             val point = mTouchPointMap[index];
             paint.color = mColorList[index];
             if (point != null) {
-                canvas.drawCircle(point.x, point.y, CIRCLE_SIZE.toFloat(), paint)
+                canvas.drawCircle(point.x, point.y,
+                        dpToPx(mContext, CIRCLE_SIZE.toFloat()), paint)
             }
         }
 
@@ -64,7 +69,8 @@ class CanvasView : View {
                 val point = mTouchPointMap[it]
                 paint.color = mColorList[it]
                 if (point != null) {
-                    canvas.drawCircle(point.x, point.y, 300F, paint)
+                    canvas.drawCircle(point.x, point.y,
+                            dpToPx(mContext, SELECTED_CIRCLE_SIZE.toFloat()), paint)
                 }
             }
         }
@@ -163,5 +169,13 @@ class CanvasView : View {
         mTouchPointMap.forEach { point ->
             Log.d(TAG, "mTouchPointList:" + "(" + point.value.x + "," + point.value.y + ")")
         }
+    }
+
+    private fun dpToPx(context:Context?, dp:Float) : Float {
+        if (context != null) {
+            return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                    dp, context.resources.displayMetrics)
+        };
+        return dp;
     }
 }
