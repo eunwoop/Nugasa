@@ -37,7 +37,6 @@ class CanvasView : View {
     private var mTouchPointMap = mutableMapOf<Int, PointF>()
     private var mColorList = arrayListOf<Int>()
     private var mSelected = arrayListOf<Int>()
-    private var mContext : Context? = context;
     private var mShouldKeepTouchDrawn = false
     private var mHandler = Handler(Looper.getMainLooper(), Handler.Callback {
         return@Callback when(it.what) {
@@ -73,7 +72,7 @@ class CanvasView : View {
             paint.color = mColorList[index];
             if (point != null) {
                 canvas.drawCircle(point.x, point.y,
-                        dpToPx(mContext, CIRCLE_SIZE.toFloat()), paint)
+                        dpToPx(context, CIRCLE_SIZE.toFloat()), paint)
             }
         }
 
@@ -83,7 +82,7 @@ class CanvasView : View {
                 paint.color = mColorList[it]
                 if (point != null) {
                     canvas.drawCircle(point.x, point.y,
-                            dpToPx(mContext, SELECTED_CIRCLE_SIZE.toFloat()), paint)
+                            dpToPx(context, SELECTED_CIRCLE_SIZE.toFloat()), paint)
                 }
             }
         }
@@ -104,7 +103,7 @@ class CanvasView : View {
                             ColorLoader.getInstance(it).getColorList()
                         } as ArrayList<Int>?)!!
                     }
-                    addNewCoord(event, pointerIndex, pointerId)
+                    addNewCoord(event, pointerId)
                     triggerSelect()
                     invalidate()
                 }
@@ -114,7 +113,7 @@ class CanvasView : View {
                 }
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP,
                 MotionEvent.ACTION_POINTER_2_UP, MotionEvent.ACTION_POINTER_3_UP -> {
-                    removeCoord(event, pointerIndex, pointerId)
+                    removeCoord(pointerId)
                     triggerSelect()
                     invalidate()
                 }
@@ -125,7 +124,7 @@ class CanvasView : View {
         return true
     }
 
-    private fun addNewCoord(event: MotionEvent, pointerIndex: Int, pointerId: Int) {
+    private fun addNewCoord(event: MotionEvent, pointerId: Int) {
         if (isFingerSelected()) {
             return;
         }
@@ -149,7 +148,7 @@ class CanvasView : View {
         }
     }
 
-    private fun removeCoord(event: MotionEvent,  pointerIndex: Int, pointerId: Int) {
+    private fun removeCoord(pointerId: Int) {
         mTouchPointMap.remove(pointerId)
         if (mTouchPointMap.isEmpty()) {
             mSelected.clear()
@@ -202,7 +201,7 @@ class CanvasView : View {
 
     private fun printPointerMap() {
         mTouchPointMap.forEach { point ->
-            Log.d(TAG, "mTouchPointList:" + "(" + point.value.x + "," + point.value.y + ")")
+            Log.d(TAG, "mTouchPointList:(${point.value.x}, ${point.value.y})")
         }
     }
 
@@ -210,7 +209,7 @@ class CanvasView : View {
         if (context != null) {
             return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
                     dp, context.resources.displayMetrics)
-        };
-        return dp;
+        }
+        return dp
     }
 }
