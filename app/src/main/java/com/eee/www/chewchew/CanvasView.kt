@@ -12,6 +12,7 @@ import android.view.View
 import androidx.lifecycle.MutableLiveData
 import com.eee.www.chewchew.CanvasView.CanvasViewConstants.CIRCLE_SIZE
 import com.eee.www.chewchew.CanvasView.CanvasViewConstants.MAX_TOUCH
+import com.eee.www.chewchew.CanvasView.CanvasViewConstants.MESSAGE_RESET_KEEP
 import com.eee.www.chewchew.CanvasView.CanvasViewConstants.MESSAGE_PICK
 import com.eee.www.chewchew.CanvasView.CanvasViewConstants.SELECTED_CIRCLE_SIZE
 import com.eee.www.chewchew.CanvasView.CanvasViewConstants.TAG
@@ -27,6 +28,7 @@ class CanvasView : View {
         const val WAITING_TIME = 3000L
 
         const val MESSAGE_PICK = 0
+        const val MESSAGE_RESET_KEEP = 1
     }
 
     val fingerPressed = MutableLiveData<Boolean>()
@@ -36,12 +38,19 @@ class CanvasView : View {
     private var mColorList = arrayListOf<Int>()
     private var mSelected = arrayListOf<Int>()
     private var mContext : Context? = context;
+    private var mShouldKeepTouchDrawn = false
     private var mHandler = Handler(Looper.getMainLooper(), Handler.Callback {
-        if (it.what == MESSAGE_PICK) {
-            pickN(fingerCount)
-            return@Callback true
+        return@Callback when(it.what) {
+            MESSAGE_PICK -> {
+                pickN(1)
+                true
+            }
+            MESSAGE_RESET_KEEP -> {
+                resetKeepFingerDrawn()
+                true
+            }
+            else -> false
         }
-        return@Callback false
     });
 
     init {
@@ -81,6 +90,9 @@ class CanvasView : View {
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
+        if (mShouldKeepTouchDrawn) {
+            return true
+        }
         try {
             val pointerIndex = event.actionIndex
             val pointerId = event.getPointerId(pointerIndex)
@@ -156,6 +168,7 @@ class CanvasView : View {
         for (i in 0 until (mTouchPointMap.size - n)) {
             mSelected.removeAt(0)
         }
+        keepFingerDrawnAwhile()
         invalidate()
     }
 
@@ -170,6 +183,21 @@ class CanvasView : View {
         if (mTouchPointMap.size > fingerCount) {
             mHandler.sendEmptyMessageDelayed(MESSAGE_PICK, WAITING_TIME)
         }
+    }
+
+    private fun keepFingerDrawnAwhile() {
+        if (mHandler.hasMessages(MESSAGE_RESET_KEEP)) {
+            mHandler.removeMessages(MESSAGE_RESET_KEEP)
+        }
+        mShouldKeepTouchDrawn = true
+        mHandler.sendEmptyMessageDelayed(MESSAGE_RESET_KEEP, WAITING_TIME)
+    }
+
+    private fun resetKeepFingerDrawn() {
+        mShouldKeepTouchDrawn = false
+        mTouchPointMap.clear()
+        mSelected.clear()
+        invalidate()
     }
 
     private fun printPointerMap() {
