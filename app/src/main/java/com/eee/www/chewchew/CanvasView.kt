@@ -41,11 +41,12 @@ class CanvasView : View {
     private var mHandler = Handler(Looper.getMainLooper(), Handler.Callback {
         return@Callback when(it.what) {
             MESSAGE_PICK -> {
-                pickN(1)
+                pickN(fingerCount)
                 true
             }
             MESSAGE_RESET_KEEP -> {
                 resetKeepFingerDrawn()
+                fingerPressed.value = false
                 true
             }
             else -> false
