@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.*
 import android.os.Handler
 import android.os.Looper
+import android.os.Message
 import android.util.AttributeSet
 import android.util.Log
 import android.util.TypedValue
@@ -11,21 +12,25 @@ import android.view.MotionEvent
 import android.view.View
 import androidx.lifecycle.MutableLiveData
 import com.eee.www.chewchew.CanvasView.CanvasViewConstants.CIRCLE_SIZE
+import com.eee.www.chewchew.CanvasView.CanvasViewConstants.CIRCLE_SIZE_2
 import com.eee.www.chewchew.CanvasView.CanvasViewConstants.MAX_TOUCH
+import com.eee.www.chewchew.CanvasView.CanvasViewConstants.MESSAGE_ANIM
 import com.eee.www.chewchew.CanvasView.CanvasViewConstants.MESSAGE_PICK
 import com.eee.www.chewchew.CanvasView.CanvasViewConstants.SELECTED_CIRCLE_SIZE
 import com.eee.www.chewchew.CanvasView.CanvasViewConstants.TAG
 import com.eee.www.chewchew.CanvasView.CanvasViewConstants.WAITING_TIME
 
-class CanvasView : View {
+class CanvasView : View, Handler.Callback {
     object CanvasViewConstants {
         const val TAG = "CanvasView"
         const val MAX_TOUCH = 10
         const val CIRCLE_SIZE = 50
+        const val CIRCLE_SIZE_2 = 60
         const val SELECTED_CIRCLE_SIZE = 100
         const val WAITING_TIME = 3000L
 
-        const val MESSAGE_PICK = 0
+        const val MESSAGE_PICK: Int = 0
+        const val MESSAGE_ANIM: Int = 1
     }
 
     val fingerPressed = MutableLiveData<Boolean>()
@@ -35,13 +40,13 @@ class CanvasView : View {
     private var mColorList = arrayListOf<Int>()
     private var mSelected = arrayListOf<Int>()
     private var mContext: Context? = context
-    private var mHandler = Handler(Looper.getMainLooper(), Handler.Callback {
-        if (it.what == MESSAGE_PICK) {
-            pickN(fingerCount)
-            return@Callback true
-        }
-        return@Callback false
-    })
+    private val paint = Paint()
+    private val mHandler = Handler(Looper.getMainLooper(), this)
+    private val circleSize = dpToPx(mContext, CIRCLE_SIZE.toFloat())
+    private val circleSize2 = dpToPx(mContext, CIRCLE_SIZE_2.toFloat())
+    var curCircleSize = circleSize
+
+    var counter = 0;
 
     init {
         mColorList = (context?.let { ColorLoader.getInstance(it).getColorList() }
@@ -56,8 +61,24 @@ class CanvasView : View {
         defStyleAttr
     )
 
+    override fun handleMessage(msg: Message): Boolean {
+        if (msg.what == MESSAGE_PICK) {
+            pickN(fingerCount)
+            return true
+        } else if (msg.what == MESSAGE_ANIM) {
+            doAnimation()
+            invalidate()
+            Log.d(TAG, "handleMessage : send MESSAGE_ANIM")
+            mHandler.sendEmptyMessageDelayed(MESSAGE_ANIM, 15)
+            return true
+        }
+        return false
+    }
+
     override fun onDraw(canvas: Canvas) {
-        val paint = Paint()
+        super.onDraw(canvas)
+
+        curCircleSize = if (curCircleSize >= circleSize2) circleSize else curCircleSize
         for (index in 0..mTouchPointMap.size) {
             if (index >= MAX_TOUCH) {
                 return;
@@ -68,7 +89,7 @@ class CanvasView : View {
             if (point != null) {
                 canvas.drawCircle(
                     point.x, point.y,
-                    dpToPx(mContext, CIRCLE_SIZE.toFloat()), paint
+                    curCircleSize, paint
                 )
             }
         }
@@ -87,10 +108,13 @@ class CanvasView : View {
         }
     }
 
+    private fun doAnimation() {
+        curCircleSize++
+    }
+
     override fun onTouchEvent(event: MotionEvent): Boolean {
         when (event.actionMasked) {
-            MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN,
-            MotionEvent.ACTION_POINTER_2_UP, MotionEvent.ACTION_POINTER_3_DOWN -> {
+            MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> {
                 Log.d(TAG, "onTouchEvent : ACTION_DOWN")
                 if (event.pointerCount == 1) {
                     mColorList = (context?.let {
@@ -100,21 +124,27 @@ class CanvasView : View {
                 addNewCoord(event)
                 triggerSelect()
                 invalidate()
+                if (!mHandler.hasMessages(MESSAGE_ANIM)){
+                    Log.d(TAG, "onTouchEvent : send MESSAGE_ANIM")
+                    mHandler.sendEmptyMessageDelayed(MESSAGE_ANIM, 1000)
+                }
+                return true
             }
             MotionEvent.ACTION_MOVE -> {
                 Log.d(TAG, "onTouchEvent : ACTION_MOVE")
                 moveCoord(event)
                 invalidate()
+                return true
             }
-            MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP,
-            MotionEvent.ACTION_POINTER_2_UP, MotionEvent.ACTION_POINTER_3_UP -> {
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP -> {
                 Log.d(TAG, "onTouchEvent : ACTION_UP")
                 removeCoord(event)
                 triggerSelect()
                 invalidate()
+                return true
             }
         }
-        return true
+        return false
     }
 
     private fun addNewCoord(event: MotionEvent) {
@@ -153,6 +183,7 @@ class CanvasView : View {
         if (mTouchPointMap.isEmpty()) {
             mSelected.clear()
             fingerPressed.value = false
+            stopAnim()
         }
     }
 
@@ -167,7 +198,15 @@ class CanvasView : View {
         for (i in 0 until (mTouchPointMap.size - n)) {
             mSelected.removeAt(0)
         }
+        stopAnim()
         invalidate()
+    }
+
+    private fun stopAnim() {
+        if (mHandler.hasMessages(MESSAGE_ANIM)){
+            Log.d(TAG, "onTouchEvent : remove MESSAGE_ANIM")
+            mHandler.removeMessages(MESSAGE_ANIM)
+        }
     }
 
     private fun isFingerSelected(): Boolean {
