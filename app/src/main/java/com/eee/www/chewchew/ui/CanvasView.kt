@@ -1,32 +1,33 @@
-package com.eee.www.chewchew
+package com.eee.www.chewchew.ui
 
 import android.content.Context
-import android.graphics.*
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.PointF
 import android.os.*
 import android.util.AttributeSet
 import android.util.Log
-import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
-import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.MutableLiveData
-import com.eee.www.chewchew.CanvasView.CanvasViewConstants.CIRCLE_SIZE
-import com.eee.www.chewchew.CanvasView.CanvasViewConstants.CIRCLE_SIZE_2
-import com.eee.www.chewchew.CanvasView.CanvasViewConstants.MAX_TOUCH
-import com.eee.www.chewchew.CanvasView.CanvasViewConstants.MESSAGE_ANIM
-import com.eee.www.chewchew.CanvasView.CanvasViewConstants.MESSAGE_PICK
-import com.eee.www.chewchew.CanvasView.CanvasViewConstants.SELECTED_CIRCLE_SIZE
-import com.eee.www.chewchew.CanvasView.CanvasViewConstants.TAG
-import com.eee.www.chewchew.CanvasView.CanvasViewConstants.WAITING_TIME
+import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.CIRCLE_SIZE_MAX_PX
+import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.CIRCLE_SIZE_PX
+import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.CIRCLE_SIZE_SELECTED_PX
+import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.MAX_TOUCH
+import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.MESSAGE_ANIM
+import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.MESSAGE_PICK
+import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.TAG
+import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.WAITING_TIME
+import com.eee.www.chewchew.utils.ColorLoader
+import com.eee.www.chewchew.utils.ViewUtils
 
 class CanvasView : View, Handler.Callback {
     object CanvasViewConstants {
         const val TAG = "CanvasView"
         const val MAX_TOUCH = 10
-        const val CIRCLE_SIZE = 50
-        const val CIRCLE_SIZE_2 = 60
-        const val SELECTED_CIRCLE_SIZE = 100
+        const val CIRCLE_SIZE_PX = 50
+        const val CIRCLE_SIZE_MAX_PX = 60
+        const val CIRCLE_SIZE_SELECTED_PX = 100
         const val WAITING_TIME = 3000L
 
         const val MESSAGE_PICK: Int = 0
@@ -39,13 +40,16 @@ class CanvasView : View, Handler.Callback {
     private var mTouchPointMap = mutableMapOf<Int, PointF>()
     private var mColorList = arrayListOf<Int>()
     private var mSelected = arrayListOf<Int>()
-    private var mContext: Context? = context
+
     private val paint = Paint()
     private val mHandler = Handler(Looper.getMainLooper(), this)
-    private val circleSize = dpToPx(mContext, CIRCLE_SIZE.toFloat())
-    private val circleSize2 = dpToPx(mContext, CIRCLE_SIZE_2.toFloat())
-    var curCircleSize = circleSize
-    val vibrator: Vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator;
+
+    private val MIN_CIRCLE_SIZE = ViewUtils.dpToPx(context, CIRCLE_SIZE_PX.toFloat())
+    private val MAX_CIRCLE_SIZE = ViewUtils.dpToPx(context, CIRCLE_SIZE_MAX_PX.toFloat())
+    private val SELECTED_CIRCLE_SIZE = ViewUtils.dpToPx(context, CIRCLE_SIZE_SELECTED_PX.toFloat())
+
+    private var curCircleSize = MIN_CIRCLE_SIZE
+    private val vibrator: Vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator;
 
     init {
         mColorList = (context?.let { ColorLoader.getInstance(it).getColorList() }
@@ -63,21 +67,31 @@ class CanvasView : View, Handler.Callback {
     override fun handleMessage(msg: Message): Boolean {
         if (msg.what == MESSAGE_PICK) {
             pickN(fingerCount)
+            invalidate()
             return true
         } else if (msg.what == MESSAGE_ANIM) {
             doAnimation()
             invalidate()
-            Log.d(TAG, "handleMessage : send MESSAGE_ANIM")
             mHandler.sendEmptyMessageDelayed(MESSAGE_ANIM, 15)
             return true
         }
         return false
     }
 
+    private fun doAnimation() {
+        curCircleSize++
+    }
+
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+        if (isFingerSelected()) {
+            drawSelectedCircle(canvas)
+        }
+        drawCirclesOnTouch(canvas)
+    }
 
-        curCircleSize = if (curCircleSize >= circleSize2) circleSize else curCircleSize
+    private fun drawCirclesOnTouch(canvas: Canvas){
+        curCircleSize = if (curCircleSize >= MAX_CIRCLE_SIZE) MIN_CIRCLE_SIZE else curCircleSize
         for (index in 0..mTouchPointMap.size) {
             if (index >= MAX_TOUCH) {
                 return;
@@ -87,38 +101,24 @@ class CanvasView : View, Handler.Callback {
             paint.color = mColorList[index];
             if (point != null) {
                 canvas.drawCircle(
-                    point.x, point.y,
-                    curCircleSize, paint
+                        point.x, point.y,
+                        curCircleSize, paint
                 )
             }
         }
+    }
 
-        if (isFingerSelected()) {
-            mSelected.forEach {
-                val point = mTouchPointMap[it]
-                paint.color = mColorList[it]
-                if (point != null) {
-                    canvas.drawCircle(
+    private fun drawSelectedCircle(canvas: Canvas) {
+        mSelected.forEach {
+            val point = mTouchPointMap[it]
+            paint.color = mColorList[it]
+            if (point != null) {
+                canvas.drawCircle(
                         point.x, point.y,
-                        dpToPx(mContext, SELECTED_CIRCLE_SIZE.toFloat()), paint
-                    )
-                }
+                        SELECTED_CIRCLE_SIZE, paint
+                )
             }
         }
-    }
-
-    private fun doVibrate() {
-        Log.d(TAG, "do Vibrate!")
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val effect = VibrationEffect.createOneShot(100, 100)
-            vibrator.vibrate(effect)
-        } else {
-            vibrator.vibrate(100)
-        }
-    }
-
-    private fun doAnimation() {
-        curCircleSize++
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -126,55 +126,59 @@ class CanvasView : View, Handler.Callback {
             MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> {
                 Log.d(TAG, "onTouchEvent : ACTION_DOWN")
                 if (event.pointerCount == 1) {
-                    mColorList = (context?.let {
-                        ColorLoader.getInstance(it).getColorList()
-                    } as ArrayList<Int>?)!!
+                    // shuffle color on first finger
+                    shuffleColor()
                 }
-                addNewCoord(event)
-                triggerSelect()
-                invalidate()
-                if (!mHandler.hasMessages(MESSAGE_ANIM)){
-                    Log.d(TAG, "onTouchEvent : send MESSAGE_ANIM")
-                    mHandler.sendEmptyMessageDelayed(MESSAGE_ANIM, 1000)
-                }
+                addNewPoint(event)
+                startAnim()
                 return true
             }
             MotionEvent.ACTION_MOVE -> {
                 Log.d(TAG, "onTouchEvent : ACTION_MOVE")
-                moveCoord(event)
-                invalidate()
+                movePoint(event)
                 return true
             }
             MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP -> {
                 Log.d(TAG, "onTouchEvent : ACTION_UP")
-                removeCoord(event)
-                triggerSelect()
-                invalidate()
+                removePoint(event)
                 return true
             }
         }
         return false
     }
 
-    private fun addNewCoord(event: MotionEvent) {
+    private fun shuffleColor() {
+        mColorList = (context?.let {
+            ColorLoader.getInstance(it).getColorList()
+        } as ArrayList<Int>?)!!
+    }
+
+    private fun startAnim() {
+        if (!mHandler.hasMessages(MESSAGE_ANIM)){
+            mHandler.sendEmptyMessageDelayed(MESSAGE_ANIM, 1000)
+        }
+    }
+
+    private fun addNewPoint(event: MotionEvent) {
         if (isFingerSelected()) {
             return
         }
         val pointerIndex = event.actionIndex
         val pointerId = event.getPointerId(pointerIndex)
-        Log.d(TAG, "addNewCoord : $pointerId")
+        Log.d(TAG, "addNewPoint : $pointerId")
         if (mTouchPointMap[pointerId] == null) {
             mTouchPointMap[pointerId] = PointF(event.getX(pointerIndex), event.getY(pointerIndex))
             fingerPressed.value = true
         }
+        triggerSelect()
+        invalidate()
     }
 
-    private fun moveCoord(event: MotionEvent) {
+    private fun movePoint(event: MotionEvent) {
         if (isFingerSelected()) {
             return
         }
-
-        Log.d(TAG, "moveCoord")
+        Log.d(TAG, "movePoint")
         for (pointerIndex in 0 until event.pointerCount) {
             val pointerId = event.getPointerId(pointerIndex)
             mTouchPointMap[pointerId]?.run {
@@ -182,19 +186,27 @@ class CanvasView : View, Handler.Callback {
                 y = event.getY(pointerIndex)
             }
         }
+        invalidate()
     }
 
-    private fun removeCoord(event: MotionEvent) {
+    private fun removePoint(event: MotionEvent) {
         val pointerIndex = event.actionIndex
         val pointerId = event.getPointerId(pointerIndex)
+
         mTouchPointMap.remove(pointerId)
-        Log.d(TAG, "removeCoord : $pointerId")
+        Log.d(TAG, "removePoint : $pointerId")
+
+        //when last point removed
         if (mTouchPointMap.isEmpty()) {
             mSelected.clear()
             fingerPressed.value = false
             stopAnim()
-            curCircleSize = circleSize
+            curCircleSize = MIN_CIRCLE_SIZE
+            invalidate()
+            return;
         }
+        triggerSelect()
+        invalidate()
     }
 
     private fun pickN(n: Int) {
@@ -210,12 +222,20 @@ class CanvasView : View, Handler.Callback {
         }
         stopAnim()
         doVibrate()
-        invalidate()
+    }
+
+    private fun doVibrate() {
+        Log.d(TAG, "do Vibrate!")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val effect = VibrationEffect.createOneShot(100, 100)
+            vibrator.vibrate(effect)
+        } else {
+            vibrator.vibrate(100)
+        }
     }
 
     private fun stopAnim() {
         if (mHandler.hasMessages(MESSAGE_ANIM)){
-            Log.d(TAG, "onTouchEvent : remove MESSAGE_ANIM")
             mHandler.removeMessages(MESSAGE_ANIM)
         }
     }
@@ -237,15 +257,5 @@ class CanvasView : View, Handler.Callback {
         mTouchPointMap.forEach { point ->
             Log.d(TAG, "mTouchPointList:" + "(" + point.value.x + "," + point.value.y + ")")
         }
-    }
-
-    private fun dpToPx(context: Context?, dp: Float): Float {
-        if (context != null) {
-            return TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP,
-                dp, context.resources.displayMetrics
-            )
-        }
-        return dp
     }
 }

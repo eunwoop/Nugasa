@@ -1,6 +1,7 @@
-package com.eee.www.chewchew
+package com.eee.www.chewchew.utils
 
 import android.content.Context
+import com.eee.www.chewchew.R
 
 class ColorLoader private constructor(context: Context) {
     companion object {
