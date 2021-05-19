@@ -16,7 +16,6 @@ import com.eee.www.chewchew.CanvasView.CanvasViewConstants.MESSAGE_PICK
 import com.eee.www.chewchew.CanvasView.CanvasViewConstants.SELECTED_CIRCLE_SIZE
 import com.eee.www.chewchew.CanvasView.CanvasViewConstants.TAG
 import com.eee.www.chewchew.CanvasView.CanvasViewConstants.WAITING_TIME
-import java.lang.IllegalArgumentException
 
 class CanvasView : View {
     object CanvasViewConstants {
@@ -35,14 +34,14 @@ class CanvasView : View {
     private var mTouchPointMap = mutableMapOf<Int, PointF>()
     private var mColorList = arrayListOf<Int>()
     private var mSelected = arrayListOf<Int>()
-    private var mContext : Context? = context;
+    private var mContext: Context? = context
     private var mHandler = Handler(Looper.getMainLooper(), Handler.Callback {
         if (it.what == MESSAGE_PICK) {
             pickN(fingerCount)
             return@Callback true
         }
         return@Callback false
-    });
+    })
 
     init {
         mColorList = (context?.let { ColorLoader.getInstance(it).getColorList() }
@@ -51,11 +50,15 @@ class CanvasView : View {
 
     constructor(context: Context) : super(context)
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    )
 
     override fun onDraw(canvas: Canvas) {
         val paint = Paint()
-        for (index in 0 .. mTouchPointMap.size) {
+        for (index in 0..mTouchPointMap.size) {
             if (index >= MAX_TOUCH) {
                 return;
             }
@@ -63,8 +66,10 @@ class CanvasView : View {
             val point = mTouchPointMap[index];
             paint.color = mColorList[index];
             if (point != null) {
-                canvas.drawCircle(point.x, point.y,
-                        dpToPx(mContext, CIRCLE_SIZE.toFloat()), paint)
+                canvas.drawCircle(
+                    point.x, point.y,
+                    dpToPx(mContext, CIRCLE_SIZE.toFloat()), paint
+                )
             }
         }
 
@@ -73,79 +78,85 @@ class CanvasView : View {
                 val point = mTouchPointMap[it]
                 paint.color = mColorList[it]
                 if (point != null) {
-                    canvas.drawCircle(point.x, point.y,
-                            dpToPx(mContext, SELECTED_CIRCLE_SIZE.toFloat()), paint)
+                    canvas.drawCircle(
+                        point.x, point.y,
+                        dpToPx(mContext, SELECTED_CIRCLE_SIZE.toFloat()), paint
+                    )
                 }
             }
         }
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        try {
-            val pointerIndex = event.actionIndex
-            val pointerId = event.getPointerId(pointerIndex)
-            when (event.actionMasked) {
-                MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN,
-                MotionEvent.ACTION_POINTER_2_UP, MotionEvent.ACTION_POINTER_3_DOWN -> {
-                    if (event.pointerCount == 1) {
-                        mColorList = (context?.let {
-                            ColorLoader.getInstance(it).getColorList()
-                        } as ArrayList<Int>?)!!
-                    }
-                    addNewCoord(event, pointerIndex, pointerId)
-                    triggerSelect()
-                    invalidate()
+        when (event.actionMasked) {
+            MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN,
+            MotionEvent.ACTION_POINTER_2_UP, MotionEvent.ACTION_POINTER_3_DOWN -> {
+                Log.d(TAG, "onTouchEvent : ACTION_DOWN")
+                if (event.pointerCount == 1) {
+                    mColorList = (context?.let {
+                        ColorLoader.getInstance(it).getColorList()
+                    } as ArrayList<Int>?)!!
                 }
-                MotionEvent.ACTION_MOVE -> {
-                    moveCoord(event)
-                    invalidate()
-                }
-                MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP,
-                MotionEvent.ACTION_POINTER_2_UP, MotionEvent.ACTION_POINTER_3_UP -> {
-                    removeCoord(event, pointerIndex, pointerId)
-                    triggerSelect()
-                    invalidate()
-                }
+                addNewCoord(event)
+                triggerSelect()
+                invalidate()
             }
-        } catch (e : IllegalArgumentException) {
-            Log.e(TAG, "IllegalArgumentException happened in onTouch$e")
+            MotionEvent.ACTION_MOVE -> {
+                Log.d(TAG, "onTouchEvent : ACTION_MOVE")
+                moveCoord(event)
+                invalidate()
+            }
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP,
+            MotionEvent.ACTION_POINTER_2_UP, MotionEvent.ACTION_POINTER_3_UP -> {
+                Log.d(TAG, "onTouchEvent : ACTION_UP")
+                removeCoord(event)
+                triggerSelect()
+                invalidate()
+            }
         }
         return true
     }
 
-    private fun addNewCoord(event: MotionEvent, pointerIndex: Int, pointerId: Int) {
+    private fun addNewCoord(event: MotionEvent) {
         if (isFingerSelected()) {
-            return;
+            return
         }
+        val pointerIndex = event.actionIndex
+        val pointerId = event.getPointerId(pointerIndex)
+        Log.d(TAG, "addNewCoord : $pointerId")
         if (mTouchPointMap[pointerId] == null) {
-            mTouchPointMap[pointerId] = PointF(event.getX(pointerId), event.getY(pointerId))
+            mTouchPointMap[pointerId] = PointF(event.getX(pointerIndex), event.getY(pointerIndex))
             fingerPressed.value = true
         }
     }
 
     private fun moveCoord(event: MotionEvent) {
         if (isFingerSelected()) {
-            return;
+            return
         }
-        for (i in 0 until event.pointerCount) {
-            if (mTouchPointMap.size - 1 < i) {
-                mTouchPointMap[event.getPointerId(i)] = PointF(event.getX(i), event.getY(i))
-            } else {
-                (mTouchPointMap[event.getPointerId(i)])?.x = event.getX(i)
-                (mTouchPointMap[event.getPointerId(i)])?.y = event.getY(i)
+
+        Log.d(TAG, "moveCoord")
+        for (pointerIndex in 0 until event.pointerCount) {
+            val pointerId = event.getPointerId(pointerIndex)
+            mTouchPointMap[pointerId]?.run {
+                x = event.getX(pointerIndex)
+                y = event.getY(pointerIndex)
             }
         }
     }
 
-    private fun removeCoord(event: MotionEvent,  pointerIndex: Int, pointerId: Int) {
+    private fun removeCoord(event: MotionEvent) {
+        val pointerIndex = event.actionIndex
+        val pointerId = event.getPointerId(pointerIndex)
         mTouchPointMap.remove(pointerId)
+        Log.d(TAG, "removeCoord : $pointerId")
         if (mTouchPointMap.isEmpty()) {
             mSelected.clear()
             fingerPressed.value = false
         }
     }
 
-    private fun pickN(n:Int) {
+    private fun pickN(n: Int) {
         if (mTouchPointMap.isEmpty()) {
             return
         }
@@ -159,7 +170,7 @@ class CanvasView : View {
         invalidate()
     }
 
-    private fun isFingerSelected() : Boolean {
+    private fun isFingerSelected(): Boolean {
         return mSelected.isNotEmpty()
     }
 
@@ -178,11 +189,13 @@ class CanvasView : View {
         }
     }
 
-    private fun dpToPx(context:Context?, dp:Float) : Float {
+    private fun dpToPx(context: Context?, dp: Float): Float {
         if (context != null) {
-            return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                    dp, context.resources.displayMetrics)
-        };
-        return dp;
+            return TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                dp, context.resources.displayMetrics
+            )
+        }
+        return dp
     }
 }
