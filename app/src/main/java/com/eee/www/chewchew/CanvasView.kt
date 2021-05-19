@@ -2,14 +2,14 @@ package com.eee.www.chewchew
 
 import android.content.Context
 import android.graphics.*
-import android.os.Handler
-import android.os.Looper
-import android.os.Message
+import android.os.*
 import android.util.AttributeSet
 import android.util.Log
 import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
+import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.MutableLiveData
 import com.eee.www.chewchew.CanvasView.CanvasViewConstants.CIRCLE_SIZE
 import com.eee.www.chewchew.CanvasView.CanvasViewConstants.CIRCLE_SIZE_2
@@ -45,8 +45,7 @@ class CanvasView : View, Handler.Callback {
     private val circleSize = dpToPx(mContext, CIRCLE_SIZE.toFloat())
     private val circleSize2 = dpToPx(mContext, CIRCLE_SIZE_2.toFloat())
     var curCircleSize = circleSize
-
-    var counter = 0;
+    val vibrator: Vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator;
 
     init {
         mColorList = (context?.let { ColorLoader.getInstance(it).getColorList() }
@@ -105,6 +104,16 @@ class CanvasView : View, Handler.Callback {
                     )
                 }
             }
+        }
+    }
+
+    private fun doVibrate() {
+        Log.d(TAG, "do Vibrate!")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val effect = VibrationEffect.createOneShot(100, 100)
+            vibrator.vibrate(effect)
+        } else {
+            vibrator.vibrate(100)
         }
     }
 
@@ -184,6 +193,7 @@ class CanvasView : View, Handler.Callback {
             mSelected.clear()
             fingerPressed.value = false
             stopAnim()
+            curCircleSize = circleSize
         }
     }
 
@@ -199,6 +209,7 @@ class CanvasView : View, Handler.Callback {
             mSelected.removeAt(0)
         }
         stopAnim()
+        doVibrate()
         invalidate()
     }
 
