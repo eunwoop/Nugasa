@@ -49,7 +49,7 @@ class CanvasView : View, Handler.Callback {
     private val vibrator: Vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
     init {
-        FingerColors.shuffle(context)
+        shuffleColor()
     }
 
     constructor(context: Context) : super(context)
