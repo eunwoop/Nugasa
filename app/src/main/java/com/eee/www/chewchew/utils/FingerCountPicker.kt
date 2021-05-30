@@ -1,4 +1,4 @@
-package com.eee.www.chewchew
+package com.eee.www.chewchew.utils
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
@@ -7,6 +7,7 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.ViewPropertyAnimator
 import android.widget.NumberPicker
+import com.eee.www.chewchew.R
 
 class FingerCountPicker : NumberPicker {
 

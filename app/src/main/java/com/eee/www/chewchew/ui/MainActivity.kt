@@ -1,9 +1,10 @@
-package com.eee.www.chewchew
+package com.eee.www.chewchew.ui
 
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
+import com.eee.www.chewchew.R
 import com.eee.www.chewchew.viewmodels.PreferenceViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 

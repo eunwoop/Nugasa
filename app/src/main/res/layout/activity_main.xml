@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.eee.www.chewchew.FingerCountPicker
+    <com.eee.www.chewchew.utils.FingerCountPicker
         android:id="@+id/countPicker"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -17,7 +17,7 @@
         max="5"
         min="1" />
 
-    <com.eee.www.chewchew.CanvasView
+    <com.eee.www.chewchew.ui.CanvasView
         android:id="@+id/canvasView"
         android:layout_width="0dp"
         android:layout_height="0dp"
