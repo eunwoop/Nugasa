@@ -7,6 +7,8 @@ import com.eee.www.chewchew.utils.TAG
 
 class FingerMap {
 
+    private val MAX_SIZE = 10
+
     private val _map = mutableMapOf<Int, PointF>()
     val map
         get() = _map as Map<Int, PointF>
@@ -39,13 +41,13 @@ class FingerMap {
     }
 
     fun isEmpty() = _map.isEmpty()
-    
-    fun getPoint(pointerId: Int): PointF? = _map[pointerId]
+
+    fun isFull() = size == MAX_SIZE
 
     fun select(n: Int): List<Int> {
         val selected = mutableListOf<Int>()
-        for (i in 0 until _map.size) {
-            selected.add(i)
+        for (pointerId in _map.keys) {
+            selected.add(pointerId)
         }
         selected.shuffle()
         for (i in 0 until (_map.size - n)) {
@@ -55,7 +57,7 @@ class FingerMap {
     }
 
     fun print() {
-        map.forEach { point ->
+        _map.forEach { point ->
             Log.d(TAG, "touchPoint:(${point.value.x},${point.value.y})")
         }
     }

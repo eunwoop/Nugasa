@@ -3,7 +3,6 @@ package com.eee.www.chewchew.ui
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
-import android.graphics.PointF
 import android.os.*
 import android.util.AttributeSet
 import android.util.Log
@@ -14,7 +13,6 @@ import com.eee.www.chewchew.model.FingerMap
 import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.CIRCLE_SIZE_MAX_PX
 import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.CIRCLE_SIZE_PX
 import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.CIRCLE_SIZE_SELECTED_PX
-import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.MAX_TOUCH
 import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.MESSAGE_ANIM
 import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.MESSAGE_PICK
 import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.WAITING_TIME
@@ -24,7 +22,6 @@ import com.eee.www.chewchew.utils.ViewUtils
 
 class CanvasView : View, Handler.Callback {
     object CanvasViewConstants {
-        const val MAX_TOUCH = 10
         const val CIRCLE_SIZE_PX = 50
         const val CIRCLE_SIZE_MAX_PX = 60
         const val CIRCLE_SIZE_SELECTED_PX = 100
@@ -40,7 +37,6 @@ class CanvasView : View, Handler.Callback {
     private var touchPointMap = FingerMap()
     private var selectedPointList = listOf<Int>()
 
-    private var colorList = FingerColors.shuffle(context)
     private val paint = Paint()
 
     private val eventHandler = Handler(Looper.getMainLooper(), this)
@@ -51,6 +47,10 @@ class CanvasView : View, Handler.Callback {
     private var circleSize = MIN_CIRCLE_SIZE
 
     private val vibrator: Vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+
+    init {
+        FingerColors.shuffle(context)
+    }
 
     constructor(context: Context) : super(context)
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
@@ -95,7 +95,7 @@ class CanvasView : View, Handler.Callback {
     }
 
     private fun addNewPoint(event: MotionEvent) {
-        if (isFingerSelected()) {
+        if (isFingerSelected() || touchPointMap.isFull()) {
             return
         }
         val pointerId = touchPointMap.add(event)
@@ -133,7 +133,7 @@ class CanvasView : View, Handler.Callback {
     }
 
     private fun shuffleColor() {
-        colorList = FingerColors.shuffle(context)
+        FingerColors.shuffle(context)
     }
 
     private fun stopAnim() {
@@ -167,39 +167,20 @@ class CanvasView : View, Handler.Callback {
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        if (isFingerSelected()) {
-            drawSelectedCircle(canvas)
-        }
         drawCirclesOnTouch(canvas)
-    }
-
-    private fun drawSelectedCircle(canvas: Canvas) {
-        selectedPointList.forEach {
-            val point = touchPointMap.map[it]
-            paint.color = colorList[it]
-            if (point != null) {
-                canvas.drawCircle(
-                    point.x, point.y,
-                    SELECTED_CIRCLE_SIZE, paint
-                )
-            }
-        }
     }
 
     private fun drawCirclesOnTouch(canvas: Canvas) {
         circleSize = if (circleSize >= MAX_CIRCLE_SIZE) MIN_CIRCLE_SIZE else circleSize
-        for (index in 0..touchPointMap.size) {
-            if (index >= MAX_TOUCH) {
-                return
-            }
 
-            val point = touchPointMap.map[index]
-            paint.color = colorList[index]
-            if (point != null) {
-                canvas.drawCircle(
-                    point.x, point.y,
-                    circleSize, paint
-                )
+        touchPointMap.map.forEach {
+            val isSelected = selectedPointList.contains(it.key)
+            val point = touchPointMap.map[it.key]
+            paint.color = FingerColors.randomColor(it.key)
+            if (isSelected) {
+                point?.also { canvas.drawCircle(it.x, it.y, SELECTED_CIRCLE_SIZE, paint) }
+            } else {
+                point?.also { canvas.drawCircle(it.x, it.y, circleSize, paint) }
             }
         }
     }

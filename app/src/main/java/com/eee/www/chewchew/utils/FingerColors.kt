@@ -5,14 +5,15 @@ import com.eee.www.chewchew.R
 
 object FingerColors {
 
+    private val MAX_SIZE = 10
+
     private val colorList = arrayListOf<Int>()
 
-    fun shuffle(context: Context) : List<Int> {
+    fun shuffle(context: Context) {
         if (colorList.isEmpty()) {
             loadColor(context)
         }
         colorList.shuffle()
-        return colorList
     }
 
     private fun loadColor(context: Context) {
@@ -29,4 +30,6 @@ object FingerColors {
             add(context.resources.getColor(R.color.electric_lime))
         }
     }
+
+    fun randomColor(randomInt: Int) = colorList[randomInt % MAX_SIZE]
 }
