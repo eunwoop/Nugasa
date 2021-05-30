@@ -1,4 +1,4 @@
-package com.eee.www.chewchew.utils
+package com.eee.www.chewchew.ui
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
