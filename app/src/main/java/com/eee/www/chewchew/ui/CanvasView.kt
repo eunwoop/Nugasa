@@ -64,16 +64,27 @@ class CanvasView : View, Handler.Callback {
             MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> {
                 Log.d(TAG, "onTouchEvent : ACTION_DOWN")
                 addNewPoint(event)
+                triggerSelect()
+                triggerAnim()
+                invalidate()
                 return true
             }
             MotionEvent.ACTION_MOVE -> {
                 Log.d(TAG, "onTouchEvent : ACTION_MOVE")
                 movePoint(event)
+                invalidate()
                 return true
             }
             MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP -> {
                 Log.d(TAG, "onTouchEvent : ACTION_UP")
                 removePoint(event)
+                val cleared = resetAllIfEmptyPoint()
+                if (cleared) {
+                    stopAnim()
+                } else {
+                    triggerSelect()
+                }
+                invalidate()
                 return true
             }
         }
@@ -87,17 +98,10 @@ class CanvasView : View, Handler.Callback {
         val pointerIndex = event.actionIndex
         val pointerId = event.getPointerId(pointerIndex)
         Log.d(TAG, "addNewPoint : $pointerId")
-        if (touchPointMap[pointerId] == null) {
-            touchPointMap[pointerId] = PointF(event.getX(pointerIndex), event.getY(pointerIndex))
-            fingerPressed.value = true
-        }
-        triggerSelect()
-        invalidate()
-
-        startAnim()
+        touchPointMap[pointerId] = PointF(event.getX(pointerIndex), event.getY(pointerIndex))
     }
 
-    private fun startAnim() {
+    private fun triggerAnim() {
         if (!eventHandler.hasMessages(MESSAGE_ANIM)) {
             eventHandler.sendEmptyMessageDelayed(MESSAGE_ANIM, 1000)
         }
@@ -115,29 +119,24 @@ class CanvasView : View, Handler.Callback {
                 y = event.getY(pointerIndex)
             }
         }
-        invalidate()
     }
 
     private fun removePoint(event: MotionEvent) {
         val pointerIndex = event.actionIndex
         val pointerId = event.getPointerId(pointerIndex)
-
-        touchPointMap.remove(pointerId)
         Log.d(TAG, "removePoint : $pointerId")
+        touchPointMap.remove(pointerId)
+    }
 
-        //when last point removed
+    private fun resetAllIfEmptyPoint(): Boolean {
         if (touchPointMap.isEmpty()) {
             selectedPointList.clear()
-            shuffleColor()
             fingerPressed.value = false
             circleSize = MIN_CIRCLE_SIZE
-            invalidate()
-
-            stopAnim()
-            return
+            shuffleColor()
+            return true
         }
-        triggerSelect()
-        invalidate()
+        return false
     }
 
     private fun shuffleColor() {
@@ -155,6 +154,8 @@ class CanvasView : View, Handler.Callback {
     }
 
     private fun triggerSelect() {
+        fingerPressed.value = true
+
         if (eventHandler.hasMessages(MESSAGE_PICK)) {
             eventHandler.removeMessages(MESSAGE_PICK)
         }
@@ -205,12 +206,13 @@ class CanvasView : View, Handler.Callback {
     override fun handleMessage(msg: Message): Boolean {
         if (msg.what == MESSAGE_PICK) {
             pickN(fingerCount)
+            stopAnim()
+            doVibrate()
             invalidate()
             return true
         } else if (msg.what == MESSAGE_ANIM) {
-            doAnimation()
+            doAnim()
             invalidate()
-            eventHandler.sendEmptyMessageDelayed(MESSAGE_ANIM, 15)
             return true
         }
         return false
@@ -227,12 +229,9 @@ class CanvasView : View, Handler.Callback {
         for (i in 0 until (touchPointMap.size - n)) {
             selectedPointList.removeAt(0)
         }
-        stopAnim()
-        doVibrate()
     }
 
     private fun doVibrate() {
-        Log.d(TAG, "do Vibrate!")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val effect = VibrationEffect.createOneShot(100, 100)
             vibrator.vibrate(effect)
@@ -241,8 +240,12 @@ class CanvasView : View, Handler.Callback {
         }
     }
 
-    private fun doAnimation() {
+    private fun doAnim() {
         circleSize++
+
+        if (!eventHandler.hasMessages(MESSAGE_ANIM)) {
+            eventHandler.sendEmptyMessageDelayed(MESSAGE_ANIM, 15)
+        }
     }
 
     private fun printPointerMap() {
