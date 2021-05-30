@@ -59,63 +59,6 @@ class CanvasView : View, Handler.Callback {
         defStyleAttr
     )
 
-    override fun handleMessage(msg: Message): Boolean {
-        if (msg.what == MESSAGE_PICK) {
-            pickN(fingerCount)
-            invalidate()
-            return true
-        } else if (msg.what == MESSAGE_ANIM) {
-            doAnimation()
-            invalidate()
-            eventHandler.sendEmptyMessageDelayed(MESSAGE_ANIM, 15)
-            return true
-        }
-        return false
-    }
-
-    private fun doAnimation() {
-        circleSize++
-    }
-
-    override fun onDraw(canvas: Canvas) {
-        super.onDraw(canvas)
-        if (isFingerSelected()) {
-            drawSelectedCircle(canvas)
-        }
-        drawCirclesOnTouch(canvas)
-    }
-
-    private fun drawCirclesOnTouch(canvas: Canvas){
-        circleSize = if (circleSize >= MAX_CIRCLE_SIZE) MIN_CIRCLE_SIZE else circleSize
-        for (index in 0..touchPointMap.size) {
-            if (index >= MAX_TOUCH) {
-                return
-            }
-
-            val point = touchPointMap[index];
-            paint.color = colorList[index];
-            if (point != null) {
-                canvas.drawCircle(
-                        point.x, point.y,
-                        circleSize, paint
-                )
-            }
-        }
-    }
-
-    private fun drawSelectedCircle(canvas: Canvas) {
-        selectedPointList.forEach {
-            val point = touchPointMap[it]
-            paint.color = colorList[it]
-            if (point != null) {
-                canvas.drawCircle(
-                        point.x, point.y,
-                        SELECTED_CIRCLE_SIZE, paint
-                )
-            }
-        }
-    }
-
     override fun onTouchEvent(event: MotionEvent): Boolean {
         when (event.actionMasked) {
             MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> {
@@ -138,12 +81,6 @@ class CanvasView : View, Handler.Callback {
         return false
     }
 
-    private fun startAnim() {
-        if (!eventHandler.hasMessages(MESSAGE_ANIM)){
-            eventHandler.sendEmptyMessageDelayed(MESSAGE_ANIM, 1000)
-        }
-    }
-
     private fun addNewPoint(event: MotionEvent) {
         if (isFingerSelected()) {
             return
@@ -157,6 +94,12 @@ class CanvasView : View, Handler.Callback {
         }
         triggerSelect()
         invalidate()
+    }
+
+    private fun startAnim() {
+        if (!eventHandler.hasMessages(MESSAGE_ANIM)) {
+            eventHandler.sendEmptyMessageDelayed(MESSAGE_ANIM, 1000)
+        }
     }
 
     private fun movePoint(event: MotionEvent) {
@@ -199,6 +142,78 @@ class CanvasView : View, Handler.Callback {
         colorList = FingerColors.shuffle(context)
     }
 
+    private fun stopAnim() {
+        if (eventHandler.hasMessages(MESSAGE_ANIM)) {
+            eventHandler.removeMessages(MESSAGE_ANIM)
+        }
+    }
+
+    private fun isFingerSelected(): Boolean {
+        return selectedPointList.isNotEmpty()
+    }
+
+    private fun triggerSelect() {
+        if (eventHandler.hasMessages(MESSAGE_PICK)) {
+            eventHandler.removeMessages(MESSAGE_PICK)
+        }
+        if (touchPointMap.size > fingerCount) {
+            eventHandler.sendEmptyMessageDelayed(MESSAGE_PICK, WAITING_TIME)
+        }
+    }
+
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
+        if (isFingerSelected()) {
+            drawSelectedCircle(canvas)
+        }
+        drawCirclesOnTouch(canvas)
+    }
+
+    private fun drawSelectedCircle(canvas: Canvas) {
+        selectedPointList.forEach {
+            val point = touchPointMap[it]
+            paint.color = colorList[it]
+            if (point != null) {
+                canvas.drawCircle(
+                    point.x, point.y,
+                    SELECTED_CIRCLE_SIZE, paint
+                )
+            }
+        }
+    }
+
+    private fun drawCirclesOnTouch(canvas: Canvas) {
+        circleSize = if (circleSize >= MAX_CIRCLE_SIZE) MIN_CIRCLE_SIZE else circleSize
+        for (index in 0..touchPointMap.size) {
+            if (index >= MAX_TOUCH) {
+                return
+            }
+
+            val point = touchPointMap[index];
+            paint.color = colorList[index];
+            if (point != null) {
+                canvas.drawCircle(
+                    point.x, point.y,
+                    circleSize, paint
+                )
+            }
+        }
+    }
+
+    override fun handleMessage(msg: Message): Boolean {
+        if (msg.what == MESSAGE_PICK) {
+            pickN(fingerCount)
+            invalidate()
+            return true
+        } else if (msg.what == MESSAGE_ANIM) {
+            doAnimation()
+            invalidate()
+            eventHandler.sendEmptyMessageDelayed(MESSAGE_ANIM, 15)
+            return true
+        }
+        return false
+    }
+
     private fun pickN(n: Int) {
         if (touchPointMap.isEmpty()) {
             return
@@ -224,23 +239,8 @@ class CanvasView : View, Handler.Callback {
         }
     }
 
-    private fun stopAnim() {
-        if (eventHandler.hasMessages(MESSAGE_ANIM)){
-            eventHandler.removeMessages(MESSAGE_ANIM)
-        }
-    }
-
-    private fun isFingerSelected(): Boolean {
-        return selectedPointList.isNotEmpty()
-    }
-
-    private fun triggerSelect() {
-        if (eventHandler.hasMessages(MESSAGE_PICK)) {
-            eventHandler.removeMessages(MESSAGE_PICK)
-        }
-        if (touchPointMap.size > fingerCount) {
-            eventHandler.sendEmptyMessageDelayed(MESSAGE_PICK, WAITING_TIME)
-        }
+    private fun doAnimation() {
+        circleSize++
     }
 
     private fun printPointerMap() {
