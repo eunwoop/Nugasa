@@ -18,7 +18,7 @@ import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.MESSAGE_ANIM
 import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.MESSAGE_PICK
 import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.TAG
 import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.WAITING_TIME
-import com.eee.www.chewchew.utils.ColorLoader
+import com.eee.www.chewchew.utils.FingerColors
 import com.eee.www.chewchew.utils.ViewUtils
 
 class CanvasView : View, Handler.Callback {
@@ -38,7 +38,7 @@ class CanvasView : View, Handler.Callback {
     var fingerCount = 1
 
     private var mTouchPointMap = mutableMapOf<Int, PointF>()
-    private var mColorList = arrayListOf<Int>()
+    private var mColorList = FingerColors.shuffle(context)
     private var mSelected = arrayListOf<Int>()
 
     private val paint = Paint()
@@ -50,11 +50,6 @@ class CanvasView : View, Handler.Callback {
 
     private var curCircleSize = MIN_CIRCLE_SIZE
     private val vibrator: Vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator;
-
-    init {
-        mColorList = (context?.let { ColorLoader.getInstance(it).getColorList() }
-                as ArrayList<Int>?)!!
-    }
 
     constructor(context: Context) : super(context)
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
@@ -125,10 +120,6 @@ class CanvasView : View, Handler.Callback {
         when (event.actionMasked) {
             MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> {
                 Log.d(TAG, "onTouchEvent : ACTION_DOWN")
-                if (event.pointerCount == 1) {
-                    // shuffle color on first finger
-                    shuffleColor()
-                }
                 addNewPoint(event)
                 startAnim()
                 return true
@@ -145,12 +136,6 @@ class CanvasView : View, Handler.Callback {
             }
         }
         return false
-    }
-
-    private fun shuffleColor() {
-        mColorList = (context?.let {
-            ColorLoader.getInstance(it).getColorList()
-        } as ArrayList<Int>?)!!
     }
 
     private fun startAnim() {
@@ -199,6 +184,7 @@ class CanvasView : View, Handler.Callback {
         //when last point removed
         if (mTouchPointMap.isEmpty()) {
             mSelected.clear()
+            shuffleColor()
             fingerPressed.value = false
             stopAnim()
             curCircleSize = MIN_CIRCLE_SIZE
@@ -207,6 +193,10 @@ class CanvasView : View, Handler.Callback {
         }
         triggerSelect()
         invalidate()
+    }
+
+    private fun shuffleColor() {
+        mColorList = FingerColors.shuffle(context)
     }
 
     private fun pickN(n: Int) {
