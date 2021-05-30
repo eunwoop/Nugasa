@@ -16,14 +16,13 @@ import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.CIRCLE_SIZE_SELECT
 import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.MAX_TOUCH
 import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.MESSAGE_ANIM
 import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.MESSAGE_PICK
-import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.TAG
 import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.WAITING_TIME
 import com.eee.www.chewchew.utils.FingerColors
+import com.eee.www.chewchew.utils.TAG
 import com.eee.www.chewchew.utils.ViewUtils
 
 class CanvasView : View, Handler.Callback {
     object CanvasViewConstants {
-        const val TAG = "CanvasView"
         const val MAX_TOUCH = 10
         const val CIRCLE_SIZE_PX = 50
         const val CIRCLE_SIZE_MAX_PX = 60
