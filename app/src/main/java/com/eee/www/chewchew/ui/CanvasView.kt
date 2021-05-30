@@ -78,10 +78,12 @@ class CanvasView : View, Handler.Callback {
             MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP -> {
                 Log.d(TAG, "onTouchEvent : ACTION_UP")
                 removePoint(event)
-                val cleared = resetAllIfEmptyPoint()
-                if (cleared) {
+                val reset = resetAllIfEmptyPoint()
+                if (reset) {
+                    stopSelect()
                     stopAnim()
                 } else {
+                    triggerAnim()
                     triggerSelect()
                 }
                 invalidate()
@@ -102,9 +104,10 @@ class CanvasView : View, Handler.Callback {
     }
 
     private fun triggerAnim() {
-        if (!eventHandler.hasMessages(MESSAGE_ANIM)) {
-            eventHandler.sendEmptyMessageDelayed(MESSAGE_ANIM, 1000)
+        if (eventHandler.hasMessages(MESSAGE_ANIM)) {
+            eventHandler.removeMessages(MESSAGE_ANIM)
         }
+        eventHandler.sendEmptyMessageDelayed(MESSAGE_ANIM, 300)
     }
 
     private fun movePoint(event: MotionEvent) {
@@ -131,7 +134,6 @@ class CanvasView : View, Handler.Callback {
     private fun resetAllIfEmptyPoint(): Boolean {
         if (touchPointMap.isEmpty()) {
             selectedPointList.clear()
-            fingerPressed.value = false
             circleSize = MIN_CIRCLE_SIZE
             shuffleColor()
             return true
@@ -151,6 +153,14 @@ class CanvasView : View, Handler.Callback {
 
     private fun isFingerSelected(): Boolean {
         return selectedPointList.isNotEmpty()
+    }
+
+    private fun stopSelect() {
+        fingerPressed.value = false
+
+        if (eventHandler.hasMessages(MESSAGE_PICK)) {
+            eventHandler.removeMessages(MESSAGE_PICK)
+        }
     }
 
     private fun triggerSelect() {
@@ -219,9 +229,6 @@ class CanvasView : View, Handler.Callback {
     }
 
     private fun pickN(n: Int) {
-        if (touchPointMap.isEmpty()) {
-            return
-        }
         for (i in 0 until touchPointMap.size) {
             selectedPointList.add(i)
         }
