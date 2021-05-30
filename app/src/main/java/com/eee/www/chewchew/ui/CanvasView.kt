@@ -89,7 +89,7 @@ class CanvasView : View, Handler.Callback {
         curCircleSize = if (curCircleSize >= MAX_CIRCLE_SIZE) MIN_CIRCLE_SIZE else curCircleSize
         for (index in 0..mTouchPointMap.size) {
             if (index >= MAX_TOUCH) {
-                return;
+                return
             }
 
             val point = mTouchPointMap[index];
@@ -245,7 +245,7 @@ class CanvasView : View, Handler.Callback {
 
     private fun printPointerMap() {
         mTouchPointMap.forEach { point ->
-            Log.d(TAG, "mTouchPointList:" + "(" + point.value.x + "," + point.value.y + ")")
+            Log.d(TAG, "mTouchPointList:(${point.value.x},${point.value.y})")
         }
     }
 }
