@@ -64,7 +64,6 @@ class CanvasView : View, Handler.Callback {
             MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> {
                 Log.d(TAG, "onTouchEvent : ACTION_DOWN")
                 addNewPoint(event)
-                startAnim()
                 return true
             }
             MotionEvent.ACTION_MOVE -> {
@@ -94,6 +93,8 @@ class CanvasView : View, Handler.Callback {
         }
         triggerSelect()
         invalidate()
+
+        startAnim()
     }
 
     private fun startAnim() {
@@ -129,10 +130,11 @@ class CanvasView : View, Handler.Callback {
             selectedPointList.clear()
             shuffleColor()
             fingerPressed.value = false
-            stopAnim()
             circleSize = MIN_CIRCLE_SIZE
             invalidate()
-            return;
+
+            stopAnim()
+            return
         }
         triggerSelect()
         invalidate()
