@@ -10,12 +10,14 @@ import android.view.MotionEvent
 import android.view.View
 import androidx.lifecycle.MutableLiveData
 import com.eee.www.chewchew.model.FingerMap
+import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.ANIM_REPEAT_DELAYED_MILLIS
+import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.ANIM_START_DELAYED_MILLIS
 import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.CIRCLE_SIZE_MAX_PX
 import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.CIRCLE_SIZE_PX
 import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.CIRCLE_SIZE_SELECTED_PX
 import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.MESSAGE_ANIM
 import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.MESSAGE_PICK
-import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.WAITING_TIME
+import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.PICK_DELAYED_MILLIS
 import com.eee.www.chewchew.utils.FingerColors
 import com.eee.www.chewchew.utils.TAG
 import com.eee.www.chewchew.utils.ViewUtils
@@ -26,10 +28,13 @@ class CanvasView : View, Handler.Callback {
         const val CIRCLE_SIZE_PX = 50
         const val CIRCLE_SIZE_MAX_PX = 60
         const val CIRCLE_SIZE_SELECTED_PX = 100
-        const val WAITING_TIME = 3000L
 
         const val MESSAGE_PICK: Int = 0
         const val MESSAGE_ANIM: Int = 1
+
+        const val PICK_DELAYED_MILLIS = 3000L
+        const val ANIM_START_DELAYED_MILLIS = 300L
+        const val ANIM_REPEAT_DELAYED_MILLIS = 15L
     }
 
     val fingerPressed = MutableLiveData<Boolean>()
@@ -118,7 +123,7 @@ class CanvasView : View, Handler.Callback {
         if (eventHandler.hasMessages(MESSAGE_ANIM)) {
             eventHandler.removeMessages(MESSAGE_ANIM)
         }
-        eventHandler.sendEmptyMessageDelayed(MESSAGE_ANIM, 300)
+        eventHandler.sendEmptyMessageDelayed(MESSAGE_ANIM, ANIM_START_DELAYED_MILLIS)
     }
 
     private fun movePoint(event: MotionEvent) {
@@ -167,7 +172,7 @@ class CanvasView : View, Handler.Callback {
             eventHandler.removeMessages(MESSAGE_PICK)
         }
         if (touchPointMap.size > fingerCount) {
-            eventHandler.sendEmptyMessageDelayed(MESSAGE_PICK, WAITING_TIME)
+            eventHandler.sendEmptyMessageDelayed(MESSAGE_PICK, PICK_DELAYED_MILLIS)
         }
     }
 
@@ -226,7 +231,7 @@ class CanvasView : View, Handler.Callback {
         circleSize++
 
         if (!eventHandler.hasMessages(MESSAGE_ANIM)) {
-            eventHandler.sendEmptyMessageDelayed(MESSAGE_ANIM, 15)
+            eventHandler.sendEmptyMessageDelayed(MESSAGE_ANIM, ANIM_REPEAT_DELAYED_MILLIS)
         }
     }
 }
