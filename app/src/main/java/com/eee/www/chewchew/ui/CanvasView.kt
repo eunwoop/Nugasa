@@ -16,8 +16,10 @@ import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.CIRCLE_SIZE_MAX_PX
 import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.CIRCLE_SIZE_PX
 import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.CIRCLE_SIZE_SELECTED_PX
 import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.MESSAGE_ANIM
+import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.MESSAGE_RESET
 import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.MESSAGE_PICK
 import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.PICK_DELAYED_MILLIS
+import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.RESET_DELAYED_MILLIS
 import com.eee.www.chewchew.utils.FingerColors
 import com.eee.www.chewchew.utils.TAG
 import com.eee.www.chewchew.utils.ViewUtils
@@ -31,10 +33,12 @@ class CanvasView : View, Handler.Callback {
 
         const val MESSAGE_PICK: Int = 0
         const val MESSAGE_ANIM: Int = 1
+        const val MESSAGE_RESET: Int = 2
 
         const val PICK_DELAYED_MILLIS = 3000L
         const val ANIM_START_DELAYED_MILLIS = 300L
         const val ANIM_REPEAT_DELAYED_MILLIS = 15L
+        const val RESET_DELAYED_MILLIS = 2000L
     }
 
     val fingerPressed = MutableLiveData<Boolean>()
@@ -46,6 +50,7 @@ class CanvasView : View, Handler.Callback {
     private val eventHandler = Handler(Looper.getMainLooper(), this)
 
     private val paint = Paint()
+    private var shouldKeepDrawn by Delegates.notNull<Boolean>()
 
     private val MIN_CIRCLE_SIZE = ViewUtils.dpToPx(context, CIRCLE_SIZE_PX.toFloat())
     private val MAX_CIRCLE_SIZE = ViewUtils.dpToPx(context, CIRCLE_SIZE_MAX_PX.toFloat())
@@ -59,8 +64,10 @@ class CanvasView : View, Handler.Callback {
     }
 
     private fun resetAll() {
+        fingerPressed.value = false
         touchPointMap = FingerMap()
         selectedPointList = listOf()
+        shouldKeepDrawn = false
         circleSize = MIN_CIRCLE_SIZE
         shuffleColor()
     }
@@ -78,6 +85,10 @@ class CanvasView : View, Handler.Callback {
     )
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
+        if (shouldKeepDrawn) {
+            return false
+        }
+
         when (event.actionMasked) {
             MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> {
                 Log.d(TAG, "onTouchEvent : ACTION_DOWN")
@@ -158,8 +169,6 @@ class CanvasView : View, Handler.Callback {
     }
 
     private fun stopSelect() {
-        fingerPressed.value = false
-
         if (eventHandler.hasMessages(MESSAGE_PICK)) {
             eventHandler.removeMessages(MESSAGE_PICK)
         }
@@ -200,6 +209,7 @@ class CanvasView : View, Handler.Callback {
         return when (msg.what) {
             MESSAGE_PICK -> {
                 pickN(fingerCount)
+                keepDrawnAwhile()
                 stopAnim()
                 doVibrate()
                 invalidate()
@@ -210,12 +220,26 @@ class CanvasView : View, Handler.Callback {
                 invalidate()
                 true
             }
+            MESSAGE_RESET -> {
+                resetAll()
+                invalidate()
+                true
+            }
             else -> false
         }
     }
 
     private fun pickN(n: Int) {
         selectedPointList = touchPointMap.select(n)
+    }
+
+    private fun keepDrawnAwhile() {
+        shouldKeepDrawn = true
+
+        if (eventHandler.hasMessages(MESSAGE_RESET)) {
+            eventHandler.removeMessages(MESSAGE_RESET)
+        }
+        eventHandler.sendEmptyMessageDelayed(MESSAGE_RESET, RESET_DELAYED_MILLIS)
     }
 
     private fun doVibrate() {
