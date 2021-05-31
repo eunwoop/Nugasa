@@ -19,6 +19,7 @@ import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.WAITING_TIME
 import com.eee.www.chewchew.utils.FingerColors
 import com.eee.www.chewchew.utils.TAG
 import com.eee.www.chewchew.utils.ViewUtils
+import kotlin.properties.Delegates
 
 class CanvasView : View, Handler.Callback {
     object CanvasViewConstants {
@@ -34,22 +35,33 @@ class CanvasView : View, Handler.Callback {
     val fingerPressed = MutableLiveData<Boolean>()
     var fingerCount = 1
 
-    private var touchPointMap = FingerMap()
-    private var selectedPointList = listOf<Int>()
-
-    private val paint = Paint()
+    private lateinit var touchPointMap: FingerMap
+    private lateinit var selectedPointList: List<Int>
 
     private val eventHandler = Handler(Looper.getMainLooper(), this)
+
+    private val paint = Paint()
 
     private val MIN_CIRCLE_SIZE = ViewUtils.dpToPx(context, CIRCLE_SIZE_PX.toFloat())
     private val MAX_CIRCLE_SIZE = ViewUtils.dpToPx(context, CIRCLE_SIZE_MAX_PX.toFloat())
     private val SELECTED_CIRCLE_SIZE = ViewUtils.dpToPx(context, CIRCLE_SIZE_SELECTED_PX.toFloat())
-    private var circleSize = MIN_CIRCLE_SIZE
+    private var circleSize by Delegates.notNull<Float>()
 
     private val vibrator: Vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
     init {
+        resetAll()
+    }
+
+    private fun resetAll() {
+        touchPointMap = FingerMap()
+        selectedPointList = listOf()
+        circleSize = MIN_CIRCLE_SIZE
         shuffleColor()
+    }
+
+    private fun shuffleColor() {
+        FingerColors.shuffle(context)
     }
 
     constructor(context: Context) : super(context)
@@ -124,16 +136,10 @@ class CanvasView : View, Handler.Callback {
 
     private fun resetAllIfEmptyPoint(): Boolean {
         if (touchPointMap.isEmpty()) {
-            selectedPointList = listOf()
-            circleSize = MIN_CIRCLE_SIZE
-            shuffleColor()
+            resetAll()
             return true
         }
         return false
-    }
-
-    private fun shuffleColor() {
-        FingerColors.shuffle(context)
     }
 
     private fun stopAnim() {
@@ -186,18 +192,21 @@ class CanvasView : View, Handler.Callback {
     }
 
     override fun handleMessage(msg: Message): Boolean {
-        if (msg.what == MESSAGE_PICK) {
-            pickN(fingerCount)
-            stopAnim()
-            doVibrate()
-            invalidate()
-            return true
-        } else if (msg.what == MESSAGE_ANIM) {
-            doAnim()
-            invalidate()
-            return true
+        return when (msg.what) {
+            MESSAGE_PICK -> {
+                pickN(fingerCount)
+                stopAnim()
+                doVibrate()
+                invalidate()
+                true
+            }
+            MESSAGE_ANIM -> {
+                doAnim()
+                invalidate()
+                true
+            }
+            else -> false
         }
-        return false
     }
 
     private fun pickN(n: Int) {
