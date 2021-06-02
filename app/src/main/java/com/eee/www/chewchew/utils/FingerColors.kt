@@ -5,7 +5,7 @@ import com.eee.www.chewchew.R
 
 object FingerColors {
 
-    private val MAX_SIZE = 10
+    private const val MAX_SIZE = 10
 
     private val colorList = arrayListOf<Int>()
 
