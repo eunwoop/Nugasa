@@ -16,11 +16,12 @@ import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.CIRCLE_SIZE_MAX_PX
 import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.CIRCLE_SIZE_PX
 import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.CIRCLE_SIZE_SELECTED_PX
 import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.MESSAGE_ANIM
-import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.MESSAGE_RESET
 import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.MESSAGE_PICK
+import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.MESSAGE_RESET
 import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.PICK_DELAYED_MILLIS
 import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.RESET_DELAYED_MILLIS
 import com.eee.www.chewchew.utils.FingerColors
+import com.eee.www.chewchew.utils.SoundEffector
 import com.eee.www.chewchew.utils.TAG
 import com.eee.www.chewchew.utils.ViewUtils
 import kotlin.properties.Delegates
@@ -57,7 +58,8 @@ class CanvasView : View, Handler.Callback {
     private val SELECTED_CIRCLE_SIZE = ViewUtils.dpToPx(context, CIRCLE_SIZE_SELECTED_PX.toFloat())
     private var circleSize by Delegates.notNull<Float>()
 
-    private val vibrator: Vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+    private val soundEffector = SoundEffector(context)
+    private val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
     init {
         resetAll()
@@ -110,6 +112,7 @@ class CanvasView : View, Handler.Callback {
                 val reset = resetAllIfEmptyPoint()
                 if (reset) {
                     stopSelect()
+                    stopSound()
                     stopAnim()
                 } else {
                     triggerOrStopSelect()
@@ -139,8 +142,10 @@ class CanvasView : View, Handler.Callback {
 
         if (canSelect()) {
             triggerSelect()
+            playTriggerSound()
         } else {
             stopSelect()
+            stopSound()
         }
     }
 
@@ -153,6 +158,10 @@ class CanvasView : View, Handler.Callback {
             eventHandler.removeMessages(MESSAGE_PICK)
         }
         eventHandler.sendEmptyMessageDelayed(MESSAGE_PICK, PICK_DELAYED_MILLIS)
+    }
+
+    private fun playTriggerSound() {
+        soundEffector.playSelectTrigger()
     }
 
     private fun triggerAnim() {
@@ -189,6 +198,10 @@ class CanvasView : View, Handler.Callback {
         }
     }
 
+    private fun stopSound() {
+        soundEffector.pause()
+    }
+
     private fun stopAnim() {
         if (eventHandler.hasMessages(MESSAGE_ANIM)) {
             eventHandler.removeMessages(MESSAGE_ANIM)
@@ -219,6 +232,7 @@ class CanvasView : View, Handler.Callback {
         return when (msg.what) {
             MESSAGE_PICK -> {
                 pickN(fingerCount)
+                playSelectSound()
                 keepDrawnAwhile()
                 stopAnim()
                 doVibrate()
@@ -241,6 +255,10 @@ class CanvasView : View, Handler.Callback {
 
     private fun pickN(n: Int) {
         selectedPointList = touchPointMap.select(n)
+    }
+
+    private fun playSelectSound() {
+        soundEffector.playSelect()
     }
 
     private fun keepDrawnAwhile() {
