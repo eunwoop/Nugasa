@@ -67,4 +67,8 @@ class SoundEffector(context: Context) : Handler.Callback {
     private fun play(soundId: Int) {
         soundPool.play(soundId, 1f, 1f, 1, 0, 1f)
     }
+
+    fun release() {
+        soundPool.release()
+    }
 }

@@ -43,4 +43,9 @@ class MainActivity : AppCompatActivity() {
             )
         }
     }
+
+    override fun onDestroy() {
+        canvasView.destroy()
+        super.onDestroy()
+    }
 }

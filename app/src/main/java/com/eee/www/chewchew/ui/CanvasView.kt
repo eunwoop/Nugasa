@@ -277,4 +277,8 @@ class CanvasView : View, Handler.Callback {
             eventHandler.sendEmptyMessageDelayed(MESSAGE_ANIM, ANIM_REPEAT_DELAYED_MILLIS)
         }
     }
+
+    fun destroy() {
+        soundEffector.release()
+    }
 }
