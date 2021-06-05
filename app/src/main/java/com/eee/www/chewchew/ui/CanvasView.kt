@@ -34,7 +34,7 @@ class CanvasView : View, Handler.Callback {
 
         const val MESSAGE_PICK = 0
         const val MESSAGE_ANIM = 1
-        const val MESSAGE_RESET= 2
+        const val MESSAGE_RESET = 2
 
         const val PICK_DELAYED_MILLIS = 3000L
         const val ANIM_START_DELAYED_MILLIS = 300L
@@ -96,7 +96,6 @@ class CanvasView : View, Handler.Callback {
                 Log.d(TAG, "onTouchEvent : ACTION_DOWN")
                 addNewPoint(event)
                 triggerOrStopSelect()
-                triggerAnim()
                 invalidate()
                 return true
             }
@@ -109,15 +108,8 @@ class CanvasView : View, Handler.Callback {
             MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP -> {
                 Log.d(TAG, "onTouchEvent : ACTION_UP")
                 removePoint(event)
-                val reset = resetAllIfEmptyPoint()
-                if (reset) {
-                    stopSelect()
-                    stopSound()
-                    stopAnim()
-                } else {
-                    triggerOrStopSelect()
-                    triggerAnim()
-                }
+                resetAllIfEmptyPoint()
+                triggerOrStopSelect()
                 invalidate()
                 return true
             }
@@ -140,12 +132,30 @@ class CanvasView : View, Handler.Callback {
     private fun triggerOrStopSelect() {
         fingerPressed.value = true
 
+        stopSelect()
+        stopSound()
+        stopAnim()
+
         if (canSelect()) {
             triggerSelect()
             playTriggerSound()
-        } else {
-            stopSelect()
-            stopSound()
+            triggerAnim()
+        }
+    }
+
+    private fun stopSelect() {
+        if (eventHandler.hasMessages(MESSAGE_PICK)) {
+            eventHandler.removeMessages(MESSAGE_PICK)
+        }
+    }
+
+    private fun stopSound() {
+        soundEffector.stop()
+    }
+
+    private fun stopAnim() {
+        if (eventHandler.hasMessages(MESSAGE_ANIM)) {
+            eventHandler.removeMessages(MESSAGE_ANIM)
         }
     }
 
@@ -154,9 +164,6 @@ class CanvasView : View, Handler.Callback {
     }
 
     private fun triggerSelect() {
-        if (eventHandler.hasMessages(MESSAGE_PICK)) {
-            eventHandler.removeMessages(MESSAGE_PICK)
-        }
         eventHandler.sendEmptyMessageDelayed(MESSAGE_PICK, PICK_DELAYED_MILLIS)
     }
 
@@ -165,9 +172,6 @@ class CanvasView : View, Handler.Callback {
     }
 
     private fun triggerAnim() {
-        if (eventHandler.hasMessages(MESSAGE_ANIM)) {
-            eventHandler.removeMessages(MESSAGE_ANIM)
-        }
         eventHandler.sendEmptyMessageDelayed(MESSAGE_ANIM, ANIM_START_DELAYED_MILLIS)
     }
 
@@ -184,27 +188,9 @@ class CanvasView : View, Handler.Callback {
         Log.d(TAG, "removePoint : $pointerId")
     }
 
-    private fun resetAllIfEmptyPoint(): Boolean {
+    private fun resetAllIfEmptyPoint() {
         if (touchPointMap.isEmpty()) {
             resetAll()
-            return true
-        }
-        return false
-    }
-
-    private fun stopSelect() {
-        if (eventHandler.hasMessages(MESSAGE_PICK)) {
-            eventHandler.removeMessages(MESSAGE_PICK)
-        }
-    }
-
-    private fun stopSound() {
-        soundEffector.stop()
-    }
-
-    private fun stopAnim() {
-        if (eventHandler.hasMessages(MESSAGE_ANIM)) {
-            eventHandler.removeMessages(MESSAGE_ANIM)
         }
     }
 
