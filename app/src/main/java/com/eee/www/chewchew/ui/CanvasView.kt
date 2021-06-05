@@ -112,8 +112,8 @@ class CanvasView : View, Handler.Callback {
                     stopSelect()
                     stopAnim()
                 } else {
-                    triggerAnim()
                     triggerSelect()
+                    triggerAnim()
                 }
                 invalidate()
                 return true
@@ -128,6 +128,23 @@ class CanvasView : View, Handler.Callback {
         }
         val pointerId = touchPointMap.add(event)
         Log.d(TAG, "addNewPoint : $pointerId")
+    }
+
+    private fun isFingerSelected(): Boolean {
+        return selectedPointList.isNotEmpty()
+    }
+
+    private fun triggerSelect(): Boolean {
+        fingerPressed.value = true
+
+        if (eventHandler.hasMessages(MESSAGE_PICK)) {
+            eventHandler.removeMessages(MESSAGE_PICK)
+        }
+        if (touchPointMap.size > fingerCount) {
+            eventHandler.sendEmptyMessageDelayed(MESSAGE_PICK, PICK_DELAYED_MILLIS)
+            return true
+        }
+        return false
     }
 
     private fun triggerAnim() {
@@ -158,30 +175,15 @@ class CanvasView : View, Handler.Callback {
         return false
     }
 
-    private fun stopAnim() {
-        if (eventHandler.hasMessages(MESSAGE_ANIM)) {
-            eventHandler.removeMessages(MESSAGE_ANIM)
-        }
-    }
-
-    private fun isFingerSelected(): Boolean {
-        return selectedPointList.isNotEmpty()
-    }
-
     private fun stopSelect() {
         if (eventHandler.hasMessages(MESSAGE_PICK)) {
             eventHandler.removeMessages(MESSAGE_PICK)
         }
     }
 
-    private fun triggerSelect() {
-        fingerPressed.value = true
-
-        if (eventHandler.hasMessages(MESSAGE_PICK)) {
-            eventHandler.removeMessages(MESSAGE_PICK)
-        }
-        if (touchPointMap.size > fingerCount) {
-            eventHandler.sendEmptyMessageDelayed(MESSAGE_PICK, PICK_DELAYED_MILLIS)
+    private fun stopAnim() {
+        if (eventHandler.hasMessages(MESSAGE_ANIM)) {
+            eventHandler.removeMessages(MESSAGE_ANIM)
         }
     }
 
