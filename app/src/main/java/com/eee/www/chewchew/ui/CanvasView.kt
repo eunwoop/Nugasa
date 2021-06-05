@@ -20,6 +20,7 @@ import com.eee.www.chewchew.ui.CanvasView.Constants.MESSAGE_PICK
 import com.eee.www.chewchew.ui.CanvasView.Constants.MESSAGE_RESET
 import com.eee.www.chewchew.ui.CanvasView.Constants.PICK_DELAYED_MILLIS
 import com.eee.www.chewchew.ui.CanvasView.Constants.RESET_DELAYED_MILLIS
+import com.eee.www.chewchew.ui.CanvasView.Constants.SOUND_DELAYED_MILLIS
 import com.eee.www.chewchew.utils.FingerColors
 import com.eee.www.chewchew.utils.SoundEffector
 import com.eee.www.chewchew.utils.TAG
@@ -40,6 +41,7 @@ class CanvasView : View, Handler.Callback {
         const val ANIM_START_DELAYED_MILLIS = 300L
         const val ANIM_REPEAT_DELAYED_MILLIS = 15L
         const val RESET_DELAYED_MILLIS = 2000L
+        const val SOUND_DELAYED_MILLIS = 1000L
     }
 
     val fingerPressed = MutableLiveData<Boolean>()
@@ -132,25 +134,25 @@ class CanvasView : View, Handler.Callback {
     private fun triggerOrStopSelect() {
         fingerPressed.value = true
 
-        stopSelect()
         stopSound()
+        stopSelect()
         stopAnim()
 
         if (canSelect()) {
+            triggerSound()
             triggerSelect()
-            playTriggerSound()
             triggerAnim()
         }
+    }
+
+    private fun stopSound() {
+        soundEffector.stop()
     }
 
     private fun stopSelect() {
         if (eventHandler.hasMessages(MESSAGE_PICK)) {
             eventHandler.removeMessages(MESSAGE_PICK)
         }
-    }
-
-    private fun stopSound() {
-        soundEffector.stop()
     }
 
     private fun stopAnim() {
@@ -163,12 +165,12 @@ class CanvasView : View, Handler.Callback {
         return touchPointMap.size > fingerCount
     }
 
-    private fun triggerSelect() {
-        eventHandler.sendEmptyMessageDelayed(MESSAGE_PICK, PICK_DELAYED_MILLIS)
+    private fun triggerSound() {
+        soundEffector.playTriggerInMillis(SOUND_DELAYED_MILLIS)
     }
 
-    private fun playTriggerSound() {
-        soundEffector.playSelectTrigger()
+    private fun triggerSelect() {
+        eventHandler.sendEmptyMessageDelayed(MESSAGE_PICK, PICK_DELAYED_MILLIS)
     }
 
     private fun triggerAnim() {
@@ -218,11 +220,14 @@ class CanvasView : View, Handler.Callback {
         return when (msg.what) {
             MESSAGE_PICK -> {
                 pickN(fingerCount)
+
                 playSelectSound()
-                keepDrawnAwhile()
+
                 stopAnim()
-                doVibrate()
+                keepDrawnAwhile()
                 invalidate()
+
+                doVibrate()
                 true
             }
             MESSAGE_ANIM -> {

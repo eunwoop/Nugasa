@@ -3,15 +3,23 @@ package com.eee.www.chewchew.utils
 import android.content.Context
 import android.media.AudioAttributes
 import android.media.SoundPool
+import android.os.Handler
+import android.os.Looper
+import android.os.Message
 import com.eee.www.chewchew.utils.SoundEffector.Constants.ASSET_SELECT
 import com.eee.www.chewchew.utils.SoundEffector.Constants.ASSET_SELECT_TRIGGER
+import com.eee.www.chewchew.utils.SoundEffector.Constants.MESSAGE_PLAY
 import kotlin.properties.Delegates
 
-class SoundEffector(context: Context) {
+class SoundEffector(context: Context) : Handler.Callback {
     private object Constants {
         const val ASSET_SELECT_TRIGGER = "select_trigger_effect.mp3"
         const val ASSET_SELECT = "select_effect.mp3"
+
+        const val MESSAGE_PLAY = 0
     }
+
+    private val eventHandler = Handler(Looper.getMainLooper(), this)
 
     private val audioAttributes = AudioAttributes.Builder()
         .setUsage(AudioAttributes.USAGE_NOTIFICATION)
@@ -33,8 +41,11 @@ class SoundEffector(context: Context) {
         selectEffect = soundPool.load(selectAsset, 1)
     }
 
-    fun playSelectTrigger() {
-        play(selectTriggerEffect)
+    fun playTriggerInMillis(millis: Long) {
+        if (eventHandler.hasMessages(MESSAGE_PLAY)) {
+            eventHandler.removeMessages(MESSAGE_PLAY)
+        }
+        eventHandler.sendEmptyMessageDelayed(MESSAGE_PLAY, millis)
     }
 
     fun playSelect() {
@@ -42,7 +53,18 @@ class SoundEffector(context: Context) {
     }
 
     fun stop() {
+        if (eventHandler.hasMessages(MESSAGE_PLAY)) {
+            eventHandler.removeMessages(MESSAGE_PLAY)
+        }
         soundPool.autoPause()
+    }
+
+    override fun handleMessage(msg: Message): Boolean {
+        if (msg.what == MESSAGE_PLAY) {
+            play(selectTriggerEffect)
+            return true
+        }
+        return false
     }
 
     private fun play(soundId: Int) {
