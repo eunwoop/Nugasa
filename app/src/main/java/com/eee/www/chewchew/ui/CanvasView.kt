@@ -3,6 +3,7 @@ package com.eee.www.chewchew.ui
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.PointF
 import android.os.*
 import android.util.AttributeSet
 import android.util.Log
@@ -187,22 +188,33 @@ class CanvasView : View, Handler.Callback {
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        drawCirclesOnTouch(canvas)
+        if (shouldKeepDrawn) {
+            drawSelected(canvas)
+        } else {
+            drawAll(canvas)
+        }
     }
 
-    private fun drawCirclesOnTouch(canvas: Canvas) {
+    private fun drawAll(canvas: Canvas) {
         circleSize = if (circleSize >= MAX_CIRCLE_SIZE) MIN_CIRCLE_SIZE else circleSize
+        touchPointMap.map.forEach {
+            drawCircle(canvas, it.key, it.value)
+        }
+    }
 
+    private fun drawSelected(canvas: Canvas) {
+        circleSize = SELECTED_CIRCLE_SIZE
         touchPointMap.map.forEach {
             val isSelected = selectedPointList.contains(it.key)
-            val point = touchPointMap.map[it.key]
-            paint.color = FingerColors.randomColor(it.key)
             if (isSelected) {
-                point?.also { canvas.drawCircle(it.x, it.y, SELECTED_CIRCLE_SIZE, paint) }
-            } else {
-                point?.also { canvas.drawCircle(it.x, it.y, circleSize, paint) }
+                drawCircle(canvas, it.key, it.value)
             }
         }
+    }
+
+    private fun drawCircle(canvas: Canvas, pointerId: Int, point: PointF?) {
+        paint.color = FingerColors.randomColor(pointerId)
+        point?.also { canvas.drawCircle(it.x, it.y, circleSize, paint) }
     }
 
     override fun handleMessage(msg: Message): Boolean {
