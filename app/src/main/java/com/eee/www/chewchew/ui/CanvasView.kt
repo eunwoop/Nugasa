@@ -93,7 +93,7 @@ class CanvasView : View, Handler.Callback {
             MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> {
                 Log.d(TAG, "onTouchEvent : ACTION_DOWN")
                 addNewPoint(event)
-                triggerSelect()
+                triggerOrStopSelect()
                 triggerAnim()
                 invalidate()
                 return true
@@ -112,7 +112,7 @@ class CanvasView : View, Handler.Callback {
                     stopSelect()
                     stopAnim()
                 } else {
-                    triggerSelect()
+                    triggerOrStopSelect()
                     triggerAnim()
                 }
                 invalidate()
@@ -134,17 +134,25 @@ class CanvasView : View, Handler.Callback {
         return selectedPointList.isNotEmpty()
     }
 
-    private fun triggerSelect(): Boolean {
+    private fun triggerOrStopSelect() {
         fingerPressed.value = true
 
+        if (canSelect()) {
+            triggerSelect()
+        } else {
+            stopSelect()
+        }
+    }
+
+    private fun canSelect(): Boolean {
+        return touchPointMap.size > fingerCount
+    }
+
+    private fun triggerSelect() {
         if (eventHandler.hasMessages(MESSAGE_PICK)) {
             eventHandler.removeMessages(MESSAGE_PICK)
         }
-        if (touchPointMap.size > fingerCount) {
-            eventHandler.sendEmptyMessageDelayed(MESSAGE_PICK, PICK_DELAYED_MILLIS)
-            return true
-        }
-        return false
+        eventHandler.sendEmptyMessageDelayed(MESSAGE_PICK, PICK_DELAYED_MILLIS)
     }
 
     private fun triggerAnim() {
