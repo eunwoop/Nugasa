@@ -22,8 +22,8 @@ class SoundEffector(context: Context) : Handler.Callback {
     private val eventHandler = Handler(Looper.getMainLooper(), this)
 
     private val audioAttributes = AudioAttributes.Builder()
-        .setUsage(AudioAttributes.USAGE_NOTIFICATION)
-        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+        .setUsage(AudioAttributes.USAGE_MEDIA)
+        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
         .build()
     private val soundPool = SoundPool.Builder().setAudioAttributes(audioAttributes).build()
 
