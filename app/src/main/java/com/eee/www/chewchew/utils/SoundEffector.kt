@@ -3,12 +3,15 @@ package com.eee.www.chewchew.utils
 import android.content.Context
 import android.media.AudioAttributes
 import android.media.SoundPool
+import com.eee.www.chewchew.utils.SoundEffector.Constants.ASSET_SELECT
+import com.eee.www.chewchew.utils.SoundEffector.Constants.ASSET_SELECT_TRIGGER
 import kotlin.properties.Delegates
 
 class SoundEffector(context: Context) {
-
-    private val ASSET_SELECT_TRIGGER = "select_trigger_effect.mp3"
-    private val ASSET_SELECT = "select_effect.mp3"
+    private object Constants {
+        const val ASSET_SELECT_TRIGGER = "select_trigger_effect.mp3"
+        const val ASSET_SELECT = "select_effect.mp3"
+    }
 
     private val audioAttributes = AudioAttributes.Builder()
         .setUsage(AudioAttributes.USAGE_NOTIFICATION)
@@ -38,7 +41,7 @@ class SoundEffector(context: Context) {
         play(selectEffect)
     }
 
-    fun pause() {
+    fun stop() {
         soundPool.autoPause()
     }
 
