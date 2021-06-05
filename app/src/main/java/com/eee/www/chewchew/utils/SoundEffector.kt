@@ -42,9 +42,6 @@ class SoundEffector(context: Context) : Handler.Callback {
     }
 
     fun playTriggerInMillis(millis: Long) {
-        if (eventHandler.hasMessages(MESSAGE_PLAY)) {
-            eventHandler.removeMessages(MESSAGE_PLAY)
-        }
         eventHandler.sendEmptyMessageDelayed(MESSAGE_PLAY, millis)
     }
 
