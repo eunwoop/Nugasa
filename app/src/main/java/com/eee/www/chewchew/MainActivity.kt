@@ -34,6 +34,7 @@ class MainActivity : AppCompatActivity() {
                         ObjectAnimator.ofFloat(this, "alpha", 0f, 1f).apply {
                             duration = 500;
                         }).start()
+                    this.isEnabled = !fingerPressed
                 }
             })
         viewModel.fingerCount.observe(
@@ -42,7 +43,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initCountPicker() {
-        countPicker.value = viewModel.fingerCount.value!!
+        countPicker.value.apply { viewModel.fingerCount.value }
         countPicker.setOnValueChangedListener { _, _, newVal ->
             viewModel.setFingerSelectionCount(
                 newVal
