@@ -11,35 +11,38 @@ import android.view.MotionEvent
 import android.view.View
 import androidx.lifecycle.MutableLiveData
 import com.eee.www.chewchew.model.FingerMap
-import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.ANIM_REPEAT_DELAYED_MILLIS
-import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.ANIM_START_DELAYED_MILLIS
-import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.CIRCLE_SIZE_MAX_PX
-import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.CIRCLE_SIZE_PX
-import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.CIRCLE_SIZE_SELECTED_PX
-import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.MESSAGE_ANIM
-import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.MESSAGE_RESET
-import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.MESSAGE_PICK
-import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.PICK_DELAYED_MILLIS
-import com.eee.www.chewchew.ui.CanvasView.CanvasViewConstants.RESET_DELAYED_MILLIS
+import com.eee.www.chewchew.ui.CanvasView.Constants.ANIM_REPEAT_DELAYED_MILLIS
+import com.eee.www.chewchew.ui.CanvasView.Constants.ANIM_START_DELAYED_MILLIS
+import com.eee.www.chewchew.ui.CanvasView.Constants.CIRCLE_SIZE_MAX_PX
+import com.eee.www.chewchew.ui.CanvasView.Constants.CIRCLE_SIZE_PX
+import com.eee.www.chewchew.ui.CanvasView.Constants.CIRCLE_SIZE_SELECTED_PX
+import com.eee.www.chewchew.ui.CanvasView.Constants.MESSAGE_ANIM
+import com.eee.www.chewchew.ui.CanvasView.Constants.MESSAGE_PICK
+import com.eee.www.chewchew.ui.CanvasView.Constants.MESSAGE_RESET
+import com.eee.www.chewchew.ui.CanvasView.Constants.PICK_DELAYED_MILLIS
+import com.eee.www.chewchew.ui.CanvasView.Constants.RESET_DELAYED_MILLIS
+import com.eee.www.chewchew.ui.CanvasView.Constants.SOUND_DELAYED_MILLIS
 import com.eee.www.chewchew.utils.FingerColors
+import com.eee.www.chewchew.utils.SoundEffector
 import com.eee.www.chewchew.utils.TAG
 import com.eee.www.chewchew.utils.ViewUtils
 import kotlin.properties.Delegates
 
 class CanvasView : View, Handler.Callback {
-    object CanvasViewConstants {
+    private object Constants {
         const val CIRCLE_SIZE_PX = 50
         const val CIRCLE_SIZE_MAX_PX = 60
         const val CIRCLE_SIZE_SELECTED_PX = 100
 
-        const val MESSAGE_PICK: Int = 0
-        const val MESSAGE_ANIM: Int = 1
-        const val MESSAGE_RESET: Int = 2
+        const val MESSAGE_PICK = 0
+        const val MESSAGE_ANIM = 1
+        const val MESSAGE_RESET = 2
 
         const val PICK_DELAYED_MILLIS = 3000L
         const val ANIM_START_DELAYED_MILLIS = 300L
         const val ANIM_REPEAT_DELAYED_MILLIS = 15L
         const val RESET_DELAYED_MILLIS = 2000L
+        const val SOUND_DELAYED_MILLIS = 1000L
     }
 
     val fingerPressed = MutableLiveData<Boolean>()
@@ -58,7 +61,8 @@ class CanvasView : View, Handler.Callback {
     private val SELECTED_CIRCLE_SIZE = ViewUtils.dpToPx(context, CIRCLE_SIZE_SELECTED_PX.toFloat())
     private var circleSize by Delegates.notNull<Float>()
 
-    private val vibrator: Vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+    private val soundEffector = SoundEffector(context)
+    private val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
     init {
         resetAll()
@@ -94,8 +98,7 @@ class CanvasView : View, Handler.Callback {
             MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> {
                 Log.d(TAG, "onTouchEvent : ACTION_DOWN")
                 addNewPoint(event)
-                triggerSelect()
-                triggerAnim()
+                triggerOrStopSelect()
                 invalidate()
                 return true
             }
@@ -108,14 +111,8 @@ class CanvasView : View, Handler.Callback {
             MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP -> {
                 Log.d(TAG, "onTouchEvent : ACTION_UP")
                 removePoint(event)
-                val reset = resetAllIfEmptyPoint()
-                if (reset) {
-                    stopSelect()
-                    stopAnim()
-                } else {
-                    triggerAnim()
-                    triggerSelect()
-                }
+                resetAllIfEmptyPoint()
+                triggerOrStopSelect()
                 invalidate()
                 return true
             }
@@ -131,10 +128,53 @@ class CanvasView : View, Handler.Callback {
         Log.d(TAG, "addNewPoint : $pointerId")
     }
 
-    private fun triggerAnim() {
+    private fun isFingerSelected(): Boolean {
+        return selectedPointList.isNotEmpty()
+    }
+
+    private fun triggerOrStopSelect() {
+        fingerPressed.value = true
+
+        stopSound()
+        stopSelect()
+        stopAnim()
+
+        if (canSelect()) {
+            triggerSound()
+            triggerSelect()
+            triggerAnim()
+        }
+    }
+
+    private fun stopSound() {
+        soundEffector.stop()
+    }
+
+    private fun stopSelect() {
+        if (eventHandler.hasMessages(MESSAGE_PICK)) {
+            eventHandler.removeMessages(MESSAGE_PICK)
+        }
+    }
+
+    private fun stopAnim() {
         if (eventHandler.hasMessages(MESSAGE_ANIM)) {
             eventHandler.removeMessages(MESSAGE_ANIM)
         }
+    }
+
+    private fun canSelect(): Boolean {
+        return touchPointMap.size > fingerCount
+    }
+
+    private fun triggerSound() {
+        soundEffector.playTriggerInMillis(SOUND_DELAYED_MILLIS)
+    }
+
+    private fun triggerSelect() {
+        eventHandler.sendEmptyMessageDelayed(MESSAGE_PICK, PICK_DELAYED_MILLIS)
+    }
+
+    private fun triggerAnim() {
         eventHandler.sendEmptyMessageDelayed(MESSAGE_ANIM, ANIM_START_DELAYED_MILLIS)
     }
 
@@ -151,38 +191,9 @@ class CanvasView : View, Handler.Callback {
         Log.d(TAG, "removePoint : $pointerId")
     }
 
-    private fun resetAllIfEmptyPoint(): Boolean {
+    private fun resetAllIfEmptyPoint() {
         if (touchPointMap.isEmpty()) {
             resetAll()
-            return true
-        }
-        return false
-    }
-
-    private fun stopAnim() {
-        if (eventHandler.hasMessages(MESSAGE_ANIM)) {
-            eventHandler.removeMessages(MESSAGE_ANIM)
-        }
-    }
-
-    private fun isFingerSelected(): Boolean {
-        return selectedPointList.isNotEmpty()
-    }
-
-    private fun stopSelect() {
-        if (eventHandler.hasMessages(MESSAGE_PICK)) {
-            eventHandler.removeMessages(MESSAGE_PICK)
-        }
-    }
-
-    private fun triggerSelect() {
-        fingerPressed.value = true
-
-        if (eventHandler.hasMessages(MESSAGE_PICK)) {
-            eventHandler.removeMessages(MESSAGE_PICK)
-        }
-        if (touchPointMap.size > fingerCount) {
-            eventHandler.sendEmptyMessageDelayed(MESSAGE_PICK, PICK_DELAYED_MILLIS)
         }
     }
 
@@ -221,10 +232,14 @@ class CanvasView : View, Handler.Callback {
         return when (msg.what) {
             MESSAGE_PICK -> {
                 pickN(fingerCount)
-                keepDrawnAwhile()
+
+                playSelectSound()
+
                 stopAnim()
-                doVibrate()
+                keepDrawnAwhile()
                 invalidate()
+
+                doVibrate()
                 true
             }
             MESSAGE_ANIM -> {
@@ -243,6 +258,10 @@ class CanvasView : View, Handler.Callback {
 
     private fun pickN(n: Int) {
         selectedPointList = touchPointMap.select(n)
+    }
+
+    private fun playSelectSound() {
+        soundEffector.playSelect()
     }
 
     private fun keepDrawnAwhile() {
@@ -269,5 +288,9 @@ class CanvasView : View, Handler.Callback {
         if (!eventHandler.hasMessages(MESSAGE_ANIM)) {
             eventHandler.sendEmptyMessageDelayed(MESSAGE_ANIM, ANIM_REPEAT_DELAYED_MILLIS)
         }
+    }
+
+    fun destroy() {
+        soundEffector.release()
     }
 }
