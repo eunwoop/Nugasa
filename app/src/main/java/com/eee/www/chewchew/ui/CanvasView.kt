@@ -98,7 +98,8 @@ class CanvasView : View, Handler.Callback {
             MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> {
                 Log.d(TAG, "onTouchEvent : ACTION_DOWN")
                 addNewPoint(event)
-                triggerOrStopSelect()
+                stopSelectJobs()
+                triggerSelectJobs()
                 invalidate()
                 return true
             }
@@ -111,8 +112,11 @@ class CanvasView : View, Handler.Callback {
             MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP -> {
                 Log.d(TAG, "onTouchEvent : ACTION_UP")
                 removePoint(event)
-                resetAllIfEmptyPoint()
-                triggerOrStopSelect()
+                val reset = resetAllIfEmptyPoint()
+                stopSelectJobs()
+                if (!reset) {
+                    triggerSelectJobs()
+                }
                 invalidate()
                 return true
             }
@@ -132,18 +136,10 @@ class CanvasView : View, Handler.Callback {
         return selectedPointList.isNotEmpty()
     }
 
-    private fun triggerOrStopSelect() {
-        fingerPressed.value = true
-
+    private fun stopSelectJobs() {
         stopSound()
         stopSelect()
         stopAnim()
-
-        if (canSelect()) {
-            triggerSound()
-            triggerSelect()
-            triggerAnim()
-        }
     }
 
     private fun stopSound() {
@@ -159,6 +155,16 @@ class CanvasView : View, Handler.Callback {
     private fun stopAnim() {
         if (eventHandler.hasMessages(MESSAGE_ANIM)) {
             eventHandler.removeMessages(MESSAGE_ANIM)
+        }
+    }
+
+    private fun triggerSelectJobs() {
+        fingerPressed.value = true
+
+        if (canSelect()) {
+            triggerSound()
+            triggerSelect()
+            triggerAnim()
         }
     }
 
@@ -191,10 +197,12 @@ class CanvasView : View, Handler.Callback {
         Log.d(TAG, "removePoint : $pointerId")
     }
 
-    private fun resetAllIfEmptyPoint() {
+    private fun resetAllIfEmptyPoint(): Boolean {
         if (touchPointMap.isEmpty()) {
             resetAll()
+            return true
         }
+        return false
     }
 
     override fun onDraw(canvas: Canvas) {
