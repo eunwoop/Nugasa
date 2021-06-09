@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">ChewChew</string>
+    <string-array name="menu_array">
+        <item>Pick</item>
+        <item>Team</item>
+        <item>Rank</item>
+    </string-array>
 </resources>
