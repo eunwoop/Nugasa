@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:background="@null" />
-        <com.eee.www.chewchew.utils.FingerCountPicker
+        <com.eee.www.chewchew.ui.FingerCountPicker
             android:id="@+id/countPicker"
             max="5"
             min="1"
