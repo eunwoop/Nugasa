@@ -45,10 +45,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initMenuSpinner() {
-        ArrayAdapter.createFromResource(this, R.array.menu_array,
-            android.R.layout.simple_spinner_item
+        ArrayAdapter.createFromResource(this, R.array.menu_array, R.layout.spinner_item
         ).also { adapter ->
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            adapter.setDropDownViewResource(R.layout.spinner_item)
             menuSpinner.adapter = adapter
         }
 
@@ -87,9 +86,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initCountPicker(countList: MutableList<Int>) {
-        val arrayAdapter = ArrayAdapter<Int>(this, android.R.layout.simple_spinner_item,
-            countList)
-        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        val arrayAdapter = ArrayAdapter<Int>(this, R.layout.spinner_item, countList)
+        arrayAdapter.setDropDownViewResource(R.layout.spinner_item)
         countSpinner.adapter = arrayAdapter
 
         // set initial value -> not sure needed.
