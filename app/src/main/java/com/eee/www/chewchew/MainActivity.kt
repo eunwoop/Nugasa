@@ -15,6 +15,12 @@ class MainActivity : AppCompatActivity() {
 
     private val viewModel: PreferenceViewModel by viewModels()
 
+    object Constants {
+        const val MENU_PICK = 0
+        const val MENU_TEAM = 1
+        const val MENU_RANK = 2
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -59,24 +65,22 @@ class MainActivity : AppCompatActivity() {
                 id: Long
             ) {
                 when(position) {
-                    // pick
-                    0-> {
+                    Constants.MENU_PICK-> {
                         countSpinner.isEnabled = true
                         countSpinner.visibility = View.VISIBLE
                         initCountPicker(viewModel.pickList)
                     }
-                    // team
-                    1-> {
+                    Constants.MENU_TEAM-> {
                         countSpinner.isEnabled = true
                         countSpinner.visibility = View.VISIBLE
                         initCountPicker(viewModel.teamList)
                     }
-                    // rank
-                    2-> {
+                    Constants.MENU_RANK-> {
                         countSpinner.isEnabled = false
                         countSpinner.visibility = View.GONE
                     }
                 }
+                canvasView.mode = position
                 viewModel.setFingerSelectionCount(viewModel.pickList[position])
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {

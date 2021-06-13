@@ -56,6 +56,25 @@ class FingerMap {
         return selected
     }
 
+    fun selectTeam(n: Int): MutableMap<Int, Int> {
+        val teamMap = mutableMapOf<Int, Int>()
+        var teamId: Int;
+        val numOfOneTeam = _map.size / n;
+
+        // 0 1 2 3 4 5 6 7 ,  3 -> 0 0 0 1 1 1 2 2(O) / 0 0 1 1 2 2 2 2(X)
+        _map.forEach {
+            teamId = it.key / numOfOneTeam
+            teamMap.put(it.key, if (teamId < n) teamId else -1)
+        }
+        teamId = 0
+        teamMap.forEach {
+            if (teamMap.get(it.key) == -1) {
+                teamMap.put(it.key, teamId++)
+            }
+        }
+        return teamMap
+    }
+
     fun print() {
         _map.forEach { point ->
             Log.d(TAG, "touchPoint:(${point.value.x},${point.value.y})")
