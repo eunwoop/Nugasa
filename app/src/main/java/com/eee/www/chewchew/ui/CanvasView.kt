@@ -11,6 +11,7 @@ import android.view.MotionEvent
 import android.view.View
 import androidx.lifecycle.MutableLiveData
 import com.eee.www.chewchew.MainActivity
+import com.eee.www.chewchew.R
 import com.eee.www.chewchew.model.FingerMap
 import com.eee.www.chewchew.ui.CanvasView.Constants.ANIM_REPEAT_DELAYED_MILLIS
 import com.eee.www.chewchew.ui.CanvasView.Constants.ANIM_START_DELAYED_MILLIS
@@ -21,8 +22,9 @@ import com.eee.www.chewchew.ui.CanvasView.Constants.MESSAGE_ANIM
 import com.eee.www.chewchew.ui.CanvasView.Constants.MESSAGE_PICK
 import com.eee.www.chewchew.ui.CanvasView.Constants.MESSAGE_RESET
 import com.eee.www.chewchew.ui.CanvasView.Constants.PICK_DELAYED_MILLIS
-import com.eee.www.chewchew.ui.CanvasView.Constants.RESET_DELAYED_MILLIS
+import com.eee.www.chewchew.ui.CanvasView.Constants.PICK_RESET_DELAYED_MILLIS
 import com.eee.www.chewchew.ui.CanvasView.Constants.SOUND_DELAYED_MILLIS
+import com.eee.www.chewchew.ui.CanvasView.Constants.TEAM_RESET_DELAYED_MILLIS
 import com.eee.www.chewchew.utils.FingerColors
 import com.eee.www.chewchew.utils.SoundEffector
 import com.eee.www.chewchew.utils.TAG
@@ -42,7 +44,8 @@ class CanvasView : View, Handler.Callback {
         const val PICK_DELAYED_MILLIS = 3000L
         const val ANIM_START_DELAYED_MILLIS = 300L
         const val ANIM_REPEAT_DELAYED_MILLIS = 15L
-        const val RESET_DELAYED_MILLIS = 4000L
+        const val PICK_RESET_DELAYED_MILLIS = 2000L
+        const val TEAM_RESET_DELAYED_MILLIS = 4000L
         const val SOUND_DELAYED_MILLIS = 1000L
     }
 
@@ -219,8 +222,16 @@ class CanvasView : View, Handler.Callback {
 
     private fun drawAll(canvas: Canvas) {
         circleSize = if (circleSize >= MAX_CIRCLE_SIZE) MIN_CIRCLE_SIZE else circleSize
+        val grayColor = resources.getColor(R.color.gray)
         touchPointMap.map.forEach {
-            drawCircle(canvas, it.key, it.value)
+            when(mode) {
+                MainActivity.Constants.MENU_PICK -> {
+                    drawCircle(canvas, it.key, it.value)
+                }
+                MainActivity.Constants.MENU_TEAM -> {
+                    drawCircle(canvas, it.key, it.value, grayColor)
+                }
+            }
         }
     }
 
@@ -316,7 +327,9 @@ class CanvasView : View, Handler.Callback {
         if (eventHandler.hasMessages(MESSAGE_RESET)) {
             eventHandler.removeMessages(MESSAGE_RESET)
         }
-        eventHandler.sendEmptyMessageDelayed(MESSAGE_RESET, RESET_DELAYED_MILLIS)
+        val delayMillis = if (mode == MainActivity.Constants.MENU_TEAM)
+            TEAM_RESET_DELAYED_MILLIS else PICK_RESET_DELAYED_MILLIS
+        eventHandler.sendEmptyMessageDelayed(MESSAGE_RESET, delayMillis)
     }
 
     private fun doVibrate() {
