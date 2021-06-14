@@ -20,10 +20,10 @@ object FingerColors {
         with(colorList) {
             add(context.resources.getColor(R.color.medium_turquoise))
             add(context.resources.getColor(R.color.sugar_cane))
-            add(context.resources.getColor(R.color.tickle_me_pink))
-            add(context.resources.getColor(R.color.tangerine_orange))
+            add(context.resources.getColor(R.color.carnation_pink))
+            add(context.resources.getColor(R.color.selective_yellow))
             add(context.resources.getColor(R.color.golden_yellow))
-            add(context.resources.getColor(R.color.tangerine))
+            add(context.resources.getColor(R.color.purple))
             add(context.resources.getColor(R.color.wild_watermelon))
             add(context.resources.getColor(R.color.apple_green))
             add(context.resources.getColor(R.color.light_pink))
