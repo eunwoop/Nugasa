@@ -1,6 +1,8 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="Theme.ChewChew" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.ChewChew" parent="CommonTheme">
         <item name="android:windowFullscreen">true</item>
     </style>
+
+    <style name="CommonTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar" />
 </resources>
