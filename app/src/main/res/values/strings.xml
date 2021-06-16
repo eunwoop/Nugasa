@@ -5,4 +5,5 @@
         <item>Team</item>
         <item>Rank</item>
     </string-array>
+    <string name="pickImpossibleMessage">Cannot pick! Come on more fingers!</string>
 </resources>

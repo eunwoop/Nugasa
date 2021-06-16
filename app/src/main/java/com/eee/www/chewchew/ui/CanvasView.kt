@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import androidx.lifecycle.MutableLiveData
+import com.eee.www.chewchew.R
 import com.eee.www.chewchew.model.FingerMap
 import com.eee.www.chewchew.ui.CanvasView.Constants.ANIM_REPEAT_DELAYED_MILLIS
 import com.eee.www.chewchew.ui.CanvasView.Constants.ANIM_START_DELAYED_MILLIS
@@ -19,8 +20,10 @@ import com.eee.www.chewchew.ui.CanvasView.Constants.CIRCLE_SIZE_SELECTED_PX
 import com.eee.www.chewchew.ui.CanvasView.Constants.MESSAGE_ANIM
 import com.eee.www.chewchew.ui.CanvasView.Constants.MESSAGE_PICK
 import com.eee.www.chewchew.ui.CanvasView.Constants.MESSAGE_RESET
+import com.eee.www.chewchew.ui.CanvasView.Constants.MESSAGE_SNACKBAR
 import com.eee.www.chewchew.ui.CanvasView.Constants.PICK_DELAYED_MILLIS
 import com.eee.www.chewchew.ui.CanvasView.Constants.RESET_DELAYED_MILLIS
+import com.eee.www.chewchew.ui.CanvasView.Constants.SNACKBAR_DELAYED_MILLIS
 import com.eee.www.chewchew.ui.CanvasView.Constants.SOUND_DELAYED_MILLIS
 import com.eee.www.chewchew.utils.FingerColors
 import com.eee.www.chewchew.utils.SoundEffector
@@ -37,12 +40,14 @@ class CanvasView : View, Handler.Callback {
         const val MESSAGE_PICK = 0
         const val MESSAGE_ANIM = 1
         const val MESSAGE_RESET = 2
+        const val MESSAGE_SNACKBAR = 3
 
         const val PICK_DELAYED_MILLIS = 3000L
         const val ANIM_START_DELAYED_MILLIS = 300L
         const val ANIM_REPEAT_DELAYED_MILLIS = 15L
         const val RESET_DELAYED_MILLIS = 2000L
         const val SOUND_DELAYED_MILLIS = 1000L
+        const val SNACKBAR_DELAYED_MILLIS = 2000L
     }
 
     val fingerPressed = MutableLiveData<Boolean>()
@@ -98,8 +103,8 @@ class CanvasView : View, Handler.Callback {
             MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> {
                 Log.d(TAG, "onTouchEvent : ACTION_DOWN")
                 addNewPoint(event)
-                stopSelectJobs()
-                triggerSelectJobs()
+                stopPressedJobs()
+                triggerPressedJobs()
                 invalidate()
                 return true
             }
@@ -113,9 +118,9 @@ class CanvasView : View, Handler.Callback {
                 Log.d(TAG, "onTouchEvent : ACTION_UP")
                 removePoint(event)
                 val reset = resetAllIfEmptyPoint()
-                stopSelectJobs()
+                stopPressedJobs()
                 if (!reset) {
-                    triggerSelectJobs()
+                    triggerPressedJobs()
                 }
                 invalidate()
                 return true
@@ -136,14 +141,21 @@ class CanvasView : View, Handler.Callback {
         return selectedPointList.isNotEmpty()
     }
 
-    private fun stopSelectJobs() {
+    private fun stopPressedJobs() {
         stopSound()
+        stopSnackbar()
         stopSelect()
         stopAnim()
     }
 
     private fun stopSound() {
         soundEffector.stop()
+    }
+
+    private fun stopSnackbar() {
+        if (eventHandler.hasMessages(MESSAGE_SNACKBAR)) {
+            eventHandler.removeMessages(MESSAGE_SNACKBAR)
+        }
     }
 
     private fun stopSelect() {
@@ -158,13 +170,15 @@ class CanvasView : View, Handler.Callback {
         }
     }
 
-    private fun triggerSelectJobs() {
+    private fun triggerPressedJobs() {
         fingerPressed.value = true
 
         if (canSelect()) {
             triggerSound()
             triggerSelect()
             triggerAnim()
+        } else {
+            triggerSnackbar()
         }
     }
 
@@ -182,6 +196,10 @@ class CanvasView : View, Handler.Callback {
 
     private fun triggerAnim() {
         eventHandler.sendEmptyMessageDelayed(MESSAGE_ANIM, ANIM_START_DELAYED_MILLIS)
+    }
+
+    private fun triggerSnackbar() {
+        eventHandler.sendEmptyMessageDelayed(MESSAGE_SNACKBAR, SNACKBAR_DELAYED_MILLIS)
     }
 
     private fun movePoint(event: MotionEvent) {
@@ -260,6 +278,10 @@ class CanvasView : View, Handler.Callback {
                 invalidate()
                 true
             }
+            MESSAGE_SNACKBAR -> {
+                showToast()
+                true
+            }
             else -> false
         }
     }
@@ -296,6 +318,10 @@ class CanvasView : View, Handler.Callback {
         if (!eventHandler.hasMessages(MESSAGE_ANIM)) {
             eventHandler.sendEmptyMessageDelayed(MESSAGE_ANIM, ANIM_REPEAT_DELAYED_MILLIS)
         }
+    }
+
+    private fun showToast() {
+        CenterSnackbar.showShort(this, R.string.pickImpossibleMessage)
     }
 
     fun destroy() {
