@@ -23,6 +23,7 @@ import com.eee.www.chewchew.ui.CanvasView.Constants.MESSAGE_PICK
 import com.eee.www.chewchew.ui.CanvasView.Constants.MESSAGE_RESET
 import com.eee.www.chewchew.ui.CanvasView.Constants.PICK_DELAYED_MILLIS
 import com.eee.www.chewchew.ui.CanvasView.Constants.PICK_RESET_DELAYED_MILLIS
+import com.eee.www.chewchew.ui.CanvasView.Constants.RANK_TEXT_SIZE
 import com.eee.www.chewchew.ui.CanvasView.Constants.SOUND_DELAYED_MILLIS
 import com.eee.www.chewchew.ui.CanvasView.Constants.TEAM_RESET_DELAYED_MILLIS
 import com.eee.www.chewchew.utils.FingerColors
@@ -36,6 +37,7 @@ class CanvasView : View, Handler.Callback {
         const val CIRCLE_SIZE_PX = 50
         const val CIRCLE_SIZE_MAX_PX = 60
         const val CIRCLE_SIZE_SELECTED_PX = 100
+        const val RANK_TEXT_SIZE = 80F
 
         const val MESSAGE_PICK = 0
         const val MESSAGE_ANIM = 1
@@ -56,6 +58,7 @@ class CanvasView : View, Handler.Callback {
     private lateinit var touchPointMap: FingerMap
     private lateinit var selectedPointList: List<Int>
     private lateinit var selectedTeamMap: Map<Int, Int>
+    private lateinit var selectedRankMap: Map<Int, Int>
 
     private val eventHandler = Handler(Looper.getMainLooper(), this)
 
@@ -175,6 +178,9 @@ class CanvasView : View, Handler.Callback {
     }
 
     private fun canSelect(): Boolean {
+        if (mode == MainActivity.Constants.MENU_RANK) {
+            return true;
+        }
         return touchPointMap.size > fingerCount
     }
 
@@ -231,6 +237,9 @@ class CanvasView : View, Handler.Callback {
                 MainActivity.Constants.MENU_TEAM -> {
                     drawCircle(canvas, it.key, it.value, grayColor)
                 }
+                MainActivity.Constants.MENU_RANK -> {
+                    drawCircle(canvas, it.key, it.value)
+                }
             }
         }
     }
@@ -253,6 +262,14 @@ class CanvasView : View, Handler.Callback {
                     drawCircle(canvas, it.key, it.value, teamColor)
                 }
             }
+            MainActivity.Constants.MENU_RANK -> {
+                touchPointMap.map.forEach {
+                    drawCircle(canvas, it.key, it.value)
+                }
+                touchPointMap.map.forEach {
+                    drawNumber(canvas, it.key, it.value)
+                }
+            }
         }
     }
 
@@ -264,6 +281,15 @@ class CanvasView : View, Handler.Callback {
     private fun drawCircle(canvas: Canvas, pointerId: Int, point: PointF?, color: Int) {
         paint.color = color
         point?.also { canvas.drawCircle(it.x, it.y, circleSize, paint) }
+    }
+
+    private fun drawNumber(canvas: Canvas, pointerId: Int, point: PointF?) {
+        paint.color = resources.getColor(R.color.rank_text_color)
+        point?.also {
+            paint.textSize = RANK_TEXT_SIZE;
+            canvas.drawText(selectedRankMap[pointerId].toString(),
+                it.x-15F, it.y - circleSize -5, paint);
+        }
     }
 
     override fun handleMessage(msg: Message): Boolean {
@@ -301,7 +327,7 @@ class CanvasView : View, Handler.Callback {
             MainActivity.Constants.MENU_TEAM ->
                 pickTeam(fingerCount)
             MainActivity.Constants.MENU_RANK ->
-                pickRank(fingerCount)
+                pickRank()
         }
     }
 
@@ -313,8 +339,8 @@ class CanvasView : View, Handler.Callback {
         selectedTeamMap = touchPointMap.selectTeam(n)
     }
 
-    private fun pickRank(n: Int) {
-
+    private fun pickRank() {
+        selectedRankMap = touchPointMap.selectRank()
     }
 
     private fun playSelectSound() {
