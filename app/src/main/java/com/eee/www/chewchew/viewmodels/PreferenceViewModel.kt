@@ -10,8 +10,8 @@ class PreferenceViewModel(private val savedStateHandle: SavedStateHandle) : View
     }
 
     val fingerCount = getFingerSelectionCount()
-    val teamList = mutableListOf(2,3,4,5)
-    val pickList = mutableListOf(1,2,3,4,5)
+    val teamList = listOf(2,3,4,5)
+    val pickList = listOf(1,2,3,4,5)
 
     fun setFingerSelectionCount(count: Int) {
         savedStateHandle.set(FingerPreference.SELECTION_COUNT_KEY, count)
