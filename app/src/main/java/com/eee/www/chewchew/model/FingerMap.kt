@@ -6,15 +6,14 @@ import android.view.MotionEvent
 import com.eee.www.chewchew.utils.TAG
 
 class FingerMap {
-
-    private val MAX_SIZE = 10
-
+    companion object {
+        private const val MAX_SIZE = 10
+    }
     private val _map = mutableMapOf<Int, PointF>()
     val map
         get() = _map as Map<Int, PointF>
     val size
         get() = _map.size
-
 
     fun add(event: MotionEvent): Int {
         val pointerIndex = event.actionIndex
@@ -57,20 +56,26 @@ class FingerMap {
     }
 
     fun selectTeam(n: Int): MutableMap<Int, Int> {
-        val teamMap = mutableMapOf<Int, Int>()
+        val tempList = mutableListOf<Int>() // to shuffle
+        for (key in _map.keys) {
+            tempList.add(key)
+        }
+        tempList.shuffle()
+
         var teamId: Int;
         val numOfOneTeam = _map.size / n;
 
-        // 0 1 2 3 4 5 6 7 ,  3 -> 0 0 0 1 1 1 2 2(O) / 0 0 1 1 2 2 2 2(X)
-        _map.forEach {
-            teamId = it.key / numOfOneTeam
-            teamMap.put(it.key, if (teamId < n) teamId else -1)
+        val teamMap = mutableMapOf<Int, Int>()
+        for (i in 0 until tempList.size) {
+            teamId = i / numOfOneTeam
+            teamMap.put(tempList[i], if (teamId < n) teamId else -1)
         }
         teamId = 0
         teamMap.forEach {
             if (teamMap.get(it.key) == -1) {
                 teamMap.put(it.key, teamId++)
             }
+            //Log.d(TAG, "tempMap: ${it.key}, ${it.value}")
         }
         return teamMap
     }

@@ -13,7 +13,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
-    private val viewModel: PreferenceViewModel by viewModels()
+    val viewModel: PreferenceViewModel by viewModels()
 
     object Constants {
         const val MENU_PICK = 0
@@ -89,12 +89,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun initCountPicker(countList: MutableList<Int>) {
+    private fun initCountPicker(countList: List<Int>) {
         val arrayAdapter = ArrayAdapter<Int>(this, R.layout.spinner_item, countList)
         arrayAdapter.setDropDownViewResource(R.layout.spinner_item)
         countSpinner.adapter = arrayAdapter
 
-        // set initial value -> not sure needed.
+        // TODO: set initial value of menu & count
 //        if (viewModel.fingerCount.value != null) viewModel.fingerCount.value else 0.let {
 //            countSpinner.setSelection(countList[it])
 //        }
