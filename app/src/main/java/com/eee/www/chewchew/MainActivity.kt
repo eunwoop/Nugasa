@@ -44,6 +44,9 @@ class MainActivity : AppCompatActivity() {
                         }).start()
                     this.isEnabled = !fingerPressed
                 }
+                // appears only once
+                if (fingerPressed)
+                    helpTextView.visibility = View.GONE
             })
         viewModel.fingerCount.observe(
             this,
