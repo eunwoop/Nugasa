@@ -10,6 +10,8 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import androidx.lifecycle.MutableLiveData
+import com.eee.www.chewchew.MainActivity
+import com.eee.www.chewchew.R
 import com.eee.www.chewchew.model.FingerMap
 import com.eee.www.chewchew.ui.CanvasView.Constants.ANIM_REPEAT_DELAYED_MILLIS
 import com.eee.www.chewchew.ui.CanvasView.Constants.ANIM_START_DELAYED_MILLIS
@@ -20,8 +22,9 @@ import com.eee.www.chewchew.ui.CanvasView.Constants.MESSAGE_ANIM
 import com.eee.www.chewchew.ui.CanvasView.Constants.MESSAGE_PICK
 import com.eee.www.chewchew.ui.CanvasView.Constants.MESSAGE_RESET
 import com.eee.www.chewchew.ui.CanvasView.Constants.PICK_DELAYED_MILLIS
-import com.eee.www.chewchew.ui.CanvasView.Constants.RESET_DELAYED_MILLIS
+import com.eee.www.chewchew.ui.CanvasView.Constants.PICK_RESET_DELAYED_MILLIS
 import com.eee.www.chewchew.ui.CanvasView.Constants.SOUND_DELAYED_MILLIS
+import com.eee.www.chewchew.ui.CanvasView.Constants.TEAM_RESET_DELAYED_MILLIS
 import com.eee.www.chewchew.utils.FingerColors
 import com.eee.www.chewchew.utils.SoundEffector
 import com.eee.www.chewchew.utils.TAG
@@ -41,15 +44,18 @@ class CanvasView : View, Handler.Callback {
         const val PICK_DELAYED_MILLIS = 3000L
         const val ANIM_START_DELAYED_MILLIS = 300L
         const val ANIM_REPEAT_DELAYED_MILLIS = 15L
-        const val RESET_DELAYED_MILLIS = 2000L
+        const val PICK_RESET_DELAYED_MILLIS = 2000L
+        const val TEAM_RESET_DELAYED_MILLIS = 4000L
         const val SOUND_DELAYED_MILLIS = 1000L
     }
 
     val fingerPressed = MutableLiveData<Boolean>()
     var fingerCount = 1
+    var mode = 0
 
     private lateinit var touchPointMap: FingerMap
     private lateinit var selectedPointList: List<Int>
+    private lateinit var selectedTeamMap: Map<Int, Int>
 
     private val eventHandler = Handler(Looper.getMainLooper(), this)
 
@@ -216,17 +222,36 @@ class CanvasView : View, Handler.Callback {
 
     private fun drawAll(canvas: Canvas) {
         circleSize = if (circleSize >= MAX_CIRCLE_SIZE) MIN_CIRCLE_SIZE else circleSize
+        val grayColor = resources.getColor(R.color.gray)
         touchPointMap.map.forEach {
-            drawCircle(canvas, it.key, it.value)
+            when(mode) {
+                MainActivity.Constants.MENU_PICK -> {
+                    drawCircle(canvas, it.key, it.value)
+                }
+                MainActivity.Constants.MENU_TEAM -> {
+                    drawCircle(canvas, it.key, it.value, grayColor)
+                }
+            }
         }
     }
 
     private fun drawSelected(canvas: Canvas) {
-        circleSize = SELECTED_CIRCLE_SIZE
-        touchPointMap.map.forEach {
-            val isSelected = selectedPointList.contains(it.key)
-            if (isSelected) {
-                drawCircle(canvas, it.key, it.value)
+        when(mode){
+            MainActivity.Constants.MENU_PICK -> {
+                circleSize = SELECTED_CIRCLE_SIZE
+                touchPointMap.map.forEach {
+                    val isSelected = selectedPointList.contains(it.key)
+                    if (isSelected) {
+                        drawCircle(canvas, it.key, it.value)
+                    }
+                }
+            }
+            MainActivity.Constants.MENU_TEAM -> {
+                touchPointMap.map.forEach {
+                    val team = selectedTeamMap.get(it.key) ?: 0
+                    val teamColor = FingerColors.randomColor(team)
+                    drawCircle(canvas, it.key, it.value, teamColor)
+                }
             }
         }
     }
@@ -236,10 +261,15 @@ class CanvasView : View, Handler.Callback {
         point?.also { canvas.drawCircle(it.x, it.y, circleSize, paint) }
     }
 
+    private fun drawCircle(canvas: Canvas, pointerId: Int, point: PointF?, color: Int) {
+        paint.color = color
+        point?.also { canvas.drawCircle(it.x, it.y, circleSize, paint) }
+    }
+
     override fun handleMessage(msg: Message): Boolean {
         return when (msg.what) {
             MESSAGE_PICK -> {
-                pickN(fingerCount)
+                doPick(fingerCount)
 
                 playSelectSound()
 
@@ -264,8 +294,27 @@ class CanvasView : View, Handler.Callback {
         }
     }
 
+    private fun doPick(fingerCount: Int) {
+        when (mode) {
+            MainActivity.Constants.MENU_PICK ->
+                pickN(fingerCount)
+            MainActivity.Constants.MENU_TEAM ->
+                pickTeam(fingerCount)
+            MainActivity.Constants.MENU_RANK ->
+                pickRank(fingerCount)
+        }
+    }
+
     private fun pickN(n: Int) {
         selectedPointList = touchPointMap.select(n)
+    }
+
+    private fun pickTeam(n: Int) {
+        selectedTeamMap = touchPointMap.selectTeam(n)
+    }
+
+    private fun pickRank(n: Int) {
+
     }
 
     private fun playSelectSound() {
@@ -278,7 +327,9 @@ class CanvasView : View, Handler.Callback {
         if (eventHandler.hasMessages(MESSAGE_RESET)) {
             eventHandler.removeMessages(MESSAGE_RESET)
         }
-        eventHandler.sendEmptyMessageDelayed(MESSAGE_RESET, RESET_DELAYED_MILLIS)
+        val delayMillis = if (mode == MainActivity.Constants.MENU_TEAM)
+            TEAM_RESET_DELAYED_MILLIS else PICK_RESET_DELAYED_MILLIS
+        eventHandler.sendEmptyMessageDelayed(MESSAGE_RESET, delayMillis)
     }
 
     private fun doVibrate() {

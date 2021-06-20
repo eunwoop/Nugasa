@@ -2,6 +2,8 @@ package com.eee.www.chewchew
 
 import android.animation.ObjectAnimator
 import android.os.Bundle
+import android.view.View
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -11,13 +13,19 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
-    private val viewModel: PreferenceViewModel by viewModels()
+    val viewModel: PreferenceViewModel by viewModels()
+
+    object Constants {
+        const val MENU_PICK = 0
+        const val MENU_TEAM = 1
+        const val MENU_RANK = 2
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         initCanvasView()
-        initCountPicker()
+        initCountPicker(viewModel.pickList)
         initMenuSpinner()
     }
 
@@ -42,21 +50,67 @@ class MainActivity : AppCompatActivity() {
             Observer { fingerCount -> canvasView.fingerCount = fingerCount })
     }
 
-    private fun initCountPicker() {
-        countPicker.value.apply { viewModel.fingerCount.value }
-        countPicker.setOnValueChangedListener { _, _, newVal ->
-            viewModel.setFingerSelectionCount(
-                newVal
-            )
+    private fun initMenuSpinner() {
+        ArrayAdapter.createFromResource(this, R.array.menu_array, R.layout.spinner_item
+        ).also { adapter ->
+            adapter.setDropDownViewResource(R.layout.spinner_item)
+            menuSpinner.adapter = adapter
+        }
+
+        menuSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                when(position) {
+                    Constants.MENU_PICK-> {
+                        countSpinner.isEnabled = true
+                        countSpinner.visibility = View.VISIBLE
+                        initCountPicker(viewModel.pickList)
+                    }
+                    Constants.MENU_TEAM-> {
+                        countSpinner.isEnabled = true
+                        countSpinner.visibility = View.VISIBLE
+                        initCountPicker(viewModel.teamList)
+                    }
+                    Constants.MENU_RANK-> {
+                        countSpinner.isEnabled = false
+                        countSpinner.visibility = View.GONE
+                    }
+                }
+                canvasView.mode = position
+                viewModel.setFingerSelectionCount(viewModel.pickList[position])
+            }
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+
+            }
         }
     }
 
-    private fun initMenuSpinner() {
-        ArrayAdapter.createFromResource(this, R.array.menu_array,
-                android.R.layout.simple_spinner_item
-        ).also { adapter ->
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            menuSpinner.adapter = adapter
+    private fun initCountPicker(countList: List<Int>) {
+        val arrayAdapter = ArrayAdapter<Int>(this, R.layout.spinner_item, countList)
+        arrayAdapter.setDropDownViewResource(R.layout.spinner_item)
+        countSpinner.adapter = arrayAdapter
+
+        // TODO: set initial value of menu & count
+//        if (viewModel.fingerCount.value != null) viewModel.fingerCount.value else 0.let {
+//            countSpinner.setSelection(countList[it])
+//        }
+
+        countSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                viewModel.setFingerSelectionCount(countList[position])
+            }
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+
+            }
         }
     }
 
