@@ -42,7 +42,8 @@ class MainActivity : AppCompatActivity() {
                         ObjectAnimator.ofFloat(this, "alpha", 0f, 1f).apply {
                             duration = 500;
                         }).start()
-                    this.isEnabled = !fingerPressed
+                    menuSpinner.isEnabled = !fingerPressed
+                    countSpinner.isEnabled = !fingerPressed
                 }
             })
         viewModel.fingerCount.observe(
