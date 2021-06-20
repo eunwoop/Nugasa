@@ -75,6 +75,7 @@ class CanvasView : View, Handler.Callback {
 
     init {
         resetAll()
+        paint.isAntiAlias = true
     }
 
     private fun resetAll() {
