@@ -111,7 +111,6 @@ class CanvasView : View, Handler.Callback {
         when (event.actionMasked) {
             MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> {
                 Log.d(TAG, "onTouchEvent : ACTION_DOWN")
-                fingerPressed.value = true
                 addNewPoint(event)
                 stopPressedJobs()
                 triggerPressedJobs()
@@ -142,6 +141,10 @@ class CanvasView : View, Handler.Callback {
     private fun addNewPoint(event: MotionEvent) {
         if (isFingerSelected() || touchPointMap.isFull()) {
             return
+        }
+        // first touch!
+        if (touchPointMap.isEmpty()) {
+            fingerPressed.value = true
         }
         val pointerId = touchPointMap.add(event)
         Log.d(TAG, "addNewPoint : $pointerId")
