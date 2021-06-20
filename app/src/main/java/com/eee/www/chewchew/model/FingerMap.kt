@@ -65,17 +65,17 @@ class FingerMap {
         var teamId: Int;
         val numOfOneTeam = _map.size / n;
 
-        // 0 1 2 3 4 5 6 7 ,  3 -> 0 0 0 1 1 1 2 2(O) / 0 0 1 1 2 2 2 2(X)
         val teamMap = mutableMapOf<Int, Int>()
-        tempList.forEach {
-            teamId = it / numOfOneTeam
-            teamMap.put(it, if (teamId < n) teamId else -1)
+        for (i in 0 until tempList.size) {
+            teamId = i / numOfOneTeam
+            teamMap.put(tempList[i], if (teamId < n) teamId else -1)
         }
         teamId = 0
         teamMap.forEach {
             if (teamMap.get(it.key) == -1) {
                 teamMap.put(it.key, teamId++)
             }
+            //Log.d(TAG, "tempMap: ${it.key}, ${it.value}")
         }
         return teamMap
     }
