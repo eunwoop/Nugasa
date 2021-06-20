@@ -7,6 +7,8 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="gray">#CCCCCC</color>
+    <color name="rank_text_color">#000000</color>
 
     <color name="medium_turquoise">#53CFDA</color>
     <color name="sugar_cane">#EFF2E6</color>
