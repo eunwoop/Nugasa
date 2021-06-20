@@ -111,6 +111,7 @@ class CanvasView : View, Handler.Callback {
         when (event.actionMasked) {
             MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> {
                 Log.d(TAG, "onTouchEvent : ACTION_DOWN")
+                fingerPressed.value = true
                 addNewPoint(event)
                 stopPressedJobs()
                 triggerPressedJobs()
@@ -180,8 +181,6 @@ class CanvasView : View, Handler.Callback {
     }
 
     private fun triggerPressedJobs() {
-        fingerPressed.value = true
-
         if (canSelect()) {
             triggerSound()
             triggerSelect()
