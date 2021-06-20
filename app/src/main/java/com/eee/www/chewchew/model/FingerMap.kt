@@ -80,6 +80,19 @@ class FingerMap {
         return teamMap
     }
 
+    fun selectRank(): MutableMap<Int, Int> {
+        val tempList = mutableListOf<Int>() // to shuffle
+        val rankMap = mutableMapOf<Int, Int>()
+        for (key in _map.keys) {
+            tempList.add(key)
+        }
+        tempList.shuffle()
+        _map.forEach {
+            rankMap.put(it.key, tempList[it.key] + 1) // +1 is for except 0
+        }
+        return rankMap
+    }
+
     fun print() {
         _map.forEach { point ->
             Log.d(TAG, "touchPoint:(${point.value.x},${point.value.y})")
