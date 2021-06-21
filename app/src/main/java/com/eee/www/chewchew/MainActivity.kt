@@ -51,12 +51,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initMenuSpinner() {
-        ArrayAdapter.createFromResource(this, R.array.menu_array, R.layout.spinner_item
-        ).also { adapter ->
-            adapter.setDropDownViewResource(R.layout.spinner_item)
-            menuSpinner.adapter = adapter
-        }
-
         menuSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?,
@@ -90,15 +84,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initCountPicker(countList: List<Int>) {
-        val arrayAdapter = ArrayAdapter<Int>(this, R.layout.spinner_item, countList)
-        arrayAdapter.setDropDownViewResource(R.layout.spinner_item)
-        countSpinner.adapter = arrayAdapter
-
-        // TODO: set initial value of menu & count
-//        if (viewModel.fingerCount.value != null) viewModel.fingerCount.value else 0.let {
-//            countSpinner.setSelection(countList[it])
-//        }
-
         countSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?,

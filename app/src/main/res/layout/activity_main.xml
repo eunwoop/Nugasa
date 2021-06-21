@@ -18,14 +18,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <Spinner
+        <com.eee.www.chewchew.ui.RoundedSpinner
             android:id="@+id/menuSpinner"
             android:layout_width="100dp"
             android:layout_height="50dp"
             android:background="@drawable/spinner_bg"
             android:popupBackground="@drawable/spinner_popup_bg"/>
 
-        <Spinner
+        <com.eee.www.chewchew.ui.RoundedSpinner
             android:id="@+id/countSpinner"
             android:layout_width="50dp"
             android:layout_height="50dp"
