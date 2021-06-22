@@ -66,32 +66,29 @@ class MainActivity : AppCompatActivity() {
                 ) {
                     when (position) {
                         Constants.MENU_PICK -> {
-                            countSpinner.isEnabled = true
-                            countSpinner.visibility = View.VISIBLE
-                            initCountPicker(viewModel.pickList)
+                            pickCountSpinner.show()
+                            teamCountSpinner.hide()
                         }
                         Constants.MENU_TEAM -> {
-                            countSpinner.isEnabled = true
-                            countSpinner.visibility = View.VISIBLE
-                            initCountPicker(viewModel.teamList)
+                            pickCountSpinner.hide()
+                            teamCountSpinner.show()
                         }
                         Constants.MENU_RANK -> {
-                            countSpinner.isEnabled = false
-                            countSpinner.visibility = View.GONE
+                            pickCountSpinner.hide()
+                            teamCountSpinner.hide()
                         }
                     }
                     canvasView.mode = position
-                    viewModel.setFingerSelectionCount(viewModel.pickList[position])
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {
 
+                }
             }
-        }
     }
 
     private fun initCountPicker(countList: List<Int>) {
-        countSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        pickCountSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?,
                 view: View?,
@@ -100,6 +97,7 @@ class MainActivity : AppCompatActivity() {
             ) {
                 viewModel.setFingerSelectionCount(countList[position])
             }
+
             override fun onNothingSelected(parent: AdapterView<*>?) {
 
             }

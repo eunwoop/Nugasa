@@ -8,9 +8,6 @@
             name="menuArrayResId"
             type="int" />
 
-        <variable
-            name="countArrayResId"
-            type="int" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -36,7 +33,16 @@
                 app:arrayResId="@{menuArrayResId}" />
 
             <com.eee.www.chewchew.ui.RoundedSpinner
-                android:id="@+id/countSpinner"
+                android:id="@+id/pickCountSpinner"
+                max="5"
+                min="1"
+                android:layout_width="50dp"
+                android:layout_height="50dp" />
+
+            <com.eee.www.chewchew.ui.RoundedSpinner
+                android:id="@+id/teamCountSpinner"
+                max="5"
+                min="2"
                 android:layout_width="50dp"
                 android:layout_height="50dp" />
         </LinearLayout>
