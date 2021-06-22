@@ -2,16 +2,18 @@ package com.eee.www.chewchew.ui
 
 import android.content.Context
 import android.util.AttributeSet
-import android.widget.ArrayAdapter
 import androidx.appcompat.widget.AppCompatSpinner
+import androidx.core.content.res.ResourcesCompat
 import com.eee.www.chewchew.R
 
 class RoundedSpinner : AppCompatSpinner {
 
-    constructor(context: Context) : super(context)
+    constructor(context: Context) : super(context) {
+        initView()
+    }
 
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
-        setAttributeSet(attrs)
+        initView()
     }
 
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
@@ -19,14 +21,11 @@ class RoundedSpinner : AppCompatSpinner {
         attrs,
         defStyleAttr
     ) {
-        setAttributeSet(attrs)
+        initView()
     }
 
-    private fun setAttributeSet(attrs: AttributeSet?) {
-        attrs?.let {
-            val arrayAdapter = ArrayAdapter<Int>(context, R.layout.spinner_item)
-            arrayAdapter.setDropDownViewResource(R.layout.spinner_item)
-            adapter = arrayAdapter
-        }
+    private fun initView() {
+        background = ResourcesCompat.getDrawable(resources, R.drawable.spinner_bg, null)
+        setPopupBackgroundResource(R.drawable.spinner_popup_bg)
     }
 }
