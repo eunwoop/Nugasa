@@ -1,9 +1,7 @@
 <resources>
     <string name="app_name">ChewChew</string>
-    <string-array name="menu_array">
-        <item>Pick</item>
-        <item>Team</item>
-        <item>Rank</item>
-    </string-array>
+    <string name="pick">Pick</string>
+    <string name="team">Team</string>
+    <string name="rank">Rank</string>
     <string name="pickImpossibleMessage">Come on more fingers!</string>
 </resources>

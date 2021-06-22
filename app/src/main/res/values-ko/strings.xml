@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">츄츄</string>
-    <string-array name="menu_array">
-        <item>선택</item>
-        <item>팀</item>
-        <item>랭킹</item>
-    </string-array>
+    <string name="pick">선택</string>
+    <string name="team">팀</string>
+    <string name="rank">랭킹</string>
     <string name="pickImpossibleMessage">손가락이 더 필요해요!</string>
 </resources>

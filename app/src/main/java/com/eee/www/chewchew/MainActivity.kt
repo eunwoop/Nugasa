@@ -30,7 +30,9 @@ class MainActivity : AppCompatActivity() {
 
         initCanvasView()
         initMenuSpinner(binding)
-        initCountPicker(viewModel.pickList)
+        initPickCountSpinner()
+        initTeamCountSpinner()
+        initObservers()
     }
 
     private fun initCanvasView() {
@@ -40,54 +42,37 @@ class MainActivity : AppCompatActivity() {
                 menuLayout.apply {
                     (if (fingerPressed)
                         ObjectAnimator.ofFloat(this, "alpha", 1f, 0f).apply {
-                            duration = 500;
+                            duration = 500
                         }
                     else
                         ObjectAnimator.ofFloat(this, "alpha", 0f, 1f).apply {
-                            duration = 500;
+                            duration = 500
                         }).start()
                     this.isEnabled = !fingerPressed
                 }
             })
-        viewModel.fingerCount.observe(
-            this,
-            Observer { fingerCount -> canvasView.fingerCount = fingerCount })
     }
 
     private fun initMenuSpinner(binding: ActivityMainBinding) {
         binding.menuArrayResId = R.array.menu_array
-        menuSpinner.onItemSelectedListener =
-            object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>?,
-                    view: View?,
-                    position: Int,
-                    id: Long
-                ) {
-                    when (position) {
-                        Constants.MENU_PICK -> {
-                            pickCountSpinner.show()
-                            teamCountSpinner.hide()
-                        }
-                        Constants.MENU_TEAM -> {
-                            pickCountSpinner.hide()
-                            teamCountSpinner.show()
-                        }
-                        Constants.MENU_RANK -> {
-                            pickCountSpinner.hide()
-                            teamCountSpinner.hide()
-                        }
-                    }
-                    canvasView.mode = position
-                }
-
-                override fun onNothingSelected(parent: AdapterView<*>?) {
-
-                }
+        menuSpinner.setSelection(viewModel.menuPosition.value!!)
+        menuSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                viewModel.setMenuPosition(position)
             }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+            }
+        }
     }
 
-    private fun initCountPicker(countList: List<Int>) {
+    private fun initPickCountSpinner() {
+        pickCountSpinner.setSelectionItem(viewModel.pickCount.value!!)
         pickCountSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?,
@@ -95,13 +80,59 @@ class MainActivity : AppCompatActivity() {
                 position: Int,
                 id: Long
             ) {
-                viewModel.setFingerSelectionCount(countList[position])
+                val item = pickCountSpinner.getItemAtPosition(position) as Int
+                viewModel.setPickCount(item)
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
-
             }
         }
+    }
+
+    private fun initTeamCountSpinner() {
+        teamCountSpinner.setSelectionItem(viewModel.teamCount.value!!)
+        teamCountSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                val item = teamCountSpinner.getItemAtPosition(position) as Int
+                viewModel.setTeamCount(item)
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+            }
+        }
+    }
+
+    private fun initObservers() {
+        val fingerCountObserver = Observer<Int> { count -> canvasView.fingerCount = count }
+        val modeObserver = Observer<Int> { position ->
+            when (position) {
+                Constants.MENU_PICK -> {
+                    pickCountSpinner.show()
+                    teamCountSpinner.hide()
+                    viewModel.pickCount.observe(this, fingerCountObserver)
+                    viewModel.teamCount.removeObservers(this)
+                }
+                Constants.MENU_TEAM -> {
+                    pickCountSpinner.hide()
+                    teamCountSpinner.show()
+                    viewModel.pickCount.removeObservers(this)
+                    viewModel.teamCount.observe(this, fingerCountObserver)
+                }
+                Constants.MENU_RANK -> {
+                    pickCountSpinner.hide()
+                    teamCountSpinner.hide()
+                    viewModel.pickCount.removeObservers(this)
+                    viewModel.teamCount.removeObservers(this)
+                }
+            }
+            canvasView.mode = position
+        }
+        viewModel.menuPosition.observe(this, modeObserver)
     }
 
     override fun onDestroy() {
