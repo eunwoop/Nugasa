@@ -48,6 +48,17 @@
                 app:item="@{viewModel.teamCount}" />
         </LinearLayout>
 
+        <TextView
+            android:id="@+id/helpTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="22dp"
+            android:text="@string/help_message"
+            android:textColor="@color/gray"
+            app:layout_constraintBottom_toBottomOf="@+id/canvasView"
+            app:layout_constraintEnd_toEndOf="@+id/canvasView"
+            app:layout_constraintStart_toStartOf="@+id/canvasView"
+            app:layout_constraintTop_toTopOf="@+id/menuLayout" />
+
         <com.eee.www.chewchew.ui.CanvasView
             android:id="@+id/canvasView"
             android:layout_width="0dp"

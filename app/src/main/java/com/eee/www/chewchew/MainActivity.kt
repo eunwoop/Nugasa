@@ -2,6 +2,7 @@ package com.eee.www.chewchew
 
 import android.animation.ObjectAnimator
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import androidx.activity.viewModels
@@ -53,8 +54,13 @@ class MainActivity : AppCompatActivity() {
                         ObjectAnimator.ofFloat(this, "alpha", 0f, 1f).apply {
                             duration = 500
                         }).start()
-                    this.isEnabled = !fingerPressed
                 }
+                menuSpinner.isEnabled = !fingerPressed
+                pickCountSpinner.isEnabled = !fingerPressed
+                teamCountSpinner.isEnabled = !fingerPressed
+                // appears only once
+                if (fingerPressed)
+                    helpTextView.visibility = View.GONE
             })
     }
 

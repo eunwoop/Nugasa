@@ -4,4 +4,5 @@
     <string name="team">Team</string>
     <string name="rank">Rank</string>
     <string name="pickImpossibleMessage">Come on more fingers!</string>
+    <string name="help_message">Put your fingers here!</string>
 </resources>

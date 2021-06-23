@@ -142,6 +142,10 @@ class CanvasView : View, Handler.Callback {
         if (isFingerSelected() || touchPointMap.isFull()) {
             return
         }
+        // first touch!
+        if (touchPointMap.isEmpty()) {
+            fingerPressed.value = true
+        }
         val pointerId = touchPointMap.add(event)
         Log.d(TAG, "addNewPoint : $pointerId")
     }
@@ -180,8 +184,6 @@ class CanvasView : View, Handler.Callback {
     }
 
     private fun triggerPressedJobs() {
-        fingerPressed.value = true
-
         if (canSelect()) {
             triggerSound()
             triggerSelect()
