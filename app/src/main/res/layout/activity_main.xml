@@ -4,6 +4,9 @@
 
     <data>
 
+        <variable
+            name="viewModel"
+            type="com.eee.www.chewchew.viewmodels.PreferenceViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -25,21 +28,24 @@
             <com.eee.www.chewchew.ui.MenuSpinner
                 android:id="@+id/menuSpinner"
                 android:layout_width="100dp"
-                android:layout_height="50dp" />
+                android:layout_height="50dp"
+                app:position="@{viewModel.menuPosition}" />
 
             <com.eee.www.chewchew.ui.CountSpinner
                 android:id="@+id/pickCountSpinner"
                 max="5"
                 min="1"
                 android:layout_width="50dp"
-                android:layout_height="50dp" />
+                android:layout_height="50dp"
+                app:item="@{viewModel.pickCount}" />
 
             <com.eee.www.chewchew.ui.CountSpinner
                 android:id="@+id/teamCountSpinner"
                 max="5"
                 min="2"
                 android:layout_width="50dp"
-                android:layout_height="50dp" />
+                android:layout_height="50dp"
+                app:item="@{viewModel.teamCount}" />
         </LinearLayout>
 
         <com.eee.www.chewchew.ui.CanvasView

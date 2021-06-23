@@ -25,16 +25,4 @@ class CountSpinner : RoundedSpinner {
             }
         }
     }
-
-    fun setSelectionItem(item: Any) {
-        var position = 0
-        if (item is String) {
-            val arrayAdapter = adapter as ArrayAdapter<String>
-            position = arrayAdapter.getPosition(item)
-        } else if (item is Int) {
-            val arrayAdapter = adapter as ArrayAdapter<Int>
-            position = arrayAdapter.getPosition(item)
-        }
-        setSelection(position)
-    }
 }

@@ -25,14 +25,19 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val binding: ActivityMainBinding =
-            DataBindingUtil.setContentView(this, R.layout.activity_main)
+        bindData()
 
         initCanvasView()
         initMenuSpinner()
         initPickCountSpinner()
         initTeamCountSpinner()
         initObservers()
+    }
+
+    private fun bindData() {
+        val binding: ActivityMainBinding =
+            DataBindingUtil.setContentView(this, R.layout.activity_main)
+        binding.viewModel = viewModel
     }
 
     private fun initCanvasView() {
@@ -54,7 +59,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initMenuSpinner() {
-        menuSpinner.setSelection(viewModel.menuPosition.value!!)
         menuSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?,
@@ -71,7 +75,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initPickCountSpinner() {
-        pickCountSpinner.setSelectionItem(viewModel.pickCount.value!!)
         pickCountSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?,
@@ -89,7 +92,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initTeamCountSpinner() {
-        teamCountSpinner.setSelectionItem(viewModel.teamCount.value!!)
         teamCountSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?,
