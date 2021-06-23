@@ -7,4 +7,5 @@
         <item>랭킹</item>
     </string-array>
     <string name="pickImpossibleMessage">손가락이 더 필요해요!</string>
+    <string name="help_message">손가락들을 여기에 올려주세요</string>
 </resources>

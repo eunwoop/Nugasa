@@ -6,4 +6,5 @@
         <item>Rank</item>
     </string-array>
     <string name="pickImpossibleMessage">Come on more fingers!</string>
+    <string name="help_message">Put your fingers here!</string>
 </resources>
