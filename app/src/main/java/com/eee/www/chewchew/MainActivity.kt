@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity() {
             DataBindingUtil.setContentView(this, R.layout.activity_main)
 
         initCanvasView()
-        initMenuSpinner(binding)
+        initMenuSpinner()
         initPickCountSpinner()
         initTeamCountSpinner()
         initObservers()
@@ -53,8 +53,7 @@ class MainActivity : AppCompatActivity() {
             })
     }
 
-    private fun initMenuSpinner(binding: ActivityMainBinding) {
-        binding.menuArrayResId = R.array.menu_array
+    private fun initMenuSpinner() {
         menuSpinner.setSelection(viewModel.menuPosition.value!!)
         menuSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(

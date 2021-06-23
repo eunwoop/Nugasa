@@ -4,10 +4,6 @@
 
     <data>
 
-        <variable
-            name="menuArrayResId"
-            type="int" />
-
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -26,20 +22,19 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <com.eee.www.chewchew.ui.RoundedSpinner
+            <com.eee.www.chewchew.ui.MenuSpinner
                 android:id="@+id/menuSpinner"
                 android:layout_width="100dp"
-                android:layout_height="50dp"
-                app:arrayResId="@{menuArrayResId}" />
+                android:layout_height="50dp" />
 
-            <com.eee.www.chewchew.ui.RoundedSpinner
+            <com.eee.www.chewchew.ui.CountSpinner
                 android:id="@+id/pickCountSpinner"
                 max="5"
                 min="1"
                 android:layout_width="50dp"
                 android:layout_height="50dp" />
 
-            <com.eee.www.chewchew.ui.RoundedSpinner
+            <com.eee.www.chewchew.ui.CountSpinner
                 android:id="@+id/teamCountSpinner"
                 max="5"
                 min="2"
