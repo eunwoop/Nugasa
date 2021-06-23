@@ -2,23 +2,30 @@ package com.eee.www.chewchew.viewmodels
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import com.eee.www.chewchew.viewmodels.PreferenceViewModel.FingerPreference.MENU_POSITION_KEY
-import com.eee.www.chewchew.viewmodels.PreferenceViewModel.FingerPreference.PICK_COUNT_KEY
-import com.eee.www.chewchew.viewmodels.PreferenceViewModel.FingerPreference.TEAM_COUNT_KEY
+import com.eee.www.chewchew.viewmodels.PreferenceViewModel.Constants.DEFAULT_MENU_POSITION
+import com.eee.www.chewchew.viewmodels.PreferenceViewModel.Constants.DEFAULT_PICK_COUNT
+import com.eee.www.chewchew.viewmodels.PreferenceViewModel.Constants.DEFAULT_TEAM_COUNT
+import com.eee.www.chewchew.viewmodels.PreferenceViewModel.Constants.MENU_POSITION_KEY
+import com.eee.www.chewchew.viewmodels.PreferenceViewModel.Constants.PICK_COUNT_KEY
+import com.eee.www.chewchew.viewmodels.PreferenceViewModel.Constants.TEAM_COUNT_KEY
 
 class PreferenceViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel() {
-    object FingerPreference {
+    object Constants {
         const val MENU_POSITION_KEY = "menuPosition"
         const val PICK_COUNT_KEY = "pickCount"
         const val TEAM_COUNT_KEY = "teamCount"
+
+        const val DEFAULT_MENU_POSITION = 0
+        const val DEFAULT_PICK_COUNT = 1
+        const val DEFAULT_TEAM_COUNT = 2
     }
 
     val menuPosition
-        get() = savedStateHandle.getLiveData(MENU_POSITION_KEY, 0)
+        get() = savedStateHandle.getLiveData(MENU_POSITION_KEY, DEFAULT_MENU_POSITION)
     val pickCount
-        get() = savedStateHandle.getLiveData(PICK_COUNT_KEY, 1)
+        get() = savedStateHandle.getLiveData(PICK_COUNT_KEY, DEFAULT_PICK_COUNT)
     val teamCount
-        get() = savedStateHandle.getLiveData(TEAM_COUNT_KEY, 2)
+        get() = savedStateHandle.getLiveData(TEAM_COUNT_KEY, DEFAULT_TEAM_COUNT)
 
     fun setMenuPosition(position: Int) {
         savedStateHandle.set(MENU_POSITION_KEY, position)
