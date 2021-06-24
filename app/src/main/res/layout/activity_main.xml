@@ -6,7 +6,7 @@
 
         <variable
             name="viewModel"
-            type="com.eee.www.chewchew.viewmodels.PreferenceViewModel" />
+            type="com.eee.www.chewchew.viewmodels.MainActivityViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

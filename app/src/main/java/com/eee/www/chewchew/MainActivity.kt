@@ -2,7 +2,6 @@ package com.eee.www.chewchew
 
 import android.animation.ObjectAnimator
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import androidx.activity.viewModels
@@ -10,12 +9,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.eee.www.chewchew.databinding.ActivityMainBinding
-import com.eee.www.chewchew.viewmodels.PreferenceViewModel
+import com.eee.www.chewchew.viewmodels.MainActivityViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
-    val viewModel: PreferenceViewModel by viewModels()
+    val viewModel: MainActivityViewModel by viewModels()
 
     object Constants {
         const val MENU_PICK = 0
