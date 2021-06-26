@@ -1,57 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <LinearLayout
-        android:id="@+id/menuLayout"
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.eee.www.chewchew.viewmodels.MainActivityViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:translationZ="2dp"
-        android:gravity="left"
-        android:padding="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="match_parent">
 
-        <Spinner
-            android:id="@+id/menuSpinner"
-            android:layout_width="100dp"
-            android:layout_height="50dp"
-            android:background="@drawable/spinner_bg"
-            android:popupBackground="@drawable/spinner_popup_bg"/>
+        <LinearLayout
+            android:id="@+id/menuLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:orientation="horizontal"
+            android:padding="20dp"
+            android:translationZ="2dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-        <Spinner
-            android:id="@+id/countSpinner"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:background="@drawable/spinner_bg"
-            android:popupBackground="@drawable/spinner_popup_bg"/>
-    </LinearLayout>
+            <com.eee.www.chewchew.ui.MenuSpinner
+                android:id="@+id/menuSpinner"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                app:position="@{viewModel.menuPosition}" />
 
-    <TextView
-        android:id="@+id/helpTextView"
-        android:layout_width="171dp"
-        android:layout_height="22dp"
-        android:text="@string/help_message"
-        android:textColor="@color/gray"
-        app:layout_constraintBottom_toBottomOf="@+id/canvasView"
-        app:layout_constraintEnd_toEndOf="@+id/canvasView"
-        app:layout_constraintStart_toStartOf="@+id/canvasView"
-        app:layout_constraintTop_toTopOf="@+id/menuLayout" />
+            <com.eee.www.chewchew.ui.CountSpinner
+                android:id="@+id/pickCountSpinner"
+                max="5"
+                min="1"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                app:item="@{viewModel.pickCount}" />
 
-    <com.eee.www.chewchew.ui.CanvasView
-        android:id="@+id/canvasView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+            <com.eee.www.chewchew.ui.CountSpinner
+                android:id="@+id/teamCountSpinner"
+                max="5"
+                min="2"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                app:item="@{viewModel.teamCount}" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/helpTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="22dp"
+            android:text="@string/help_message"
+            android:textColor="@color/gray"
+            app:layout_constraintBottom_toBottomOf="@+id/canvasView"
+            app:layout_constraintEnd_toEndOf="@+id/canvasView"
+            app:layout_constraintStart_toStartOf="@+id/canvasView"
+            app:layout_constraintTop_toTopOf="@+id/menuLayout" />
+
+        <com.eee.www.chewchew.ui.CanvasView
+            android:id="@+id/canvasView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

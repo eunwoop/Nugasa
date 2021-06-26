@@ -1,6 +1,7 @@
 package com.eee.www.chewchew.utils
 
 import android.content.Context
+import androidx.core.content.res.ResourcesCompat
 import com.eee.www.chewchew.R
 
 object FingerColors {
@@ -18,16 +19,16 @@ object FingerColors {
 
     private fun loadColor(context: Context) {
         with(colorList) {
-            add(context.resources.getColor(R.color.medium_turquoise))
-            add(context.resources.getColor(R.color.sugar_cane))
-            add(context.resources.getColor(R.color.carnation_pink))
-            add(context.resources.getColor(R.color.selective_yellow))
-            add(context.resources.getColor(R.color.golden_yellow))
-            add(context.resources.getColor(R.color.purple))
-            add(context.resources.getColor(R.color.wild_watermelon))
-            add(context.resources.getColor(R.color.apple_green))
-            add(context.resources.getColor(R.color.light_pink))
-            add(context.resources.getColor(R.color.electric_lime))
+            add(ResourcesCompat.getColor(context.resources, R.color.medium_turquoise, null))
+            add(ResourcesCompat.getColor(context.resources, R.color.sugar_cane, null))
+            add(ResourcesCompat.getColor(context.resources, R.color.carnation_pink, null))
+            add(ResourcesCompat.getColor(context.resources, R.color.selective_yellow, null))
+            add(ResourcesCompat.getColor(context.resources, R.color.golden_yellow, null))
+            add(ResourcesCompat.getColor(context.resources, R.color.purple, null))
+            add(ResourcesCompat.getColor(context.resources, R.color.wild_watermelon, null))
+            add(ResourcesCompat.getColor(context.resources, R.color.apple_green, null))
+            add(ResourcesCompat.getColor(context.resources, R.color.light_pink, null))
+            add(ResourcesCompat.getColor(context.resources, R.color.electric_lime, null))
         }
     }
 
