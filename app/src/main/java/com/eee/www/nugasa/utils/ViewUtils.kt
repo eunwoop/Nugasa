@@ -1,4 +1,4 @@
-package com.eee.www.chewchew.utils
+package com.eee.www.nugasa.utils
 
 import android.content.Context
 import android.util.TypedValue

@@ -1,4 +1,4 @@
-package com.eee.www.chewchew
+package com.eee.www.nugasa
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

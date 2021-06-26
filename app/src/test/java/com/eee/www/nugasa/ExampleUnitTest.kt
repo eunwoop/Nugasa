@@ -1,4 +1,4 @@
-package com.eee.www.chewchew
+package com.eee.www.nugasa
 
 import org.junit.Test
 

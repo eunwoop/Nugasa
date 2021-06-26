@@ -1,9 +1,9 @@
-package com.eee.www.chewchew.ui
+package com.eee.www.nugasa.ui
 
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.ArrayAdapter
-import com.eee.www.chewchew.R
+import com.eee.www.nugasa.R
 
 class CountSpinner : RoundedSpinner {
 
