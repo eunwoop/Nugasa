@@ -1,5 +1,7 @@
 package com.eee.www.nugasa.utils
 
+import android.animation.ObjectAnimator
+import android.view.View
 import android.widget.ArrayAdapter
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.databinding.BindingAdapter
@@ -20,4 +22,19 @@ fun setSelectionItem(view: AppCompatSpinner, item: Any) {
         position = arrayAdapter.getPosition(item)
     }
     view.setSelection(position)
+}
+
+@BindingAdapter("pressed", requireAll = true)
+fun setPressed(view: View, pressed: Boolean) {
+    view.apply {
+        (if (pressed)
+            ObjectAnimator.ofFloat(this, "alpha", 1f, 0f).apply {
+                duration = 500
+            }
+        else
+            ObjectAnimator.ofFloat(this, "alpha", 0f, 1f).apply {
+                duration = 500
+            }).start()
+    }
+    view.isEnabled = !pressed
 }
