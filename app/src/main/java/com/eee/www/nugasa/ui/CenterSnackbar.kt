@@ -1,4 +1,4 @@
-package com.eee.www.chewchew.ui
+package com.eee.www.nugasa.ui
 
 import android.view.View
 import android.widget.TextView

@@ -1,10 +1,10 @@
-package com.eee.www.chewchew.ui
+package com.eee.www.nugasa.ui
 
 import android.content.Context
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.core.content.res.ResourcesCompat
-import com.eee.www.chewchew.R
+import com.eee.www.nugasa.R
 
 abstract class RoundedSpinner : AppCompatSpinner {
 

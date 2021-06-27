@@ -1,9 +1,9 @@
-package com.eee.www.chewchew.model
+package com.eee.www.nugasa.model
 
 import android.graphics.PointF
 import android.util.Log
 import android.view.MotionEvent
-import com.eee.www.chewchew.utils.TAG
+import com.eee.www.nugasa.utils.TAG
 
 class FingerMap {
     companion object {

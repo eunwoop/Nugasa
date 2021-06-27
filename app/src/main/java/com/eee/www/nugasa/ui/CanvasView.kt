@@ -1,4 +1,4 @@
-package com.eee.www.chewchew.ui
+package com.eee.www.nugasa.ui
 
 import android.content.Context
 import android.graphics.Canvas
@@ -10,28 +10,28 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import androidx.lifecycle.MutableLiveData
-import com.eee.www.chewchew.MainActivity
-import com.eee.www.chewchew.R
-import com.eee.www.chewchew.model.FingerMap
-import com.eee.www.chewchew.ui.CanvasView.Constants.ANIM_REPEAT_DELAYED_MILLIS
-import com.eee.www.chewchew.ui.CanvasView.Constants.ANIM_START_DELAYED_MILLIS
-import com.eee.www.chewchew.ui.CanvasView.Constants.CIRCLE_SIZE_MAX_PX
-import com.eee.www.chewchew.ui.CanvasView.Constants.CIRCLE_SIZE_PX
-import com.eee.www.chewchew.ui.CanvasView.Constants.CIRCLE_SIZE_SELECTED_PX
-import com.eee.www.chewchew.ui.CanvasView.Constants.MESSAGE_ANIM
-import com.eee.www.chewchew.ui.CanvasView.Constants.MESSAGE_PICK
-import com.eee.www.chewchew.ui.CanvasView.Constants.MESSAGE_RESET
-import com.eee.www.chewchew.ui.CanvasView.Constants.MESSAGE_SNACKBAR
-import com.eee.www.chewchew.ui.CanvasView.Constants.PICK_DELAYED_MILLIS
-import com.eee.www.chewchew.ui.CanvasView.Constants.SNACKBAR_DELAYED_MILLIS
-import com.eee.www.chewchew.ui.CanvasView.Constants.PICK_RESET_DELAYED_MILLIS
-import com.eee.www.chewchew.ui.CanvasView.Constants.RANK_TEXT_SIZE
-import com.eee.www.chewchew.ui.CanvasView.Constants.SOUND_DELAYED_MILLIS
-import com.eee.www.chewchew.ui.CanvasView.Constants.TEAM_RESET_DELAYED_MILLIS
-import com.eee.www.chewchew.utils.FingerColors
-import com.eee.www.chewchew.utils.SoundEffector
-import com.eee.www.chewchew.utils.TAG
-import com.eee.www.chewchew.utils.ViewUtils
+import com.eee.www.nugasa.MainActivity
+import com.eee.www.nugasa.R
+import com.eee.www.nugasa.model.FingerMap
+import com.eee.www.nugasa.ui.CanvasView.Constants.ANIM_REPEAT_DELAYED_MILLIS
+import com.eee.www.nugasa.ui.CanvasView.Constants.ANIM_START_DELAYED_MILLIS
+import com.eee.www.nugasa.ui.CanvasView.Constants.CIRCLE_SIZE_MAX_PX
+import com.eee.www.nugasa.ui.CanvasView.Constants.CIRCLE_SIZE_PX
+import com.eee.www.nugasa.ui.CanvasView.Constants.CIRCLE_SIZE_SELECTED_PX
+import com.eee.www.nugasa.ui.CanvasView.Constants.MESSAGE_ANIM
+import com.eee.www.nugasa.ui.CanvasView.Constants.MESSAGE_PICK
+import com.eee.www.nugasa.ui.CanvasView.Constants.MESSAGE_RESET
+import com.eee.www.nugasa.ui.CanvasView.Constants.MESSAGE_SNACKBAR
+import com.eee.www.nugasa.ui.CanvasView.Constants.PICK_DELAYED_MILLIS
+import com.eee.www.nugasa.ui.CanvasView.Constants.SNACKBAR_DELAYED_MILLIS
+import com.eee.www.nugasa.ui.CanvasView.Constants.PICK_RESET_DELAYED_MILLIS
+import com.eee.www.nugasa.ui.CanvasView.Constants.RANK_TEXT_SIZE
+import com.eee.www.nugasa.ui.CanvasView.Constants.SOUND_DELAYED_MILLIS
+import com.eee.www.nugasa.ui.CanvasView.Constants.TEAM_RESET_DELAYED_MILLIS
+import com.eee.www.nugasa.utils.FingerColors
+import com.eee.www.nugasa.utils.SoundEffector
+import com.eee.www.nugasa.utils.TAG
+import com.eee.www.nugasa.utils.ViewUtils
 import kotlin.properties.Delegates
 
 class CanvasView : View, Handler.Callback {
