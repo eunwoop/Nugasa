@@ -10,7 +10,7 @@ android {
     buildToolsVersion "30.0.3"
 
     defaultConfig {
-        applicationId "com.eee.www.chewchew"
+        applicationId "com.eee.www.nugasa"
         minSdkVersion 21
         targetSdkVersion 30
         versionCode 1
