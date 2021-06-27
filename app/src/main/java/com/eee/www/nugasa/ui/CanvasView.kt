@@ -194,9 +194,6 @@ class CanvasView : View, Handler.Callback {
     }
 
     private fun canSelect(): Boolean {
-        if (mode == MainActivity.Constants.MENU_RANK) {
-            return true;
-        }
         return touchPointMap.size > fingerCount
     }
 

@@ -117,31 +117,27 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initObservers() {
-        val fingerCountObserver = Observer<Int> { count -> canvasView.fingerCount = count }
         val modeObserver = Observer<Int> { position ->
             when (position) {
                 Constants.MENU_PICK -> {
                     pickCountSpinner.show()
                     teamCountSpinner.hide()
-                    viewModel.pickCount.observe(this, fingerCountObserver)
-                    viewModel.teamCount.removeObservers(this)
                 }
                 Constants.MENU_TEAM -> {
                     pickCountSpinner.hide()
                     teamCountSpinner.show()
-                    viewModel.pickCount.removeObservers(this)
-                    viewModel.teamCount.observe(this, fingerCountObserver)
                 }
                 Constants.MENU_RANK -> {
                     pickCountSpinner.hide()
                     teamCountSpinner.hide()
-                    viewModel.pickCount.removeObservers(this)
-                    viewModel.teamCount.removeObservers(this)
                 }
             }
             canvasView.mode = position
         }
         viewModel.menuPosition.observe(this, modeObserver)
+
+        val fingerCountObserver = Observer<Int> { count -> canvasView.fingerCount = count }
+        viewModel.fingerCount.observe(this, fingerCountObserver)
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -156,7 +152,7 @@ class MainActivity : AppCompatActivity() {
             if (controller != null) {
                 controller.hide(WindowInsets.Type.statusBars())
                 controller.systemBarsBehavior =
-                        WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                    WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
             }
         } else {
             window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_FULLSCREEN
