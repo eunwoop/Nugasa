@@ -9,6 +9,7 @@ class FingerMap {
     companion object {
         private const val MAX_SIZE = 10
     }
+
     private val _map = mutableMapOf<Int, PointF>()
     val map
         get() = _map as Map<Int, PointF>
@@ -44,53 +45,48 @@ class FingerMap {
     fun isFull() = size == MAX_SIZE
 
     fun select(n: Int): List<Int> {
-        val selected = mutableListOf<Int>()
-        for (pointerId in _map.keys) {
-            selected.add(pointerId)
-        }
-        selected.shuffle()
+        val selected = shuffleList()
         for (i in 0 until (_map.size - n)) {
             selected.removeAt(0)
         }
         return selected
     }
 
-    fun selectTeam(n: Int): MutableMap<Int, Int> {
-        val tempList = mutableListOf<Int>() // to shuffle
-        for (key in _map.keys) {
-            tempList.add(key)
-        }
-        tempList.shuffle()
+    fun selectTeam(n: Int): Map<Int, Int> {
+        var teamId: Int
+        val numOfOneTeam = _map.size / n
 
-        var teamId: Int;
-        val numOfOneTeam = _map.size / n;
-
+        val tempList = shuffleList()
         val teamMap = mutableMapOf<Int, Int>()
         for (i in 0 until tempList.size) {
             teamId = i / numOfOneTeam
-            teamMap.put(tempList[i], if (teamId < n) teamId else -1)
+            teamMap[tempList[i]] = if (teamId < n) teamId else -1
         }
         teamId = 0
         teamMap.forEach {
-            if (teamMap.get(it.key) == -1) {
-                teamMap.put(it.key, teamId++)
+            if (teamMap[it.key] == -1) {
+                teamMap[it.key] = teamId++
             }
-            //Log.d(TAG, "tempMap: ${it.key}, ${it.value}")
         }
         return teamMap
     }
 
-    fun selectRank(): MutableMap<Int, Int> {
-        val tempList = mutableListOf<Int>() // to shuffle
+    fun selectRank(): Map<Int, Int> {
+        val tempList = shuffleList()
         val rankMap = mutableMapOf<Int, Int>()
-        for (key in _map.keys) {
-            tempList.add(key)
-        }
-        tempList.shuffle()
         _map.forEach {
-            rankMap.put(it.key, tempList[it.key] + 1) // +1 is for except 0
+            rankMap[it.key] = tempList[it.key] + 1 // +1 is for except 0
         }
         return rankMap
+    }
+
+    private fun shuffleList(): MutableList<Int> {
+        val list = mutableListOf<Int>()
+        for (pointerId in _map.keys) {
+            list.add(pointerId)
+        }
+        list.shuffle()
+        return list
     }
 
     fun print() {
