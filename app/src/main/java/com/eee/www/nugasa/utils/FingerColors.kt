@@ -1,8 +1,8 @@
-package com.eee.www.chewchew.utils
+package com.eee.www.nugasa.utils
 
 import android.content.Context
 import androidx.core.content.res.ResourcesCompat
-import com.eee.www.chewchew.R
+import com.eee.www.nugasa.R
 
 object FingerColors {
 

@@ -1,4 +1,4 @@
-package com.eee.www.chewchew.utils
+package com.eee.www.nugasa.utils
 
 import android.content.Context
 import android.media.AudioAttributes
@@ -6,9 +6,9 @@ import android.media.SoundPool
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
-import com.eee.www.chewchew.utils.SoundEffector.Constants.ASSET_SELECT
-import com.eee.www.chewchew.utils.SoundEffector.Constants.ASSET_SELECT_TRIGGER
-import com.eee.www.chewchew.utils.SoundEffector.Constants.MESSAGE_PLAY
+import com.eee.www.nugasa.utils.SoundEffector.Constants.ASSET_SELECT
+import com.eee.www.nugasa.utils.SoundEffector.Constants.ASSET_SELECT_TRIGGER
+import com.eee.www.nugasa.utils.SoundEffector.Constants.MESSAGE_PLAY
 import kotlin.properties.Delegates
 
 class SoundEffector(context: Context) : Handler.Callback {

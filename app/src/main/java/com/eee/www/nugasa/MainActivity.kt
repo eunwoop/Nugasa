@@ -1,4 +1,4 @@
-package com.eee.www.chewchew
+package com.eee.www.nugasa
 
 import android.animation.ObjectAnimator
 import android.os.Build
@@ -11,8 +11,8 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
-import com.eee.www.chewchew.databinding.ActivityMainBinding
-import com.eee.www.chewchew.viewmodels.MainActivityViewModel
+import com.eee.www.nugasa.databinding.ActivityMainBinding
+import com.eee.www.nugasa.viewmodels.MainActivityViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
