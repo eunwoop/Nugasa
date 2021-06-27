@@ -29,7 +29,7 @@ class MainActivityViewModel(private val savedStateHandle: SavedStateHandle) : Vi
         const val DEFAULT_TEAM_COUNT = 2
     }
 
-    val menuPosition
+    val menuPosition: LiveData<Int>
         get() = savedStateHandle.getLiveData(MENU_POSITION_KEY, DEFAULT_MENU_POSITION)
     val fingerCount: LiveData<Int>
         get() = switchMap(menuPosition) {
@@ -39,9 +39,9 @@ class MainActivityViewModel(private val savedStateHandle: SavedStateHandle) : Vi
                 else -> MutableLiveData(1)
             }
         }
-    val pickCount
+    val pickCount: LiveData<Int>
         get() = savedStateHandle.getLiveData(PICK_COUNT_KEY, DEFAULT_PICK_COUNT)
-    val teamCount
+    val teamCount: LiveData<Int>
         get() = savedStateHandle.getLiveData(TEAM_COUNT_KEY, DEFAULT_TEAM_COUNT)
 
     fun setMenuPosition(position: Int) {

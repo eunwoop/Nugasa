@@ -31,7 +31,7 @@
                 android:layout_height="50dp"
                 app:position="@{viewModel.menuPosition}" />
 
-            <com.eee.www.nugasa.ui.CountSpinner
+            <com.eee.www.nugasa.ui.PickCountSpinner
                 android:id="@+id/pickCountSpinner"
                 max="5"
                 min="1"
@@ -39,7 +39,7 @@
                 android:layout_height="50dp"
                 app:item="@{viewModel.pickCount}" />
 
-            <com.eee.www.nugasa.ui.CountSpinner
+            <com.eee.www.nugasa.ui.TeamCountSpinner
                 android:id="@+id/teamCountSpinner"
                 max="5"
                 min="2"

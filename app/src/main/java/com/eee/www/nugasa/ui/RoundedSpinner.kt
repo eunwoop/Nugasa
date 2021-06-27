@@ -10,11 +10,13 @@ abstract class RoundedSpinner : AppCompatSpinner {
 
     constructor(context: Context) : super(context) {
         initView()
+        initOnItemSelectedListener()
     }
 
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
         initView()
         attrs?.also { setAttributes(it) }
+        initOnItemSelectedListener()
     }
 
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
@@ -24,6 +26,7 @@ abstract class RoundedSpinner : AppCompatSpinner {
     ) {
         initView()
         attrs?.also { setAttributes(it) }
+        initOnItemSelectedListener()
     }
 
     private fun initView() {
@@ -32,6 +35,8 @@ abstract class RoundedSpinner : AppCompatSpinner {
     }
 
     protected abstract fun setAttributes(attrs: AttributeSet)
+
+    protected abstract fun initOnItemSelectedListener()
 
     fun show() {
         isEnabled = true
