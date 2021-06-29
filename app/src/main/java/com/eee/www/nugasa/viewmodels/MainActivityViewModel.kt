@@ -1,10 +1,12 @@
 package com.eee.www.nugasa.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.Transformations.switchMap
 import androidx.lifecycle.ViewModel
+import com.eee.www.nugasa.utils.TAG
 import com.eee.www.nugasa.viewmodels.MainActivityViewModel.Constants.DEFAULT_MENU_POSITION
 import com.eee.www.nugasa.viewmodels.MainActivityViewModel.Constants.DEFAULT_PICK_COUNT
 import com.eee.www.nugasa.viewmodels.MainActivityViewModel.Constants.DEFAULT_TEAM_COUNT
@@ -43,6 +45,7 @@ class MainActivityViewModel(private val savedStateHandle: SavedStateHandle) : Vi
         get() = savedStateHandle.getLiveData(PICK_COUNT_KEY, DEFAULT_PICK_COUNT)
     val teamCount: LiveData<Int>
         get() = savedStateHandle.getLiveData(TEAM_COUNT_KEY, DEFAULT_TEAM_COUNT)
+    var fingerPressed = MutableLiveData(false)
 
     fun setMenuPosition(position: Int) {
         savedStateHandle.set(MENU_POSITION_KEY, position)
@@ -54,5 +57,9 @@ class MainActivityViewModel(private val savedStateHandle: SavedStateHandle) : Vi
 
     fun setTeamCount(position: Int) {
         savedStateHandle.set(TEAM_COUNT_KEY, position)
+    }
+
+    fun setFingerPressed(pressed: Boolean) {
+        fingerPressed.value = pressed
     }
 }

@@ -9,7 +9,7 @@ import com.eee.www.nugasa.R
 
 class MenuSpinner : RoundedSpinner, MediatedView {
 
-    override lateinit var mediator: Mediator
+    override var mediator: Mediator? = null
 
     constructor(context: Context) : super(context)
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
@@ -34,7 +34,7 @@ class MenuSpinner : RoundedSpinner, MediatedView {
                 position: Int,
                 id: Long
             ) {
-                mediator.setMode(position)
+                mediator?.setMode(position)
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {

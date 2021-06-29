@@ -9,7 +9,6 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
-import androidx.lifecycle.MutableLiveData
 import com.eee.www.nugasa.MainActivity
 import com.eee.www.nugasa.R
 import com.eee.www.nugasa.model.FingerMap
@@ -34,7 +33,7 @@ import com.eee.www.nugasa.utils.TAG
 import com.eee.www.nugasa.utils.ViewUtils
 import kotlin.properties.Delegates
 
-class CanvasView : View, Handler.Callback {
+class CanvasView : View, Handler.Callback, MediatedView {
     private object Constants {
         const val CIRCLE_SIZE_PX = 50
         const val CIRCLE_SIZE_MAX_PX = 60
@@ -55,7 +54,8 @@ class CanvasView : View, Handler.Callback {
         const val SNACKBAR_DELAYED_MILLIS = 2000L
     }
 
-    val fingerPressed = MutableLiveData<Boolean>()
+    override var mediator: Mediator? = null
+
     var fingerCount = 1
     var mode = 0
 
@@ -83,7 +83,7 @@ class CanvasView : View, Handler.Callback {
     }
 
     private fun resetAll() {
-        fingerPressed.value = false
+        mediator?.setPressed(false)
         touchPointMap = FingerMap()
         selectedPointList = listOf()
         shouldKeepDrawn = false
@@ -144,7 +144,7 @@ class CanvasView : View, Handler.Callback {
         }
         // first touch!
         if (touchPointMap.isEmpty()) {
-            fingerPressed.value = true
+            mediator?.setPressed(true)
         }
         val pointerId = touchPointMap.add(event)
         Log.d(TAG, "addNewPoint : $pointerId")

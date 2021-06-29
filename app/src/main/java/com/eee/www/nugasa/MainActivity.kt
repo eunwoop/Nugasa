@@ -1,6 +1,5 @@
 package com.eee.www.nugasa
 
-import android.animation.ObjectAnimator
 import android.os.Build
 import android.os.Bundle
 import android.view.View
@@ -28,7 +27,6 @@ class MainActivity : AppCompatActivity(), Mediator {
         super.onCreate(savedInstanceState)
 
         bindData()
-        initCanvasView()
         initMediator()
         initOnDataChanged()
     }
@@ -37,35 +35,14 @@ class MainActivity : AppCompatActivity(), Mediator {
         val binding: ActivityMainBinding =
             DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.viewModel = viewModel
-    }
-
-    private fun initCanvasView() {
-        canvasView.fingerPressed.observe(
-            this,
-            Observer { fingerPressed ->
-                menuLayout.apply {
-                    (if (fingerPressed)
-                        ObjectAnimator.ofFloat(this, "alpha", 1f, 0f).apply {
-                            duration = 500
-                        }
-                    else
-                        ObjectAnimator.ofFloat(this, "alpha", 0f, 1f).apply {
-                            duration = 500
-                        }).start()
-                }
-                menuSpinner.isEnabled = !fingerPressed
-                pickCountSpinner.isEnabled = !fingerPressed
-                teamCountSpinner.isEnabled = !fingerPressed
-                // appears only once
-                if (fingerPressed)
-                    helpTextView.visibility = View.GONE
-            })
+        binding.lifecycleOwner = this
     }
 
     private fun initMediator() {
         menuSpinner.mediator = this
         pickCountSpinner.mediator = this
         teamCountSpinner.mediator = this
+        canvasView.mediator = this
     }
 
     override fun initOnDataChanged() {
@@ -102,6 +79,10 @@ class MainActivity : AppCompatActivity(), Mediator {
 
     override fun setTeamCount(count: Int) {
         viewModel.setTeamCount(count)
+    }
+
+    override fun setPressed(pressed: Boolean) {
+        viewModel.setFingerPressed(pressed)
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {

@@ -31,7 +31,7 @@ abstract class CountSpinner : RoundedSpinner, MediatedView {
 
 class PickCountSpinner : CountSpinner {
 
-    override lateinit var mediator: Mediator
+    override var mediator: Mediator? = null
 
     constructor(context: Context) : super(context)
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
@@ -50,7 +50,7 @@ class PickCountSpinner : CountSpinner {
                 id: Long
             ) {
                 val item = getItemAtPosition(position) as Int
-                mediator.setPickCount(item)
+                mediator?.setPickCount(item)
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -61,7 +61,7 @@ class PickCountSpinner : CountSpinner {
 
 class TeamCountSpinner : CountSpinner {
 
-    override lateinit var mediator: Mediator
+    override var mediator: Mediator? = null
 
     constructor(context: Context) : super(context)
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
@@ -80,7 +80,7 @@ class TeamCountSpinner : CountSpinner {
                 id: Long
             ) {
                 val item = getItemAtPosition(position) as Int
-                mediator.setTeamCount(item)
+                mediator?.setTeamCount(item)
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {

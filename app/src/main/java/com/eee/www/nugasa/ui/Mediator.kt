@@ -9,4 +9,6 @@ interface Mediator {
     fun setPickCount(count: Int)
 
     fun setTeamCount(count: Int)
+
+    fun setPressed(pressed: Boolean)
 }

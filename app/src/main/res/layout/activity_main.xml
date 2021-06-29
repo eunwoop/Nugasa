@@ -29,7 +29,8 @@
                 android:id="@+id/menuSpinner"
                 android:layout_width="100dp"
                 android:layout_height="50dp"
-                app:position="@{viewModel.menuPosition}" />
+                app:position="@{viewModel.menuPosition}"
+                app:pressed="@{viewModel.fingerPressed}" />
 
             <com.eee.www.nugasa.ui.PickCountSpinner
                 android:id="@+id/pickCountSpinner"
@@ -37,7 +38,8 @@
                 min="1"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                app:item="@{viewModel.pickCount}" />
+                app:item="@{viewModel.pickCount}"
+                app:pressed="@{viewModel.fingerPressed}" />
 
             <com.eee.www.nugasa.ui.TeamCountSpinner
                 android:id="@+id/teamCountSpinner"
@@ -45,7 +47,8 @@
                 min="2"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                app:item="@{viewModel.teamCount}" />
+                app:item="@{viewModel.teamCount}"
+                app:pressed="@{viewModel.fingerPressed}" />
         </LinearLayout>
 
         <TextView
@@ -57,7 +60,8 @@
             app:layout_constraintBottom_toBottomOf="@+id/canvasView"
             app:layout_constraintEnd_toEndOf="@+id/canvasView"
             app:layout_constraintStart_toStartOf="@+id/canvasView"
-            app:layout_constraintTop_toTopOf="@+id/menuLayout" />
+            app:layout_constraintTop_toTopOf="@+id/menuLayout"
+            app:pressed="@{viewModel.fingerPressed}" />
 
         <com.eee.www.nugasa.ui.CanvasView
             android:id="@+id/canvasView"
