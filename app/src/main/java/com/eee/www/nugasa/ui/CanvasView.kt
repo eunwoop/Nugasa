@@ -60,7 +60,7 @@ class CanvasView : View, Handler.Callback, MediatedView {
     var mode = 0
 
     private lateinit var touchPointMap: FingerMap
-    private lateinit var selectedPointList: List<Int>
+    private lateinit var selectedPickMap: Map<Int, Int>
     private lateinit var selectedTeamMap: Map<Int, Int>
     private lateinit var selectedRankMap: Map<Int, Int>
 
@@ -85,7 +85,6 @@ class CanvasView : View, Handler.Callback, MediatedView {
     private fun resetAll() {
         mediator?.setPressed(false)
         touchPointMap = FingerMap()
-        selectedPointList = listOf()
         shouldKeepDrawn = false
         circleSize = MIN_CIRCLE_SIZE
         shuffleColor()
@@ -139,7 +138,7 @@ class CanvasView : View, Handler.Callback, MediatedView {
     }
 
     private fun addNewPoint(event: MotionEvent) {
-        if (isFingerSelected() || touchPointMap.isFull()) {
+        if (touchPointMap.isFull()) {
             return
         }
         // first touch!
@@ -151,7 +150,7 @@ class CanvasView : View, Handler.Callback, MediatedView {
     }
 
     private fun isFingerSelected(): Boolean {
-        return selectedPointList.isNotEmpty()
+        return selectedPickMap.isNotEmpty()
     }
 
     private fun stopPressedJobs() {
@@ -214,9 +213,6 @@ class CanvasView : View, Handler.Callback, MediatedView {
     }
 
     private fun movePoint(event: MotionEvent) {
-        if (isFingerSelected()) {
-            return
-        }
         touchPointMap.move(event)
         Log.d(TAG, "movePoint")
     }
@@ -266,7 +262,7 @@ class CanvasView : View, Handler.Callback, MediatedView {
             MainActivity.Constants.MENU_PICK -> {
                 circleSize = SELECTED_CIRCLE_SIZE
                 touchPointMap.map.forEach {
-                    val isSelected = selectedPointList.contains(it.key)
+                    val isSelected = selectedPickMap[it.key] == 1
                     if (isSelected) {
                         drawCircle(canvas, it.key, it.value)
                     }
@@ -274,7 +270,7 @@ class CanvasView : View, Handler.Callback, MediatedView {
             }
             MainActivity.Constants.MENU_TEAM -> {
                 touchPointMap.map.forEach {
-                    val team = selectedTeamMap.get(it.key) ?: 0
+                    val team = selectedTeamMap[it.key] ?: 0
                     val teamColor = FingerColors.randomColor(team)
                     drawCircle(canvas, it.key, it.value, teamColor)
                 }
@@ -353,7 +349,7 @@ class CanvasView : View, Handler.Callback, MediatedView {
     }
 
     private fun pickN(n: Int) {
-        selectedPointList = touchPointMap.select(n)
+        selectedPickMap = touchPointMap.select(n)
     }
 
     private fun pickTeam(n: Int) {

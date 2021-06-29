@@ -44,12 +44,13 @@ class FingerMap {
 
     fun isFull() = size == MAX_SIZE
 
-    fun select(n: Int): List<Int> {
-        val selected = shuffleList()
-        for (i in 0 until (_map.size - n)) {
-            selected.removeAt(0)
+    fun select(n: Int): Map<Int, Int> {
+        val tempList = shuffleList()
+        val pickMap = mutableMapOf<Int, Int>()
+        for (i in 0 until tempList.size) {
+            pickMap[tempList[i]] = if (i < n) 1 else 0
         }
-        return selected
+        return pickMap
     }
 
     fun selectTeam(n: Int): Map<Int, Int> {
