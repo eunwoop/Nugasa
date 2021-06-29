@@ -1,4 +1,4 @@
-package com.eee.www.chewchew.utils
+package com.eee.www.nugasa.utils
 
 val Any.TAG: String
     get() {

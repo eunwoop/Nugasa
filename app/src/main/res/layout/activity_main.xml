@@ -6,7 +6,7 @@
 
         <variable
             name="viewModel"
-            type="com.eee.www.chewchew.viewmodels.MainActivityViewModel" />
+            type="com.eee.www.nugasa.viewmodels.MainActivityViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -25,13 +25,13 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <com.eee.www.chewchew.ui.MenuSpinner
+            <com.eee.www.nugasa.ui.MenuSpinner
                 android:id="@+id/menuSpinner"
                 android:layout_width="100dp"
                 android:layout_height="50dp"
                 app:position="@{viewModel.menuPosition}" />
 
-            <com.eee.www.chewchew.ui.CountSpinner
+            <com.eee.www.nugasa.ui.CountSpinner
                 android:id="@+id/pickCountSpinner"
                 max="5"
                 min="1"
@@ -39,7 +39,7 @@
                 android:layout_height="50dp"
                 app:item="@{viewModel.pickCount}" />
 
-            <com.eee.www.chewchew.ui.CountSpinner
+            <com.eee.www.nugasa.ui.CountSpinner
                 android:id="@+id/teamCountSpinner"
                 max="5"
                 min="2"
@@ -59,7 +59,7 @@
             app:layout_constraintStart_toStartOf="@+id/canvasView"
             app:layout_constraintTop_toTopOf="@+id/menuLayout" />
 
-        <com.eee.www.chewchew.ui.CanvasView
+        <com.eee.www.nugasa.ui.CanvasView
             android:id="@+id/canvasView"
             android:layout_width="0dp"
             android:layout_height="0dp"
