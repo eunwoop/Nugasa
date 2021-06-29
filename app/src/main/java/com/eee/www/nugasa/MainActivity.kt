@@ -1,14 +1,18 @@
 package com.eee.www.nugasa
 
+import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.WindowInsets
 import android.view.WindowInsetsController
+import android.view.animation.AccelerateInterpolator
+import android.view.animation.DecelerateInterpolator
 import android.widget.AdapterView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatSpinner
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.eee.www.nugasa.databinding.ActivityMainBinding
@@ -48,15 +52,22 @@ class MainActivity : AppCompatActivity() {
             this,
             Observer { fingerPressed ->
                 menuLayout.apply {
-                    (if (fingerPressed)
-                        ObjectAnimator.ofFloat(this, "alpha", 1f, 0f).apply {
-                            duration = 500
-                        }
-                    else
-                        ObjectAnimator.ofFloat(this, "alpha", 0f, 1f).apply {
-                            duration = 500
-                        }).start()
+                    val alphaAnim = (if (fingerPressed)
+                        ObjectAnimator.ofFloat(this, AppCompatSpinner.ALPHA, 1f, 0f)
+                        else ObjectAnimator.ofFloat(this, AppCompatSpinner.ALPHA, 0f, 1f))
+
+                    val transAnim = (if (fingerPressed)
+                        ObjectAnimator.ofFloat(this, AppCompatSpinner.TRANSLATION_Y, -100f)
+                        else ObjectAnimator.ofFloat(this, AppCompatSpinner.TRANSLATION_Y, 100f))
+
+                    transAnim.interpolator = AccelerateInterpolator(3f)
+
+                    val animatorSet = AnimatorSet()
+                    animatorSet.playTogether(alphaAnim, transAnim)
+                    animatorSet.duration = 500
+                    animatorSet.start()
                 }
+
                 menuSpinner.isEnabled = !fingerPressed
                 pickCountSpinner.isEnabled = !fingerPressed
                 teamCountSpinner.isEnabled = !fingerPressed
@@ -122,12 +133,12 @@ class MainActivity : AppCompatActivity() {
             when (position) {
                 Constants.MENU_PICK -> {
                     pickCountSpinner.show()
-                    teamCountSpinner.hide()
+                    teamCountSpinner.gone()
                     viewModel.pickCount.observe(this, fingerCountObserver)
                     viewModel.teamCount.removeObservers(this)
                 }
                 Constants.MENU_TEAM -> {
-                    pickCountSpinner.hide()
+                    pickCountSpinner.gone()
                     teamCountSpinner.show()
                     viewModel.pickCount.removeObservers(this)
                     viewModel.teamCount.observe(this, fingerCountObserver)

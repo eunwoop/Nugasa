@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="5dp"
+    android:background="@android:color/transparent"
+    android:gravity="center">
+    <View
+        android:layout_width="@dimen/spinner_item_circle_size"
+        android:layout_height="@dimen/spinner_item_circle_size"
+        android:background="@drawable/spinner_popup_circle_bg"/>
+    <TextView
+        android:id="@+id/textView"
+        android:textColor="@color/spinner_text_color"
+        android:singleLine="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/spinner_item_circle_text_size"
+        android:ellipsize="marquee"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:textAlignment="center" />
+</FrameLayout>

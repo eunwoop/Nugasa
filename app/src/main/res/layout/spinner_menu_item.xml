@@ -2,12 +2,12 @@
 <TextView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/textView"
-    android:textColor="@color/black"
+    android:textColor="@color/spinner_bg_color"
     android:singleLine="true"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingHorizontal="10dp"
-    android:paddingVertical="5dp"
-    android:textSize="25dp"
+    android:paddingHorizontal="20dp"
+    android:paddingVertical="10dp"
+    android:textSize="@dimen/spinner_item_text_size"
     android:ellipsize="marquee"
     android:textAlignment="center" />
