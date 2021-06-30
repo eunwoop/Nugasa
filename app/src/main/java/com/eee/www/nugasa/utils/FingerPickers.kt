@@ -4,9 +4,9 @@ import android.content.Context
 import android.graphics.Canvas
 import com.eee.www.nugasa.model.FingerMap
 
-abstract class FingerPicker(context: Context, protected val fingerMap: FingerMap) {
+abstract class FingerPicker(protected val fingerMap: FingerMap) {
 
-    open lateinit var selectedMap: Map<Int, Int>
+    lateinit var selectedMap: Map<Int, Int>
 
     abstract fun pick(count: Int)
 
@@ -17,7 +17,7 @@ abstract class FingerPicker(context: Context, protected val fingerMap: FingerMap
     abstract fun reset(context: Context)
 }
 
-class PickFingerPicker(context: Context, fingerMap: FingerMap) : FingerPicker(context, fingerMap) {
+class PickFingerPicker(context: Context, fingerMap: FingerMap) : FingerPicker(fingerMap) {
 
     private val fingerDrawer = PickFingerDrawer(context)
 
@@ -46,7 +46,7 @@ class PickFingerPicker(context: Context, fingerMap: FingerMap) : FingerPicker(co
     }
 }
 
-class TeamFingerPicker(context: Context, fingerMap: FingerMap) : FingerPicker(context, fingerMap) {
+class TeamFingerPicker(context: Context, fingerMap: FingerMap) : FingerPicker(fingerMap) {
 
     private val fingerDrawer = TeamFingerDrawer(context)
 
@@ -73,7 +73,7 @@ class TeamFingerPicker(context: Context, fingerMap: FingerMap) : FingerPicker(co
     }
 }
 
-class RankFingerPicker(context: Context, fingerMap: FingerMap) : FingerPicker(context, fingerMap) {
+class RankFingerPicker(context: Context, fingerMap: FingerMap) : FingerPicker(fingerMap) {
 
     private val fingerDrawer = RankFingerDrawer(context)
 
