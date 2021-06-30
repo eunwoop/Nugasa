@@ -40,6 +40,10 @@ class FingerMap {
         return pointerId
     }
 
+    fun clear() {
+        _map.clear()
+    }
+
     fun isEmpty() = _map.isEmpty()
 
     fun isFull() = size == MAX_SIZE

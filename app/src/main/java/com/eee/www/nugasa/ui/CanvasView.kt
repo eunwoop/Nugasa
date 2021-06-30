@@ -2,44 +2,30 @@ package com.eee.www.nugasa.ui
 
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.PointF
 import android.os.*
 import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
-import com.eee.www.nugasa.MainActivity
 import com.eee.www.nugasa.R
 import com.eee.www.nugasa.model.FingerMap
 import com.eee.www.nugasa.ui.CanvasView.Constants.ANIM_REPEAT_DELAYED_MILLIS
 import com.eee.www.nugasa.ui.CanvasView.Constants.ANIM_START_DELAYED_MILLIS
-import com.eee.www.nugasa.ui.CanvasView.Constants.CIRCLE_SIZE_MAX_PX
-import com.eee.www.nugasa.ui.CanvasView.Constants.CIRCLE_SIZE_PX
-import com.eee.www.nugasa.ui.CanvasView.Constants.CIRCLE_SIZE_SELECTED_PX
 import com.eee.www.nugasa.ui.CanvasView.Constants.MESSAGE_ANIM
 import com.eee.www.nugasa.ui.CanvasView.Constants.MESSAGE_PICK
 import com.eee.www.nugasa.ui.CanvasView.Constants.MESSAGE_RESET
 import com.eee.www.nugasa.ui.CanvasView.Constants.MESSAGE_SNACKBAR
 import com.eee.www.nugasa.ui.CanvasView.Constants.PICK_DELAYED_MILLIS
 import com.eee.www.nugasa.ui.CanvasView.Constants.SNACKBAR_DELAYED_MILLIS
-import com.eee.www.nugasa.ui.CanvasView.Constants.PICK_RESET_DELAYED_MILLIS
-import com.eee.www.nugasa.ui.CanvasView.Constants.RANK_TEXT_SIZE
+import com.eee.www.nugasa.ui.CanvasView.Constants.RESET_DELAYED_MILLIS
 import com.eee.www.nugasa.ui.CanvasView.Constants.SOUND_DELAYED_MILLIS
-import com.eee.www.nugasa.ui.CanvasView.Constants.TEAM_RESET_DELAYED_MILLIS
-import com.eee.www.nugasa.utils.FingerColors
+import com.eee.www.nugasa.utils.FingerPicker
 import com.eee.www.nugasa.utils.SoundEffector
 import com.eee.www.nugasa.utils.TAG
-import com.eee.www.nugasa.utils.ViewUtils
 import kotlin.properties.Delegates
 
 class CanvasView : View, Handler.Callback, MediatedView {
     private object Constants {
-        const val CIRCLE_SIZE_PX = 50
-        const val CIRCLE_SIZE_MAX_PX = 60
-        const val CIRCLE_SIZE_SELECTED_PX = 100
-        const val RANK_TEXT_SIZE = 80F
-
         const val MESSAGE_PICK = 0
         const val MESSAGE_ANIM = 1
         const val MESSAGE_RESET = 2
@@ -48,50 +34,33 @@ class CanvasView : View, Handler.Callback, MediatedView {
         const val PICK_DELAYED_MILLIS = 3000L
         const val ANIM_START_DELAYED_MILLIS = 300L
         const val ANIM_REPEAT_DELAYED_MILLIS = 15L
-        const val PICK_RESET_DELAYED_MILLIS = 2000L
-        const val TEAM_RESET_DELAYED_MILLIS = 4000L
+        const val RESET_DELAYED_MILLIS = 3000L
         const val SOUND_DELAYED_MILLIS = 1000L
         const val SNACKBAR_DELAYED_MILLIS = 2000L
     }
 
     override var mediator: Mediator? = null
 
+    lateinit var fingerPicker: FingerPicker
     var fingerCount = 1
-    var mode = 0
 
-    private lateinit var touchPointMap: FingerMap
-    private lateinit var selectedPickMap: Map<Int, Int>
-    private lateinit var selectedTeamMap: Map<Int, Int>
-    private lateinit var selectedRankMap: Map<Int, Int>
+    val fingerMap = FingerMap()
 
     private val eventHandler = Handler(Looper.getMainLooper(), this)
 
-    private val paint = Paint()
     private var shouldKeepDrawn by Delegates.notNull<Boolean>()
-
-    private val MIN_CIRCLE_SIZE = ViewUtils.dpToPx(context, CIRCLE_SIZE_PX.toFloat())
-    private val MAX_CIRCLE_SIZE = ViewUtils.dpToPx(context, CIRCLE_SIZE_MAX_PX.toFloat())
-    private val SELECTED_CIRCLE_SIZE = ViewUtils.dpToPx(context, CIRCLE_SIZE_SELECTED_PX.toFloat())
-    private var circleSize by Delegates.notNull<Float>()
 
     private val soundEffector = SoundEffector(context)
     private val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
     init {
         resetAll()
-        paint.isAntiAlias = true
     }
 
     private fun resetAll() {
         mediator?.setPressed(false)
-        touchPointMap = FingerMap()
+        fingerMap.clear()
         shouldKeepDrawn = false
-        circleSize = MIN_CIRCLE_SIZE
-        shuffleColor()
-    }
-
-    private fun shuffleColor() {
-        FingerColors.shuffle(context)
     }
 
     constructor(context: Context) : super(context)
@@ -138,19 +107,15 @@ class CanvasView : View, Handler.Callback, MediatedView {
     }
 
     private fun addNewPoint(event: MotionEvent) {
-        if (touchPointMap.isFull()) {
+        if (fingerMap.isFull()) {
             return
         }
         // first touch!
-        if (touchPointMap.isEmpty()) {
+        if (fingerMap.isEmpty()) {
             mediator?.setPressed(true)
         }
-        val pointerId = touchPointMap.add(event)
+        val pointerId = fingerMap.add(event)
         Log.d(TAG, "addNewPoint : $pointerId")
-    }
-
-    private fun isFingerSelected(): Boolean {
-        return selectedPickMap.isNotEmpty()
     }
 
     private fun stopPressedJobs() {
@@ -193,7 +158,7 @@ class CanvasView : View, Handler.Callback, MediatedView {
     }
 
     private fun canSelect(): Boolean {
-        return touchPointMap.size > fingerCount
+        return fingerMap.size > fingerCount
     }
 
     private fun triggerSound() {
@@ -213,17 +178,17 @@ class CanvasView : View, Handler.Callback, MediatedView {
     }
 
     private fun movePoint(event: MotionEvent) {
-        touchPointMap.move(event)
+        fingerMap.move(event)
         Log.d(TAG, "movePoint")
     }
 
     private fun removePoint(event: MotionEvent) {
-        val pointerId = touchPointMap.remove(event)
+        val pointerId = fingerMap.remove(event)
         Log.d(TAG, "removePoint : $pointerId")
     }
 
     private fun resetAllIfEmptyPoint(): Boolean {
-        if (touchPointMap.isEmpty()) {
+        if (fingerMap.isEmpty()) {
             resetAll()
             return true
         }
@@ -233,75 +198,9 @@ class CanvasView : View, Handler.Callback, MediatedView {
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         if (shouldKeepDrawn) {
-            drawSelected(canvas)
+            fingerPicker.drawSelected(canvas)
         } else {
-            drawAll(canvas)
-        }
-    }
-
-    private fun drawAll(canvas: Canvas) {
-        circleSize = if (circleSize >= MAX_CIRCLE_SIZE) MIN_CIRCLE_SIZE else circleSize
-        val grayColor = resources.getColor(R.color.gray)
-        touchPointMap.map.forEach {
-            when(mode) {
-                MainActivity.Constants.MENU_PICK -> {
-                    drawCircle(canvas, it.key, it.value)
-                }
-                MainActivity.Constants.MENU_TEAM -> {
-                    drawCircle(canvas, it.key, it.value, grayColor)
-                }
-                MainActivity.Constants.MENU_RANK -> {
-                    drawCircle(canvas, it.key, it.value)
-                }
-            }
-        }
-    }
-
-    private fun drawSelected(canvas: Canvas) {
-        when(mode){
-            MainActivity.Constants.MENU_PICK -> {
-                circleSize = SELECTED_CIRCLE_SIZE
-                touchPointMap.map.forEach {
-                    val isSelected = selectedPickMap[it.key] == 1
-                    if (isSelected) {
-                        drawCircle(canvas, it.key, it.value)
-                    }
-                }
-            }
-            MainActivity.Constants.MENU_TEAM -> {
-                touchPointMap.map.forEach {
-                    val team = selectedTeamMap[it.key] ?: 0
-                    val teamColor = FingerColors.randomColor(team)
-                    drawCircle(canvas, it.key, it.value, teamColor)
-                }
-            }
-            MainActivity.Constants.MENU_RANK -> {
-                touchPointMap.map.forEach {
-                    drawCircle(canvas, it.key, it.value)
-                }
-                touchPointMap.map.forEach {
-                    drawNumber(canvas, it.key, it.value)
-                }
-            }
-        }
-    }
-
-    private fun drawCircle(canvas: Canvas, pointerId: Int, point: PointF?) {
-        paint.color = FingerColors.randomColor(pointerId)
-        point?.also { canvas.drawCircle(it.x, it.y, circleSize, paint) }
-    }
-
-    private fun drawCircle(canvas: Canvas, pointerId: Int, point: PointF?, color: Int) {
-        paint.color = color
-        point?.also { canvas.drawCircle(it.x, it.y, circleSize, paint) }
-    }
-
-    private fun drawNumber(canvas: Canvas, pointerId: Int, point: PointF?) {
-        paint.color = resources.getColor(R.color.rank_text_color)
-        point?.also {
-            paint.textSize = RANK_TEXT_SIZE;
-            canvas.drawText(selectedRankMap[pointerId].toString(),
-                it.x-15F, it.y - circleSize -5, paint);
+            fingerPicker.draw(canvas)
         }
     }
 
@@ -338,26 +237,7 @@ class CanvasView : View, Handler.Callback, MediatedView {
     }
 
     private fun doPick(fingerCount: Int) {
-        when (mode) {
-            MainActivity.Constants.MENU_PICK ->
-                pickN(fingerCount)
-            MainActivity.Constants.MENU_TEAM ->
-                pickTeam(fingerCount)
-            MainActivity.Constants.MENU_RANK ->
-                pickRank()
-        }
-    }
-
-    private fun pickN(n: Int) {
-        selectedPickMap = touchPointMap.select(n)
-    }
-
-    private fun pickTeam(n: Int) {
-        selectedTeamMap = touchPointMap.selectTeam(n)
-    }
-
-    private fun pickRank() {
-        selectedRankMap = touchPointMap.selectRank()
+        fingerPicker.pick(context, fingerCount)
     }
 
     private fun playSelectSound() {
@@ -370,9 +250,7 @@ class CanvasView : View, Handler.Callback, MediatedView {
         if (eventHandler.hasMessages(MESSAGE_RESET)) {
             eventHandler.removeMessages(MESSAGE_RESET)
         }
-        val delayMillis = if (mode == MainActivity.Constants.MENU_TEAM)
-            TEAM_RESET_DELAYED_MILLIS else PICK_RESET_DELAYED_MILLIS
-        eventHandler.sendEmptyMessageDelayed(MESSAGE_RESET, delayMillis)
+        eventHandler.sendEmptyMessageDelayed(MESSAGE_RESET, RESET_DELAYED_MILLIS)
     }
 
     private fun doVibrate() {
@@ -385,8 +263,6 @@ class CanvasView : View, Handler.Callback, MediatedView {
     }
 
     private fun doAnim() {
-        circleSize++
-
         if (!eventHandler.hasMessages(MESSAGE_ANIM)) {
             eventHandler.sendEmptyMessageDelayed(MESSAGE_ANIM, ANIM_REPEAT_DELAYED_MILLIS)
         }
