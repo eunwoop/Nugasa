@@ -7,7 +7,7 @@ import android.graphics.PointF
 import androidx.core.content.res.ResourcesCompat
 import com.eee.www.nugasa.R
 
-abstract class FingerDrawer(context: Context) {
+open class FingerDrawer(context: Context) {
 
     protected val MIN_CIRCLE_SIZE = ViewUtils.dpToPx(context, 50F)
     protected val MAX_CIRCLE_SIZE = ViewUtils.dpToPx(context, 60F)
@@ -20,6 +20,7 @@ abstract class FingerDrawer(context: Context) {
     }
 
     fun init(context: Context) {
+        circleSize = MIN_CIRCLE_SIZE
         FingerColors.shuffle(context)
     }
 
@@ -58,7 +59,6 @@ class PickFingerDrawer(context: Context) : FingerDrawer(context) {
 
     fun drawSelected(canvas: Canvas, pointerId: Int, point: PointF) {
         drawCircle(canvas, point, SELECTED_CIRCLE_SIZE, FingerColors.randomColor(pointerId))
-        circleSize = MIN_CIRCLE_SIZE
     }
 }
 
@@ -71,8 +71,7 @@ class TeamFingerDrawer(context: Context) : FingerDrawer(context) {
     }
 
     fun drawSelected(canvas: Canvas, point: PointF, team: Int) {
-        circleSize = MIN_CIRCLE_SIZE
-        drawCircle(canvas, point, FingerColors.randomColor(team))
+        drawCircle(canvas, point, MIN_CIRCLE_SIZE, FingerColors.randomColor(team))
     }
 }
 
@@ -87,8 +86,7 @@ class RankFingerDrawer(context: Context) : FingerDrawer(context) {
     }
 
     fun drawSelected(canvas: Canvas, pointerId: Int, point: PointF, rank: Int) {
-        circleSize = MIN_CIRCLE_SIZE
-        drawCircle(canvas, point, FingerColors.randomColor(pointerId))
+        drawCircle(canvas, point, MIN_CIRCLE_SIZE, FingerColors.randomColor(pointerId))
         drawRank(canvas, point, rank)
     }
 

@@ -8,19 +8,20 @@ abstract class FingerPicker(context: Context, protected val fingerMap: FingerMap
 
     open lateinit var selectedMap: Map<Int, Int>
 
-    abstract fun pick(context: Context, count: Int)
+    abstract fun pick(count: Int)
 
     abstract fun draw(canvas: Canvas)
 
     abstract fun drawSelected(canvas: Canvas)
+
+    abstract fun reset(context: Context)
 }
 
 class PickFingerPicker(context: Context, fingerMap: FingerMap) : FingerPicker(context, fingerMap) {
 
     private val fingerDrawer = PickFingerDrawer(context)
 
-    override fun pick(context: Context, count: Int) {
-        fingerDrawer.init(context)
+    override fun pick(count: Int) {
         selectedMap = fingerMap.select(count)
     }
 
@@ -39,14 +40,17 @@ class PickFingerPicker(context: Context, fingerMap: FingerMap) : FingerPicker(co
             }
         }
     }
+
+    override fun reset(context: Context) {
+        fingerDrawer.init(context)
+    }
 }
 
 class TeamFingerPicker(context: Context, fingerMap: FingerMap) : FingerPicker(context, fingerMap) {
 
     private val fingerDrawer = TeamFingerDrawer(context)
 
-    override fun pick(context: Context, count: Int) {
-        fingerDrawer.init(context)
+    override fun pick(count: Int) {
         selectedMap = fingerMap.selectTeam(count)
     }
 
@@ -63,14 +67,17 @@ class TeamFingerPicker(context: Context, fingerMap: FingerMap) : FingerPicker(co
             fingerDrawer.drawSelected(canvas, it.value, team)
         }
     }
+
+    override fun reset(context: Context) {
+        fingerDrawer.init(context)
+    }
 }
 
 class RankFingerPicker(context: Context, fingerMap: FingerMap) : FingerPicker(context, fingerMap) {
 
     private val fingerDrawer = RankFingerDrawer(context)
 
-    override fun pick(context: Context, count: Int) {
-        fingerDrawer.init(context)
+    override fun pick(count: Int) {
         selectedMap = fingerMap.selectRank()
     }
 
@@ -86,5 +93,9 @@ class RankFingerPicker(context: Context, fingerMap: FingerMap) : FingerPicker(co
             val rank = selectedMap[it.key] ?: -1
             fingerDrawer.drawSelected(canvas, it.key, it.value, rank)
         }
+    }
+
+    override fun reset(context: Context) {
+        fingerDrawer.init(context)
     }
 }

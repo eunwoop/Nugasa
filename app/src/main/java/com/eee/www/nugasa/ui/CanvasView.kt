@@ -40,8 +40,7 @@ class CanvasView : View, Handler.Callback, MediatedView {
     }
 
     override var mediator: Mediator? = null
-
-    lateinit var fingerPicker: FingerPicker
+    var fingerPicker: FingerPicker? = null
     var fingerCount = 1
 
     val fingerMap = FingerMap()
@@ -59,6 +58,7 @@ class CanvasView : View, Handler.Callback, MediatedView {
 
     private fun resetAll() {
         mediator?.setPressed(false)
+        fingerPicker?.reset(context)
         fingerMap.clear()
         shouldKeepDrawn = false
     }
@@ -198,9 +198,9 @@ class CanvasView : View, Handler.Callback, MediatedView {
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         if (shouldKeepDrawn) {
-            fingerPicker.drawSelected(canvas)
+            fingerPicker?.drawSelected(canvas)
         } else {
-            fingerPicker.draw(canvas)
+            fingerPicker?.draw(canvas)
         }
     }
 
@@ -237,7 +237,7 @@ class CanvasView : View, Handler.Callback, MediatedView {
     }
 
     private fun doPick(fingerCount: Int) {
-        fingerPicker.pick(context, fingerCount)
+        fingerPicker?.pick(fingerCount)
     }
 
     private fun playSelectSound() {
