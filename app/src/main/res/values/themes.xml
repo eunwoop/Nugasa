@@ -5,4 +5,9 @@
     </style>
 
     <style name="CommonTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar" />
+    <style name="SpinnerStyle" parent="Widget.AppCompat.ListView.DropDown">
+        <item name="android:scrollbars">none</item>
+        <item name="android:scrollbarThumbVertical">@android:color/transparent</item>
+    </style>
+
 </resources>
