@@ -19,8 +19,8 @@ class CountSpinner : RoundedSpinner {
         val min = attrs.getAttributeIntValue(null, "min", 0)
         val max = attrs.getAttributeIntValue(null, "max", 0)
         if (min in 1 until max) {
-            ArrayAdapter<Int>(context, R.layout.spinner_item, (min..max).toList()).apply {
-                setDropDownViewResource(R.layout.spinner_item)
+            ArrayAdapter<Int>(context, R.layout.spinner_num_item, R.id.textView, (min..max).toList()).apply {
+                setDropDownViewResource(R.layout.spinner_num_item)
                 adapter = this
             }
         }
