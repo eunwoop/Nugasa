@@ -10,7 +10,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.eee.www.nugasa.databinding.ActivityMainBinding
-import com.eee.www.nugasa.model.FingerMap
 import com.eee.www.nugasa.ui.Mediator
 import com.eee.www.nugasa.utils.PickFingerPicker
 import com.eee.www.nugasa.utils.RankFingerPicker
@@ -55,11 +54,11 @@ class MainActivity : AppCompatActivity(), Mediator {
                 Constants.MENU_PICK -> {
                     canvasView.fingerPicker = PickFingerPicker(this, canvasView.fingerMap)
                     pickCountSpinner.show()
-                    teamCountSpinner.hide()
+                    teamCountSpinner.gone()
                 }
                 Constants.MENU_TEAM -> {
                     canvasView.fingerPicker = TeamFingerPicker(this, canvasView.fingerMap)
-                    pickCountSpinner.hide()
+                    pickCountSpinner.gone()
                     teamCountSpinner.show()
                 }
                 Constants.MENU_RANK -> {
