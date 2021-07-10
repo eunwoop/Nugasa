@@ -4,6 +4,8 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
             name="viewModel"
             type="com.eee.www.nugasa.viewmodels.MainActivityViewModel" />
@@ -17,45 +19,49 @@
             android:id="@+id/menuLayout"
             android:layout_width="match_parent"
             android:layout_height="@dimen/menu_layout_height"
+            android:layout_marginVertical="10dp"
+            android:layout_marginStart="20dp"
             android:gravity="left|center_vertical"
             android:orientation="horizontal"
-            android:layout_marginStart="20dp"
-            android:layout_marginVertical="10dp"
             android:translationZ="2dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            app:pressed="@{viewModel.fingerPressed}">
 
             <com.eee.www.nugasa.ui.MenuSpinner
                 android:id="@+id/menuSpinner"
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
-                android:gravity="center"
                 android:background="@null"
-                android:theme="@style/SpinnerStyle"
+                android:enabled="@{!viewModel.fingerPressed}"
+                android:gravity="center"
                 android:popupElevation="0dp"
+                android:theme="@style/SpinnerStyle"
                 app:position="@{viewModel.menuPosition}" />
 
-            <com.eee.www.nugasa.ui.CountSpinner
+            <com.eee.www.nugasa.ui.PickCountSpinner
                 android:id="@+id/pickCountSpinner"
                 max="5"
                 min="1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@null"
-                android:theme="@style/SpinnerStyle"
+                android:enabled="@{!viewModel.fingerPressed}"
                 android:popupElevation="0dp"
+                android:theme="@style/SpinnerStyle"
                 app:item="@{viewModel.pickCount}" />
 
-            <com.eee.www.nugasa.ui.CountSpinner
+            <com.eee.www.nugasa.ui.TeamCountSpinner
                 android:id="@+id/teamCountSpinner"
                 max="5"
                 min="2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@null"
-                android:theme="@style/SpinnerStyle"
+                android:enabled="@{!viewModel.fingerPressed}"
                 android:popupElevation="0dp"
+                android:theme="@style/SpinnerStyle"
                 app:item="@{viewModel.teamCount}" />
         </LinearLayout>
 
@@ -65,6 +71,7 @@
             android:layout_height="22dp"
             android:text="@string/help_message"
             android:textColor="@color/gray"
+            android:visibility="@{viewModel.fingerPressed? View.GONE: View.VISIBLE}"
             app:layout_constraintBottom_toBottomOf="@+id/canvasView"
             app:layout_constraintEnd_toEndOf="@+id/canvasView"
             app:layout_constraintStart_toStartOf="@+id/canvasView"

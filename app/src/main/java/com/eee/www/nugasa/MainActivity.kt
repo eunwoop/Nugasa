@@ -1,158 +1,93 @@
 package com.eee.www.nugasa
 
-import android.animation.AnimatorSet
-import android.animation.ObjectAnimator
 import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.WindowInsets
 import android.view.WindowInsetsController
-import android.view.animation.AccelerateInterpolator
-import android.view.animation.DecelerateInterpolator
-import android.widget.AdapterView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.AppCompatSpinner
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.eee.www.nugasa.databinding.ActivityMainBinding
+import com.eee.www.nugasa.ui.Mediator
+import com.eee.www.nugasa.utils.PickFingerPicker
+import com.eee.www.nugasa.utils.RankFingerPicker
+import com.eee.www.nugasa.utils.TeamFingerPicker
 import com.eee.www.nugasa.viewmodels.MainActivityViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity() {
-
-    val viewModel: MainActivityViewModel by viewModels()
-
+class MainActivity : AppCompatActivity(), Mediator {
     object Constants {
         const val MENU_PICK = 0
         const val MENU_TEAM = 1
         const val MENU_RANK = 2
     }
 
+    private val viewModel: MainActivityViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         bindData()
-
-        initCanvasView()
-        initMenuSpinner()
-        initPickCountSpinner()
-        initTeamCountSpinner()
-        initObservers()
+        initMediator()
+        initOnDataChanged()
     }
 
     private fun bindData() {
         val binding: ActivityMainBinding =
             DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.viewModel = viewModel
+        binding.lifecycleOwner = this
     }
 
-    private fun initCanvasView() {
-        canvasView.fingerPressed.observe(
-            this,
-            Observer { fingerPressed ->
-                menuLayout.apply {
-                    val alphaAnim = (if (fingerPressed)
-                        ObjectAnimator.ofFloat(this, AppCompatSpinner.ALPHA, 1f, 0f)
-                        else ObjectAnimator.ofFloat(this, AppCompatSpinner.ALPHA, 0f, 1f))
-
-                    val transAnim = (if (fingerPressed)
-                        ObjectAnimator.ofFloat(this, AppCompatSpinner.TRANSLATION_Y, -100f)
-                        else ObjectAnimator.ofFloat(this, AppCompatSpinner.TRANSLATION_Y, 100f))
-
-                    transAnim.interpolator = AccelerateInterpolator(3f)
-
-                    val animatorSet = AnimatorSet()
-                    animatorSet.playTogether(alphaAnim, transAnim)
-                    animatorSet.duration = 500
-                    animatorSet.start()
-                }
-
-                menuSpinner.isEnabled = !fingerPressed
-                pickCountSpinner.isEnabled = !fingerPressed
-                teamCountSpinner.isEnabled = !fingerPressed
-                // appears only once
-                if (fingerPressed)
-                    helpTextView.visibility = View.GONE
-            })
+    private fun initMediator() {
+        menuSpinner.mediator = this
+        pickCountSpinner.mediator = this
+        teamCountSpinner.mediator = this
+        canvasView.mediator = this
     }
 
-    private fun initMenuSpinner() {
-        menuSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                viewModel.setMenuPosition(position)
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-            }
-        }
-    }
-
-    private fun initPickCountSpinner() {
-        pickCountSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                val item = pickCountSpinner.getItemAtPosition(position) as Int
-                viewModel.setPickCount(item)
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-            }
-        }
-    }
-
-    private fun initTeamCountSpinner() {
-        teamCountSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                val item = teamCountSpinner.getItemAtPosition(position) as Int
-                viewModel.setTeamCount(item)
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-            }
-        }
-    }
-
-    private fun initObservers() {
-        val fingerCountObserver = Observer<Int> { count -> canvasView.fingerCount = count }
+    override fun initOnDataChanged() {
         val modeObserver = Observer<Int> { position ->
             when (position) {
                 Constants.MENU_PICK -> {
+                    canvasView.fingerPicker = PickFingerPicker(this, canvasView.fingerMap)
                     pickCountSpinner.show()
                     teamCountSpinner.gone()
-                    viewModel.pickCount.observe(this, fingerCountObserver)
-                    viewModel.teamCount.removeObservers(this)
                 }
                 Constants.MENU_TEAM -> {
+                    canvasView.fingerPicker = TeamFingerPicker(this, canvasView.fingerMap)
                     pickCountSpinner.gone()
                     teamCountSpinner.show()
-                    viewModel.pickCount.removeObservers(this)
-                    viewModel.teamCount.observe(this, fingerCountObserver)
                 }
                 Constants.MENU_RANK -> {
+                    canvasView.fingerPicker = RankFingerPicker(this, canvasView.fingerMap)
                     pickCountSpinner.hide()
                     teamCountSpinner.hide()
-                    viewModel.pickCount.removeObservers(this)
-                    viewModel.teamCount.removeObservers(this)
                 }
             }
-            canvasView.mode = position
         }
         viewModel.menuPosition.observe(this, modeObserver)
+
+        val fingerCountObserver = Observer<Int> { count -> canvasView.fingerCount = count }
+        viewModel.fingerCount.observe(this, fingerCountObserver)
+    }
+
+    override fun setMode(mode: Int) {
+        viewModel.setMenuPosition(mode)
+    }
+
+    override fun setPickCount(count: Int) {
+        viewModel.setPickCount(count)
+    }
+
+    override fun setTeamCount(count: Int) {
+        viewModel.setTeamCount(count)
+    }
+
+    override fun setPressed(pressed: Boolean) {
+        viewModel.setFingerPressed(pressed)
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -167,7 +102,7 @@ class MainActivity : AppCompatActivity() {
             if (controller != null) {
                 controller.hide(WindowInsets.Type.statusBars())
                 controller.systemBarsBehavior =
-                        WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                    WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
             }
         } else {
             window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_FULLSCREEN
