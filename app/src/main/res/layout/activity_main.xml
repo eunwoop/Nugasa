@@ -63,6 +63,16 @@
                 android:popupElevation="0dp"
                 android:theme="@style/SpinnerStyle"
                 app:item="@{viewModel.teamCount}" />
+
+            <ImageButton
+                android:id="@+id/shareButton"
+                android:layout_marginStart="20dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/share_outline"
+                android:background="@drawable/share_button_ripple"
+                android:scaleType="fitCenter"
+                android:onClick="onShareButtonClick"/>
         </LinearLayout>
 
         <TextView

@@ -7,6 +7,7 @@ import android.view.WindowInsets
 import android.view.WindowInsetsController
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ShareCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.eee.www.nugasa.databinding.ActivityMainBinding
@@ -72,6 +73,13 @@ class MainActivity : AppCompatActivity(), Mediator {
 
         val fingerCountObserver = Observer<Int> { count -> canvasView.fingerCount = count }
         viewModel.fingerCount.observe(this, fingerCountObserver)
+    }
+
+    fun onShareButtonClick(v: View) {
+        ShareCompat.IntentBuilder.from(this)
+                .setType("text/plain")
+                .setText("https://play.google.com/store/apps/details?id=" + this.packageName)
+                .startChooser()
     }
 
     override fun setMode(mode: Int) {
