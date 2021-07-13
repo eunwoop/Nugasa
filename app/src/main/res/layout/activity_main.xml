@@ -15,13 +15,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/menuLayout"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/menu_layout_height"
+            android:layout_height="wrap_content"
             android:layout_marginVertical="10dp"
             android:layout_marginStart="20dp"
-            android:gravity="left|center_vertical"
+            android:layout_marginEnd="20dp"
             android:orientation="horizontal"
             android:translationZ="2dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -38,42 +38,84 @@
                 android:gravity="center"
                 android:popupElevation="0dp"
                 android:theme="@style/SpinnerStyle"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.7"
                 app:position="@{viewModel.menuPosition}" />
 
-            <com.eee.www.nugasa.ui.PickCountSpinner
-                android:id="@+id/pickCountSpinner"
-                max="5"
-                min="1"
+            <LinearLayout
+                android:id="@+id/pickCountSpinnerLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@null"
-                android:enabled="@{!viewModel.fingerPressed}"
-                android:popupElevation="0dp"
-                android:theme="@style/SpinnerStyle"
-                app:item="@{viewModel.pickCount}" />
+                android:orientation="vertical"
+                app:layout_constraintBottom_toBottomOf="@+id/teamCountSpinnerLayout"
+                app:layout_constraintStart_toEndOf="@+id/menuSpinner"
+                app:layout_constraintTop_toTopOf="parent">
 
-            <com.eee.www.nugasa.ui.TeamCountSpinner
-                android:id="@+id/teamCountSpinner"
-                max="5"
-                min="2"
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/pick_guide_description" />
+
+                <com.eee.www.nugasa.ui.PickCountSpinner
+                    android:id="@+id/pickCountSpinner"
+                    max="5"
+                    min="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:enabled="@{!viewModel.fingerPressed}"
+                    android:popupElevation="0dp"
+                    android:theme="@style/SpinnerStyle"
+                    app:item="@{viewModel.pickCount}" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/teamCountSpinnerLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@null"
-                android:enabled="@{!viewModel.fingerPressed}"
-                android:popupElevation="0dp"
-                android:theme="@style/SpinnerStyle"
-                app:item="@{viewModel.teamCount}" />
+                android:orientation="vertical"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/menuSpinner"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/team_guide_description" />
+
+                <com.eee.www.nugasa.ui.TeamCountSpinner
+                    android:id="@+id/teamCountSpinner"
+                    max="5"
+                    min="2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:enabled="@{!viewModel.fingerPressed}"
+                    android:popupElevation="0dp"
+                    android:theme="@style/SpinnerStyle"
+                    app:item="@{viewModel.teamCount}" />
+            </LinearLayout>
 
             <ImageButton
                 android:id="@+id/shareButton"
-                android:layout_marginStart="20dp"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:src="@drawable/share_outline"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center_vertical|end"
                 android:background="@drawable/share_button_ripple"
+                android:onClick="onShareButtonClick"
+                app:layout_constraintVertical_bias="0.6"
+                android:popupElevation="0dp"
                 android:scaleType="fitCenter"
-                android:onClick="onShareButtonClick"/>
-        </LinearLayout>
+                android:src="@drawable/share_outline"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
             android:id="@+id/helpTextView"
@@ -93,8 +135,9 @@
             android:layout_height="match_parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="1.0" />
+            app:layout_constraintVertical_bias="0.0" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

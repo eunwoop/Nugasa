@@ -6,4 +6,6 @@
     <string name="rank">랭킹</string>
     <string name="pickImpossibleMessage">손가락이 더 필요해요!</string>
     <string name="help_message">손가락들을 여기에 올려주세요</string>
+    <string name="pick_guide_description">몇 명 뽑을까?</string>
+    <string name="team_guide_description">몇 팀 뽑을까?</string>
 </resources>
