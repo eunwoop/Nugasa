@@ -5,4 +5,6 @@
     <string name="rank">Rank</string>
     <string name="pickImpossibleMessage">Come on more fingers!</string>
     <string name="help_message">Put your fingers here!</string>
+    <string name="pick_guide_description">How many winners?</string>
+    <string name="team_guide_description">How many teams?</string>
 </resources>
