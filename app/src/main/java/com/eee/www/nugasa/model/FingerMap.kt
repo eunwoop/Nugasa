@@ -80,7 +80,8 @@ class FingerMap {
         val tempList = shuffleList()
         val rankMap = mutableMapOf<Int, Int>()
         _map.forEach {
-            rankMap[it.key] = tempList[it.key] + 1 // +1 is for except 0
+            // +1 is for remove 0
+            rankMap[it.key] = tempList.indexOf(it.key) + 1
         }
         return rankMap
     }
