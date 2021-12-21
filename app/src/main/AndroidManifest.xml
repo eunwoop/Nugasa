@@ -19,6 +19,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".ui.IntroActivity"
+            android:screenOrientation="portrait"
+            android:resizeableActivity="false">
+        </activity>
     </application>
 
 </manifest>
