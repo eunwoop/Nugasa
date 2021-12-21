@@ -6,6 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.Transformations.switchMap
 import androidx.lifecycle.ViewModel
+import com.eee.www.nugasa.MainActivity
+import com.eee.www.nugasa.data.SharedPreferenceManager
 import com.eee.www.nugasa.utils.TAG
 import com.eee.www.nugasa.viewmodels.MainActivityViewModel.Constants.DEFAULT_MENU_POSITION
 import com.eee.www.nugasa.viewmodels.MainActivityViewModel.Constants.DEFAULT_PICK_COUNT
@@ -46,6 +48,7 @@ class MainActivityViewModel(private val savedStateHandle: SavedStateHandle) : Vi
     val teamCount: LiveData<Int>
         get() = savedStateHandle.getLiveData(TEAM_COUNT_KEY, DEFAULT_TEAM_COUNT)
     var fingerPressed = MutableLiveData(false)
+    var repository: SharedPreferenceManager? = null
 
     fun setMenuPosition(position: Int) {
         savedStateHandle.set(MENU_POSITION_KEY, position)
@@ -61,5 +64,13 @@ class MainActivityViewModel(private val savedStateHandle: SavedStateHandle) : Vi
 
     fun setFingerPressed(pressed: Boolean) {
         fingerPressed.value = pressed
+    }
+
+    fun getStartedOnce() : Boolean {
+        return repository?.getBooleanSharedPref(MainActivity.PREF_NAME, MainActivity.PREF_KEY) ?: false
+    }
+
+    fun setStartedOnce() {
+        repository?.setBooleanSharedPref(MainActivity.PREF_NAME, MainActivity.PREF_KEY, true)
     }
 }

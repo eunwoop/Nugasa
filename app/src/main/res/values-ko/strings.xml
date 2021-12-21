@@ -6,4 +6,12 @@
     <string name="rank">랭킹</string>
     <string name="pickImpossibleMessage">손가락이 더 필요해요!</string>
     <string name="help_message">손가락들을 여기에 올려주세요</string>
+
+    <string name="next">다음</string>
+    <string name="skip">끄기</string>
+    <string name="start">알겠어요!</string>
+    <string name="slide_1_title">친구들을 만나서 한명을 뽑아야 할때,</string>
+    <string name="slide_2_title">화면에 손가락을 올려주세요</string>
+    <string name="slide_3_title">제가 한명을 뽑아드릴게요!</string>
+
 </resources>

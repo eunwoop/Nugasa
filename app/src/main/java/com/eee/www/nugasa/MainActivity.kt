@@ -1,5 +1,6 @@
 package com.eee.www.nugasa
 
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.View
@@ -9,7 +10,9 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
+import com.eee.www.nugasa.data.SharedPreferenceManager
 import com.eee.www.nugasa.databinding.ActivityMainBinding
+import com.eee.www.nugasa.ui.IntroActivity
 import com.eee.www.nugasa.ui.Mediator
 import com.eee.www.nugasa.utils.PickFingerPicker
 import com.eee.www.nugasa.utils.RankFingerPicker
@@ -24,19 +27,36 @@ class MainActivity : AppCompatActivity(), Mediator {
         const val MENU_RANK = 2
     }
 
+    companion object {
+        val PREF_NAME = "DEFAULT_SHARED_PREF"
+        val PREF_KEY = "IS_STARTED_BEFORE"
+    }
+
     private val viewModel: MainActivityViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        viewModel.repository = SharedPreferenceManager(baseContext)
+
+        if (!viewModel.getStartedOnce()) {
+            showIntroActivity();
+            viewModel.setStartedOnce();
+        }
 
         bindData()
         initMediator()
         initOnDataChanged()
     }
 
+    private fun showIntroActivity() {
+        val intent = Intent(this, IntroActivity::class.java)
+        startActivity(intent)
+    }
+
     private fun bindData() {
         val binding: ActivityMainBinding =
             DataBindingUtil.setContentView(this, R.layout.activity_main)
+
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
     }
