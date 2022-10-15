@@ -10,7 +10,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
-import com.eee.www.nugasa.data.SharedPreferenceManager
 import com.eee.www.nugasa.databinding.ActivityMainBinding
 import com.eee.www.nugasa.ui.IntroActivity
 import com.eee.www.nugasa.ui.Mediator
@@ -28,19 +27,18 @@ class MainActivity : AppCompatActivity(), Mediator {
     }
 
     companion object {
-        val PREF_NAME = "DEFAULT_SHARED_PREF"
-        val PREF_KEY = "IS_STARTED_BEFORE"
+        const val PREF_NAME = "DEFAULT_SHARED_PREF"
+        const val PREF_KEY = "IS_STARTED_BEFORE"
     }
 
     private val viewModel: MainActivityViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.repository = SharedPreferenceManager(baseContext)
 
         if (!viewModel.getStartedOnce()) {
-            showIntroActivity();
-            viewModel.setStartedOnce();
+            showIntroActivity()
+            viewModel.setStartedOnce()
         }
 
         bindData()

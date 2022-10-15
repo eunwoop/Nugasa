@@ -1,14 +1,11 @@
 package com.eee.www.nugasa.viewmodels
 
-import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.SavedStateHandle
+import android.app.Application
+import androidx.lifecycle.*
 import androidx.lifecycle.Transformations.switchMap
-import androidx.lifecycle.ViewModel
 import com.eee.www.nugasa.MainActivity
-import com.eee.www.nugasa.data.SharedPreferenceManager
-import com.eee.www.nugasa.utils.TAG
+import com.eee.www.nugasa.data.getBooleanSharedPref
+import com.eee.www.nugasa.data.setBooleanSharedPref
 import com.eee.www.nugasa.viewmodels.MainActivityViewModel.Constants.DEFAULT_MENU_POSITION
 import com.eee.www.nugasa.viewmodels.MainActivityViewModel.Constants.DEFAULT_PICK_COUNT
 import com.eee.www.nugasa.viewmodels.MainActivityViewModel.Constants.DEFAULT_TEAM_COUNT
@@ -18,7 +15,7 @@ import com.eee.www.nugasa.viewmodels.MainActivityViewModel.Constants.MENU_POSITI
 import com.eee.www.nugasa.viewmodels.MainActivityViewModel.Constants.PICK_COUNT_KEY
 import com.eee.www.nugasa.viewmodels.MainActivityViewModel.Constants.TEAM_COUNT_KEY
 
-class MainActivityViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel() {
+class MainActivityViewModel(application: Application, private val savedStateHandle: SavedStateHandle) : AndroidViewModel(application) {
     object Constants {
         const val MENU_POSITION_KEY = "menuPosition"
         const val PICK_COUNT_KEY = "pickCount"
@@ -48,7 +45,6 @@ class MainActivityViewModel(private val savedStateHandle: SavedStateHandle) : Vi
     val teamCount: LiveData<Int>
         get() = savedStateHandle.getLiveData(TEAM_COUNT_KEY, DEFAULT_TEAM_COUNT)
     var fingerPressed = MutableLiveData(false)
-    var repository: SharedPreferenceManager? = null
 
     fun setMenuPosition(position: Int) {
         savedStateHandle.set(MENU_POSITION_KEY, position)
@@ -67,10 +63,10 @@ class MainActivityViewModel(private val savedStateHandle: SavedStateHandle) : Vi
     }
 
     fun getStartedOnce() : Boolean {
-        return repository?.getBooleanSharedPref(MainActivity.PREF_NAME, MainActivity.PREF_KEY) ?: false
+        return getBooleanSharedPref(getApplication(), MainActivity.PREF_NAME, MainActivity.PREF_KEY)
     }
 
     fun setStartedOnce() {
-        repository?.setBooleanSharedPref(MainActivity.PREF_NAME, MainActivity.PREF_KEY, true)
+        setBooleanSharedPref(getApplication(), MainActivity.PREF_NAME, MainActivity.PREF_KEY, true)
     }
 }
