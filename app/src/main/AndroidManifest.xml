@@ -13,7 +13,8 @@
         android:hardwareAccelerated="true">
         <activity android:name=".MainActivity"
             android:screenOrientation="portrait"
-            android:resizeableActivity="false" >
+            android:resizeableActivity="false"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
