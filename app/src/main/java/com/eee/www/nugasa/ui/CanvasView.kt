@@ -106,6 +106,14 @@ class CanvasView : View, Handler.Callback, MediatedView {
         return false
     }
 
+    override fun onVisibilityChanged(changedView: View, visibility: Int) {
+        super.onVisibilityChanged(changedView, visibility)
+        if (visibility == View.INVISIBLE) {
+            stopPressedJobs()
+            resetAll()
+        }
+    }
+
     private fun addNewPoint(event: MotionEvent) {
         if (fingerMap.isFull()) {
             return
