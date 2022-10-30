@@ -1,7 +1,10 @@
 package com.eee.www.nugasa.utils
 
+import android.app.Activity
+import android.app.Application
 import android.content.Context
 import android.media.AudioAttributes
+import android.media.AudioManager
 import android.media.SoundPool
 import android.os.Handler
 import android.os.Looper
@@ -19,11 +22,11 @@ class SoundEffector(context: Context) : Handler.Callback {
         const val MESSAGE_PLAY = 0
     }
 
+    private val appContext = context.applicationContext
     private val eventHandler = Handler(Looper.getMainLooper(), this)
-
     private val audioAttributes = AudioAttributes.Builder()
-        .setUsage(AudioAttributes.USAGE_MEDIA)
-        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+        .setUsage(AudioAttributes.USAGE_NOTIFICATION_EVENT)
+        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
         .build()
     private val soundPool = SoundPool.Builder().setAudioAttributes(audioAttributes).build()
 
@@ -31,7 +34,14 @@ class SoundEffector(context: Context) : Handler.Callback {
     private var selectEffect by Delegates.notNull<Int>()
 
     init {
+        setOnlyControlMediaVolume(context)
         loadSoundEffects(context)
+    }
+
+    private fun setOnlyControlMediaVolume(context: Context) {
+        if (context is Activity) {
+            context.volumeControlStream = AudioManager.STREAM_MUSIC
+        }
     }
 
     private fun loadSoundEffects(context: Context) {
@@ -65,7 +75,15 @@ class SoundEffector(context: Context) : Handler.Callback {
     }
 
     private fun play(soundId: Int) {
-        soundPool.play(soundId, 1f, 1f, 1, 0, 1f)
+        val mediaVolume = getMediaVolume()
+        soundPool.play(soundId, mediaVolume, mediaVolume, 1, 0, 1f)
+    }
+
+    private fun getMediaVolume(): Float {
+        val audioManager = appContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        val currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
+        val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+        return currentVolume.toFloat() / maxVolume.toFloat()
     }
 
     fun release() {
