@@ -22,10 +22,9 @@ class SoundEffector(context: Context) : Handler.Callback {
         const val MESSAGE_PLAY = 0
     }
 
-    private val appContext = context.applicationContext
     private val eventHandler = Handler(Looper.getMainLooper(), this)
     private val audioAttributes = AudioAttributes.Builder()
-        .setUsage(AudioAttributes.USAGE_NOTIFICATION_EVENT)
+        .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
         .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
         .build()
     private val soundPool = SoundPool.Builder().setAudioAttributes(audioAttributes).build()
@@ -34,13 +33,13 @@ class SoundEffector(context: Context) : Handler.Callback {
     private var selectEffect by Delegates.notNull<Int>()
 
     init {
-        setOnlyControlMediaVolume(context)
+        setOnlyControlSystemVolume(context)
         loadSoundEffects(context)
     }
 
-    private fun setOnlyControlMediaVolume(context: Context) {
+    private fun setOnlyControlSystemVolume(context: Context) {
         if (context is Activity) {
-            context.volumeControlStream = AudioManager.STREAM_MUSIC
+            context.volumeControlStream = AudioManager.STREAM_SYSTEM
         }
     }
 
@@ -75,15 +74,7 @@ class SoundEffector(context: Context) : Handler.Callback {
     }
 
     private fun play(soundId: Int) {
-        val mediaVolume = getMediaVolume()
-        soundPool.play(soundId, mediaVolume, mediaVolume, 1, 0, 1f)
-    }
-
-    private fun getMediaVolume(): Float {
-        val audioManager = appContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        val currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
-        val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
-        return currentVolume.toFloat() / maxVolume.toFloat()
+        soundPool.play(soundId, 1f, 1f, 1, 0, 1f)
     }
 
     fun release() {
