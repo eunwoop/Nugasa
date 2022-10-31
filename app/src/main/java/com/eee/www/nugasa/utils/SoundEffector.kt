@@ -1,7 +1,6 @@
 package com.eee.www.nugasa.utils
 
 import android.app.Activity
-import android.app.Application
 import android.content.Context
 import android.media.AudioAttributes
 import android.media.AudioManager
