@@ -1,7 +1,9 @@
 package com.eee.www.nugasa.utils
 
+import android.app.Activity
 import android.content.Context
 import android.media.AudioAttributes
+import android.media.AudioManager
 import android.media.SoundPool
 import android.os.Handler
 import android.os.Looper
@@ -20,10 +22,9 @@ class SoundEffector(context: Context) : Handler.Callback {
     }
 
     private val eventHandler = Handler(Looper.getMainLooper(), this)
-
     private val audioAttributes = AudioAttributes.Builder()
-        .setUsage(AudioAttributes.USAGE_MEDIA)
-        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+        .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
+        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
         .build()
     private val soundPool = SoundPool.Builder().setAudioAttributes(audioAttributes).build()
 
@@ -31,7 +32,14 @@ class SoundEffector(context: Context) : Handler.Callback {
     private var selectEffect by Delegates.notNull<Int>()
 
     init {
+        setOnlyControlSystemVolume(context)
         loadSoundEffects(context)
+    }
+
+    private fun setOnlyControlSystemVolume(context: Context) {
+        if (context is Activity) {
+            context.volumeControlStream = AudioManager.STREAM_SYSTEM
+        }
     }
 
     private fun loadSoundEffects(context: Context) {
