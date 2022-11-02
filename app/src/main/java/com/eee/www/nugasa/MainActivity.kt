@@ -7,10 +7,12 @@ import android.view.WindowInsets
 import android.view.WindowInsetsController
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ShareCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.eee.www.nugasa.databinding.ActivityMainBinding
 import com.eee.www.nugasa.ui.Mediator
+import com.eee.www.nugasa.utils.AnimationUtils
 import com.eee.www.nugasa.utils.PickFingerPicker
 import com.eee.www.nugasa.utils.RankFingerPicker
 import com.eee.www.nugasa.utils.TeamFingerPicker
@@ -49,29 +51,41 @@ class MainActivity : AppCompatActivity(), Mediator {
     }
 
     override fun initOnDataChanged() {
+        var lastMode = Constants.MENU_PICK
         val modeObserver = Observer<Int> { position ->
             when (position) {
                 Constants.MENU_PICK -> {
                     canvasView.fingerPicker = PickFingerPicker(this, canvasView.fingerMap)
-                    pickCountSpinner.show()
-                    teamCountSpinner.gone()
+                    AnimationUtils.show(pickCountSpinnerLayout)
+                    AnimationUtils.gone(teamCountSpinnerLayout)
                 }
                 Constants.MENU_TEAM -> {
                     canvasView.fingerPicker = TeamFingerPicker(this, canvasView.fingerMap)
-                    pickCountSpinner.gone()
-                    teamCountSpinner.show()
+                    AnimationUtils.gone(pickCountSpinnerLayout)
+                    AnimationUtils.show(teamCountSpinnerLayout)
                 }
                 Constants.MENU_RANK -> {
                     canvasView.fingerPicker = RankFingerPicker(this, canvasView.fingerMap)
-                    pickCountSpinner.hide()
-                    teamCountSpinner.hide()
+                    if (lastMode == Constants.MENU_PICK) {
+                        AnimationUtils.hide(pickCountSpinnerLayout)
+                    } else if (lastMode == Constants.MENU_TEAM) {
+                        AnimationUtils.hide(teamCountSpinnerLayout)
+                    }
                 }
             }
+            lastMode = position
         }
         viewModel.menuPosition.observe(this, modeObserver)
 
         val fingerCountObserver = Observer<Int> { count -> canvasView.fingerCount = count }
         viewModel.fingerCount.observe(this, fingerCountObserver)
+    }
+
+    fun onShareButtonClick(v: View) {
+        ShareCompat.IntentBuilder.from(this)
+                .setType("text/plain")
+                .setText("https://play.google.com/store/apps/details?id=" + this.packageName)
+                .startChooser()
     }
 
     override fun setMode(mode: Int) {

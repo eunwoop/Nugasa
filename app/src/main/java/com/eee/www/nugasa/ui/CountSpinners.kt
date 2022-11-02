@@ -31,39 +31,6 @@ abstract class CountSpinner : RoundedSpinner, MediatedView {
         }
     }
 
-    fun show() {
-        isEnabled = true
-        visibility = VISIBLE
-
-        val alphaAnim = ObjectAnimator.ofFloat(this, ALPHA, 0f, 1f)
-        val transAnim = ObjectAnimator.ofFloat(this, TRANSLATION_X,  30f)
-        val animatorSet = AnimatorSet()
-        animatorSet.playTogether(alphaAnim, transAnim)
-        animatorSet.duration = 500
-
-        animatorSet.start()
-    }
-
-    fun hide() {
-        isEnabled = false
-
-        val alphaAnim = ObjectAnimator.ofFloat(this, ALPHA, 1f, 0f)
-        alphaAnim.doOnEnd {
-            visibility = GONE
-        }
-        val transAnim = ObjectAnimator.ofFloat(this, TRANSLATION_X, -30f)
-
-        val animatorSet = AnimatorSet()
-        animatorSet.playTogether(alphaAnim, transAnim)
-        animatorSet.duration = 500
-
-        animatorSet.start()
-    }
-
-    fun gone() {
-        isEnabled = false
-        visibility = GONE
-    }
 }
 
 class PickCountSpinner : CountSpinner {
