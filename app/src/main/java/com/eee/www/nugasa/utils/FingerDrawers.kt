@@ -51,7 +51,7 @@ open class FingerDrawer(context: Context) {
 
 class PickFingerDrawer(context: Context) : FingerDrawer(context) {
 
-    private val SELECTED_CIRCLE_SIZE = ViewUtils.dpToPx(context, 100F)
+    private val SELECTED_CIRCLE_SIZE = ViewUtils.dpToPx(context, 80F)
 
     fun draw(canvas: Canvas, pointerId: Int, point: PointF) {
         drawCircle(canvas, point, FingerColors.randomColor(pointerId))
