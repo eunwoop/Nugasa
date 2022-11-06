@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="rank_text_color">#FFFFFF</color>
+    <color name="rank_text_color">#000000</color>
+    <color name="rank_text_shadow_color">#00888888</color>
     <color name="spinner_bg_color">#FFFFFF</color>
     <color name="spinner_text_color">#000000</color>
 </resources>

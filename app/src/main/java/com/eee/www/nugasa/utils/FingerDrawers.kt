@@ -1,10 +1,7 @@
 package com.eee.www.nugasa.utils
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.PointF
-import android.graphics.Rect
+import android.graphics.*
 import androidx.core.content.res.ResourcesCompat
 import com.eee.www.nugasa.R
 
@@ -78,9 +75,18 @@ class TeamFingerDrawer(context: Context) : FingerDrawer(context) {
 
 class RankFingerDrawer(context: Context) : FingerDrawer(context) {
 
-    private val RANK_TEXT_SIZE = 200F
+    private val RANK_TEXT_SIZE = 220F
     private val numberColor =
         ResourcesCompat.getColor(context.resources, R.color.rank_text_color, null)
+    private val shadowColor =
+        ResourcesCompat.getColor(context.resources, R.color.rank_text_shadow_color, null)
+    private val textPaint = Paint().apply {
+        color = numberColor
+        textSize = RANK_TEXT_SIZE
+        textAlign = Paint.Align.LEFT
+        typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+        setShadowLayer(10f, 2f, 2f, shadowColor)
+    }
 
     fun draw(canvas: Canvas, pointerId: Int, point: PointF) {
         drawCircle(canvas, point, FingerColors.randomColor(pointerId))
@@ -94,20 +100,13 @@ class RankFingerDrawer(context: Context) : FingerDrawer(context) {
     private fun drawRank(canvas: Canvas, point: PointF?, rank: Int) {
         point?.also {
             val position = getPositionOfRank(point, rank.toString())
-            canvas.drawText(rank.toString(), position.x, position.y, paint.apply {
-                color = numberColor
-                textSize = RANK_TEXT_SIZE
-                textAlign = Paint.Align.LEFT
-            })
+            canvas.drawText(rank.toString(), position.x, position.y, textPaint)
         }
     }
 
     private fun getPositionOfRank(point: PointF, rankText: String): PointF {
-        // set textSize before get width and height of text bound
-        paint.textSize = RANK_TEXT_SIZE
-
         val textRect = Rect()
-        paint.getTextBounds(rankText, 0, rankText.length, textRect)
+        textPaint.getTextBounds(rankText, 0, rankText.length, textRect)
 
         val x: Float = point.x - textRect.width() / 2f - textRect.left
         val y: Float = point.y + textRect.height() / 2f - textRect.bottom
