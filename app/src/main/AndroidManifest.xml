@@ -24,6 +24,10 @@
             android:screenOrientation="portrait"
             android:resizeableActivity="false">
         </activity>
+        <activity android:name=".ui.LicenseActivity"
+            android:screenOrientation="portrait"
+            android:resizeableActivity="false">
+        </activity>
     </application>
 
 </manifest>
