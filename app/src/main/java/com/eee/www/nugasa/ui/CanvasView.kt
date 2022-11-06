@@ -18,8 +18,8 @@ import com.eee.www.nugasa.ui.CanvasView.Constants.MESSAGE_RESET
 import com.eee.www.nugasa.ui.CanvasView.Constants.MESSAGE_SNACKBAR
 import com.eee.www.nugasa.ui.CanvasView.Constants.PICK_ANIM_REPEAT_DELAYED_MILLIS
 import com.eee.www.nugasa.ui.CanvasView.Constants.PICK_DELAYED_MILLIS
-import com.eee.www.nugasa.ui.CanvasView.Constants.SNACKBAR_DELAYED_MILLIS
 import com.eee.www.nugasa.ui.CanvasView.Constants.RESET_DELAYED_MILLIS
+import com.eee.www.nugasa.ui.CanvasView.Constants.SNACKBAR_DELAYED_MILLIS
 import com.eee.www.nugasa.ui.CanvasView.Constants.SOUND_DELAYED_MILLIS
 import com.eee.www.nugasa.utils.FingerPicker
 import com.eee.www.nugasa.utils.SoundEffector
@@ -209,7 +209,6 @@ class CanvasView : View, Handler.Callback, MediatedView {
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        Log.e(TAG, "onDraw")
         if (shouldKeepDrawn) {
             fingerPicker?.drawSelected(canvas)
         } else {
