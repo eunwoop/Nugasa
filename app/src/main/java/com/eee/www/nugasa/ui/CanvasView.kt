@@ -34,7 +34,7 @@ class CanvasView : View, Handler.Callback, MediatedView {
         const val PICK_DELAYED_MILLIS = 3000L
         const val ANIM_START_DELAYED_MILLIS = 300L
         const val ANIM_REPEAT_DELAYED_MILLIS = 15L
-        const val RESET_DELAYED_MILLIS = 3000L
+        const val RESET_DELAYED_MILLIS = 4000L
         const val SOUND_DELAYED_MILLIS = 1000L
         const val SNACKBAR_DELAYED_MILLIS = 2000L
     }
