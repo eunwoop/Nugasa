@@ -237,7 +237,7 @@ class CanvasView : View, Handler.Callback, MediatedView {
                 true
             }
             MESSAGE_SNACKBAR -> {
-                showToast()
+                showMessage()
                 true
             }
             else -> false
@@ -276,7 +276,7 @@ class CanvasView : View, Handler.Callback, MediatedView {
         }
     }
 
-    private fun showToast() {
+    private fun showMessage() {
         CenterSnackbar.showShort(this, R.string.pickImpossibleMessage)
     }
 
