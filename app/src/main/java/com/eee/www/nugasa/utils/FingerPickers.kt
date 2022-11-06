@@ -39,6 +39,7 @@ class PickFingerPicker(context: Context, fingerMap: FingerMap) : FingerPicker(fi
                 fingerDrawer.drawSelected(canvas, it.key, it.value)
             }
         }
+        fingerDrawer.scaleSelectedCircle()
     }
 
     override fun reset(context: Context) {
@@ -66,6 +67,7 @@ class TeamFingerPicker(context: Context, fingerMap: FingerMap) : FingerPicker(fi
             val team = selectedMap[it.key] ?: 0
             fingerDrawer.drawSelected(canvas, it.value, team)
         }
+        fingerDrawer.scaleSelectedCircle()
     }
 
     override fun reset(context: Context) {
@@ -93,6 +95,7 @@ class RankFingerPicker(context: Context, fingerMap: FingerMap) : FingerPicker(fi
             val rank = selectedMap[it.key] ?: -1
             fingerDrawer.drawSelected(canvas, it.key, it.value, rank)
         }
+        fingerDrawer.scaleSelectedCircle()
     }
 
     override fun reset(context: Context) {
