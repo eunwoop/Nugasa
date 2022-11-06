@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.PointF
+import android.graphics.Rect
 import androidx.core.content.res.ResourcesCompat
 import com.eee.www.nugasa.R
 
@@ -77,7 +78,7 @@ class TeamFingerDrawer(context: Context) : FingerDrawer(context) {
 
 class RankFingerDrawer(context: Context) : FingerDrawer(context) {
 
-    private val RANK_TEXT_SIZE = 80F
+    private val RANK_TEXT_SIZE = 200F
     private val numberColor =
         ResourcesCompat.getColor(context.resources, R.color.rank_text_color, null)
 
@@ -92,10 +93,24 @@ class RankFingerDrawer(context: Context) : FingerDrawer(context) {
 
     private fun drawRank(canvas: Canvas, point: PointF?, rank: Int) {
         point?.also {
-            canvas.drawText(rank.toString(), it.x - 15F, it.y - MIN_CIRCLE_SIZE - 5, paint.apply {
+            val position = getPositionOfRank(point, rank.toString())
+            canvas.drawText(rank.toString(), position.x, position.y, paint.apply {
                 color = numberColor
                 textSize = RANK_TEXT_SIZE
+                textAlign = Paint.Align.LEFT
             })
         }
+    }
+
+    private fun getPositionOfRank(point: PointF, rankText: String): PointF {
+        // set textSize before get width and height of text bound
+        paint.textSize = RANK_TEXT_SIZE
+
+        val textRect = Rect()
+        paint.getTextBounds(rankText, 0, rankText.length, textRect)
+
+        val x: Float = point.x - textRect.width() / 2f - textRect.left
+        val y: Float = point.y + textRect.height() / 2f - textRect.bottom
+        return PointF(x, y)
     }
 }
