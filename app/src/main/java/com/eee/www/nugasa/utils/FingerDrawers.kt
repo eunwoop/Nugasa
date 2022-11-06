@@ -9,8 +9,8 @@ import com.eee.www.nugasa.R
 
 open class FingerDrawer(context: Context) {
 
-    protected val MIN_CIRCLE_SIZE = ViewUtils.dpToPx(context, 50F)
-    protected val MAX_CIRCLE_SIZE = ViewUtils.dpToPx(context, 60F)
+    protected val MIN_CIRCLE_SIZE = dpToPx(context, 50F)
+    protected val MAX_CIRCLE_SIZE = dpToPx(context, 60F)
     protected var circleSize = MIN_CIRCLE_SIZE
 
     protected val paint = Paint().apply { isAntiAlias = true }
@@ -51,7 +51,7 @@ open class FingerDrawer(context: Context) {
 
 class PickFingerDrawer(context: Context) : FingerDrawer(context) {
 
-    private val SELECTED_CIRCLE_SIZE = ViewUtils.dpToPx(context, 100F)
+    private val SELECTED_CIRCLE_SIZE = dpToPx(context, 100F)
 
     fun draw(canvas: Canvas, pointerId: Int, point: PointF) {
         drawCircle(canvas, point, FingerColors.randomColor(pointerId))
