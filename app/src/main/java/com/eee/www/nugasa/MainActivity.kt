@@ -12,12 +12,16 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.eee.www.nugasa.databinding.ActivityMainBinding
 import com.eee.www.nugasa.ui.IntroActivity
+import com.eee.www.nugasa.ui.LicenseActivity
 import com.eee.www.nugasa.ui.Mediator
 import com.eee.www.nugasa.utils.PickFingerPicker
 import com.eee.www.nugasa.utils.RankFingerPicker
 import com.eee.www.nugasa.utils.TeamFingerPicker
 import com.eee.www.nugasa.viewmodels.MainActivityViewModel
 import kotlinx.android.synthetic.main.activity_main.*
+import nl.dionsegijn.konfetti.core.Party
+import nl.dionsegijn.konfetti.core.Position
+import nl.dionsegijn.konfetti.core.emitter.Emitter
 
 class MainActivity : AppCompatActivity(), Mediator {
     object Constants {
@@ -32,6 +36,15 @@ class MainActivity : AppCompatActivity(), Mediator {
     }
 
     private val viewModel: MainActivityViewModel by viewModels()
+    private val partyConfettiConfig = Party(
+        speed = 0f,
+        maxSpeed = 30f,
+        damping = 0.9f,
+        spread = 360,
+        colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def),
+        emitter = Emitter(duration = 100).max(100),
+        position = Position.Relative(0.5, 0.3)
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,6 +57,11 @@ class MainActivity : AppCompatActivity(), Mediator {
         bindData()
         initMediator()
         initOnDataChanged()
+
+        licenseButton.setOnClickListener {
+            val intent = Intent(this, LicenseActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     private fun showIntroActivity() {
@@ -128,6 +146,10 @@ class MainActivity : AppCompatActivity(), Mediator {
                     or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                     or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
         }
+    }
+
+    override fun showPartyConfetti() {
+        konfettiView.start(partyConfettiConfig)
     }
 
     override fun onDestroy() {

@@ -224,6 +224,7 @@ class CanvasView : View, Handler.Callback, MediatedView {
                 invalidate()
 
                 doVibrate()
+                showConfetti()
                 true
             }
             MESSAGE_ANIM -> {
@@ -268,6 +269,10 @@ class CanvasView : View, Handler.Callback, MediatedView {
         } else {
             vibrator.vibrate(100)
         }
+    }
+
+    private fun showConfetti() {
+        mediator?.showPartyConfetti()
     }
 
     private fun doAnim() {

@@ -11,4 +11,6 @@ interface Mediator {
     fun setTeamCount(count: Int)
 
     fun setPressed(pressed: Boolean)
+
+    fun showPartyConfetti()
 }
