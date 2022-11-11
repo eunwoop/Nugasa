@@ -13,7 +13,16 @@
         android:layout_height="match_parent">
 
         <nl.dionsegijn.konfetti.xml.KonfettiView
-            android:id="@+id/konfettiView"
+            android:id="@+id/konfettiViewLeft"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <nl.dionsegijn.konfetti.xml.KonfettiView
+            android:id="@+id/konfettiViewRight"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -89,7 +98,9 @@
             android:layout_height="@dimen/license_button_size"
             android:text="@string/license_button"
             android:background="@android:color/transparent"
-            android:textColor="@android:color/black"
+            android:textColor="@color/license_button_color"
+            android:enabled="@{!viewModel.fingerPressed}"
+            android:visibility="@{viewModel.fingerPressed? View.GONE: View.VISIBLE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

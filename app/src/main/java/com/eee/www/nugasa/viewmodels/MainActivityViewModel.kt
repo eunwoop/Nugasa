@@ -14,6 +14,9 @@ import com.eee.www.nugasa.viewmodels.MainActivityViewModel.Constants.MENU_POSITI
 import com.eee.www.nugasa.viewmodels.MainActivityViewModel.Constants.MENU_POSITION_TEAM
 import com.eee.www.nugasa.viewmodels.MainActivityViewModel.Constants.PICK_COUNT_KEY
 import com.eee.www.nugasa.viewmodels.MainActivityViewModel.Constants.TEAM_COUNT_KEY
+import nl.dionsegijn.konfetti.core.Party
+import nl.dionsegijn.konfetti.core.Position
+import nl.dionsegijn.konfetti.core.emitter.Emitter
 
 class MainActivityViewModel(application: Application, private val savedStateHandle: SavedStateHandle) : AndroidViewModel(application) {
     object Constants {
@@ -45,6 +48,25 @@ class MainActivityViewModel(application: Application, private val savedStateHand
     val teamCount: LiveData<Int>
         get() = savedStateHandle.getLiveData(TEAM_COUNT_KEY, DEFAULT_TEAM_COUNT)
     var fingerPressed = MutableLiveData(false)
+
+    val partyConfettiConfigLeft: Party = Party(
+        speed = 0f,
+        maxSpeed = 30f,
+        damping = 0.9f,
+        spread = 360,
+        colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def),
+        emitter = Emitter(duration = 100).max(100),
+        position = Position.Relative(0.1, 0.5)
+    )
+    val partyConfettiConfigRight: Party = Party(
+        speed = 0f,
+        maxSpeed = 30f,
+        damping = 0.9f,
+        spread = 360,
+        colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def),
+        emitter = Emitter(duration = 100).max(100),
+        position = Position.Relative(0.9, 0.5)
+    )
 
     fun setMenuPosition(position: Int) {
         savedStateHandle.set(MENU_POSITION_KEY, position)

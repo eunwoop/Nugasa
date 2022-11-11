@@ -19,9 +19,6 @@ import com.eee.www.nugasa.utils.RankFingerPicker
 import com.eee.www.nugasa.utils.TeamFingerPicker
 import com.eee.www.nugasa.viewmodels.MainActivityViewModel
 import kotlinx.android.synthetic.main.activity_main.*
-import nl.dionsegijn.konfetti.core.Party
-import nl.dionsegijn.konfetti.core.Position
-import nl.dionsegijn.konfetti.core.emitter.Emitter
 
 class MainActivity : AppCompatActivity(), Mediator {
     object Constants {
@@ -36,15 +33,6 @@ class MainActivity : AppCompatActivity(), Mediator {
     }
 
     private val viewModel: MainActivityViewModel by viewModels()
-    private val partyConfettiConfig = Party(
-        speed = 0f,
-        maxSpeed = 30f,
-        damping = 0.9f,
-        spread = 360,
-        colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def),
-        emitter = Emitter(duration = 100).max(100),
-        position = Position.Relative(0.5, 0.3)
-    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -149,7 +137,8 @@ class MainActivity : AppCompatActivity(), Mediator {
     }
 
     override fun showPartyConfetti() {
-        konfettiView.start(partyConfettiConfig)
+        konfettiViewLeft.start(viewModel.partyConfettiConfigLeft)
+        konfettiViewRight.start(viewModel.partyConfettiConfigRight)
     }
 
     override fun onDestroy() {
