@@ -13,11 +13,13 @@ import com.eee.www.nugasa.ui.CanvasView.Constants.ANIM_REPEAT_DELAYED_MILLIS
 import com.eee.www.nugasa.ui.CanvasView.Constants.ANIM_START_DELAYED_MILLIS
 import com.eee.www.nugasa.ui.CanvasView.Constants.MESSAGE_ANIM
 import com.eee.www.nugasa.ui.CanvasView.Constants.MESSAGE_PICK
+import com.eee.www.nugasa.ui.CanvasView.Constants.MESSAGE_PICK_ANIM
 import com.eee.www.nugasa.ui.CanvasView.Constants.MESSAGE_RESET
 import com.eee.www.nugasa.ui.CanvasView.Constants.MESSAGE_SNACKBAR
+import com.eee.www.nugasa.ui.CanvasView.Constants.PICK_ANIM_REPEAT_DELAYED_MILLIS
 import com.eee.www.nugasa.ui.CanvasView.Constants.PICK_DELAYED_MILLIS
-import com.eee.www.nugasa.ui.CanvasView.Constants.SNACKBAR_DELAYED_MILLIS
 import com.eee.www.nugasa.ui.CanvasView.Constants.RESET_DELAYED_MILLIS
+import com.eee.www.nugasa.ui.CanvasView.Constants.SNACKBAR_DELAYED_MILLIS
 import com.eee.www.nugasa.ui.CanvasView.Constants.SOUND_DELAYED_MILLIS
 import com.eee.www.nugasa.utils.FingerPicker
 import com.eee.www.nugasa.utils.SoundEffector
@@ -28,13 +30,15 @@ class CanvasView : View, Handler.Callback, MediatedView {
     private object Constants {
         const val MESSAGE_PICK = 0
         const val MESSAGE_ANIM = 1
-        const val MESSAGE_RESET = 2
-        const val MESSAGE_SNACKBAR = 3
+        const val MESSAGE_PICK_ANIM = 2
+        const val MESSAGE_RESET = 3
+        const val MESSAGE_SNACKBAR = 4
 
         const val PICK_DELAYED_MILLIS = 3000L
         const val ANIM_START_DELAYED_MILLIS = 300L
         const val ANIM_REPEAT_DELAYED_MILLIS = 15L
-        const val RESET_DELAYED_MILLIS = 3000L
+        const val PICK_ANIM_REPEAT_DELAYED_MILLIS = 30L
+        const val RESET_DELAYED_MILLIS = 4000L
         const val SOUND_DELAYED_MILLIS = 1000L
         const val SNACKBAR_DELAYED_MILLIS = 2000L
     }
@@ -220,6 +224,7 @@ class CanvasView : View, Handler.Callback, MediatedView {
                 playSelectSound()
 
                 stopAnim()
+                doPickAnim()
                 keepDrawnAwhile()
                 invalidate()
 
@@ -232,13 +237,18 @@ class CanvasView : View, Handler.Callback, MediatedView {
                 invalidate()
                 true
             }
+            MESSAGE_PICK_ANIM -> {
+                doPickAnim()
+                invalidate()
+                true
+            }
             MESSAGE_RESET -> {
                 resetAll()
                 invalidate()
                 true
             }
             MESSAGE_SNACKBAR -> {
-                showToast()
+                showMessage()
                 true
             }
             else -> false
@@ -281,7 +291,13 @@ class CanvasView : View, Handler.Callback, MediatedView {
         }
     }
 
-    private fun showToast() {
+    private fun doPickAnim() {
+        if (!eventHandler.hasMessages(MESSAGE_PICK_ANIM)) {
+            eventHandler.sendEmptyMessageDelayed(MESSAGE_PICK_ANIM, PICK_ANIM_REPEAT_DELAYED_MILLIS)
+        }
+    }
+
+    private fun showMessage() {
         CenterSnackbar.showShort(this, R.string.pickImpossibleMessage)
     }
 
