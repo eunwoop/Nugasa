@@ -25,4 +25,8 @@
     <color name="light_pink">#F1C9C2</color>
     <color name="electric_lime">#CFF800</color>
 
+    <color name="dot_inactive">#2278d4</color>
+    <color name="dot_active">#93c6fd</color>
+
+    <color name="license_button_color">#000000</color>
 </resources>

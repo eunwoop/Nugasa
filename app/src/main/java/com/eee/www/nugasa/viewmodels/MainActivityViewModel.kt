@@ -1,12 +1,11 @@
 package com.eee.www.nugasa.viewmodels
 
-import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.SavedStateHandle
+import android.app.Application
+import androidx.lifecycle.*
 import androidx.lifecycle.Transformations.switchMap
-import androidx.lifecycle.ViewModel
-import com.eee.www.nugasa.utils.TAG
+import com.eee.www.nugasa.MainActivity
+import com.eee.www.nugasa.data.getBooleanSharedPref
+import com.eee.www.nugasa.data.setBooleanSharedPref
 import com.eee.www.nugasa.viewmodels.MainActivityViewModel.Constants.DEFAULT_MENU_POSITION
 import com.eee.www.nugasa.viewmodels.MainActivityViewModel.Constants.DEFAULT_PICK_COUNT
 import com.eee.www.nugasa.viewmodels.MainActivityViewModel.Constants.DEFAULT_TEAM_COUNT
@@ -15,8 +14,11 @@ import com.eee.www.nugasa.viewmodels.MainActivityViewModel.Constants.MENU_POSITI
 import com.eee.www.nugasa.viewmodels.MainActivityViewModel.Constants.MENU_POSITION_TEAM
 import com.eee.www.nugasa.viewmodels.MainActivityViewModel.Constants.PICK_COUNT_KEY
 import com.eee.www.nugasa.viewmodels.MainActivityViewModel.Constants.TEAM_COUNT_KEY
+import nl.dionsegijn.konfetti.core.Party
+import nl.dionsegijn.konfetti.core.Position
+import nl.dionsegijn.konfetti.core.emitter.Emitter
 
-class MainActivityViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel() {
+class MainActivityViewModel(application: Application, private val savedStateHandle: SavedStateHandle) : AndroidViewModel(application) {
     object Constants {
         const val MENU_POSITION_KEY = "menuPosition"
         const val PICK_COUNT_KEY = "pickCount"
@@ -47,6 +49,25 @@ class MainActivityViewModel(private val savedStateHandle: SavedStateHandle) : Vi
         get() = savedStateHandle.getLiveData(TEAM_COUNT_KEY, DEFAULT_TEAM_COUNT)
     var fingerPressed = MutableLiveData(false)
 
+    val partyConfettiConfigLeft: Party = Party(
+        speed = 0f,
+        maxSpeed = 30f,
+        damping = 0.9f,
+        spread = 360,
+        colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def),
+        emitter = Emitter(duration = 100).max(100),
+        position = Position.Relative(0.1, 0.5)
+    )
+    val partyConfettiConfigRight: Party = Party(
+        speed = 0f,
+        maxSpeed = 30f,
+        damping = 0.9f,
+        spread = 360,
+        colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def),
+        emitter = Emitter(duration = 100).max(100),
+        position = Position.Relative(0.9, 0.5)
+    )
+
     fun setMenuPosition(position: Int) {
         savedStateHandle.set(MENU_POSITION_KEY, position)
     }
@@ -61,5 +82,13 @@ class MainActivityViewModel(private val savedStateHandle: SavedStateHandle) : Vi
 
     fun setFingerPressed(pressed: Boolean) {
         fingerPressed.value = pressed
+    }
+
+    fun getStartedOnce() : Boolean {
+        return getBooleanSharedPref(getApplication(), MainActivity.PREF_NAME, MainActivity.PREF_KEY)
+    }
+
+    fun setStartedOnce() {
+        setBooleanSharedPref(getApplication(), MainActivity.PREF_NAME, MainActivity.PREF_KEY, true)
     }
 }

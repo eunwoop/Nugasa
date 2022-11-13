@@ -7,9 +7,9 @@ import com.eee.www.nugasa.R
 
 abstract class FingerDrawer(context: Context) {
 
-    protected val MIN_CIRCLE_SIZE = ViewUtils.dpToPx(context, 50F)
-    protected val MAX_CIRCLE_SIZE = ViewUtils.dpToPx(context, 60F)
-    private var circleSize = MIN_CIRCLE_SIZE
+    protected val MIN_CIRCLE_SIZE = dpToPx(context, 50F)
+    protected val MAX_CIRCLE_SIZE = dpToPx(context, 60F)
+    protected var circleSize = MIN_CIRCLE_SIZE
 
     protected abstract val MIN_SELECTED_CIRCLE_SIZE: Float
     protected abstract val MAX_SELECTED_CIRCLE_SIZE: Float
@@ -62,8 +62,8 @@ abstract class FingerDrawer(context: Context) {
 
 class PickFingerDrawer(context: Context) : FingerDrawer(context) {
 
-    override val MIN_SELECTED_CIRCLE_SIZE = ViewUtils.dpToPx(context, 70F)
-    override val MAX_SELECTED_CIRCLE_SIZE = ViewUtils.dpToPx(context, 80F)
+    override val MIN_SELECTED_CIRCLE_SIZE = dpToPx(context, 70F)
+    override val MAX_SELECTED_CIRCLE_SIZE = dpToPx(context, 80F)
     override var selectedCircleSize = MAX_SELECTED_CIRCLE_SIZE
 
     fun draw(canvas: Canvas, pointerId: Int, point: PointF) {
