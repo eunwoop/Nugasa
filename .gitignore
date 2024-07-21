@@ -20,3 +20,7 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# signing setting file
+signing.properties
+*.jks
