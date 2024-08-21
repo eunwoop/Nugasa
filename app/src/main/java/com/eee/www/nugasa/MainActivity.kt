@@ -8,13 +8,13 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.eee.www.nugasa.databinding.ActivityMainBinding
 import com.eee.www.nugasa.ui.IntroActivity
-import com.eee.www.nugasa.ui.LicenseActivity
 import com.eee.www.nugasa.ui.Mediator
 import com.eee.www.nugasa.utils.PickFingerPicker
 import com.eee.www.nugasa.utils.RankFingerPicker
 import com.eee.www.nugasa.utils.TeamFingerPicker
 import com.eee.www.nugasa.utils.setFullScreen
 import com.eee.www.nugasa.viewmodels.MainActivityViewModel
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), Mediator {
@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity(), Mediator {
         initOnDataChanged()
 
         licenseButton.setOnClickListener {
-            val intent = Intent(this, LicenseActivity::class.java)
+            val intent = Intent(this, OssLicensesMenuActivity::class.java)
             startActivity(intent)
         }
     }
