@@ -9,7 +9,7 @@
     <dimen name="intro_horizontal_margin">16dp</dimen>
     <dimen name="dots_margin_bottom">10dp</dimen>
     <dimen name="img_size">240dp</dimen>
-    <dimen name="slide_title">30dp</dimen>
+    <dimen name="slide_title">30sp</dimen>
     <dimen name="license_text_margin">20dp</dimen>
     <dimen name="license_button_size">50dp</dimen>
 </resources>

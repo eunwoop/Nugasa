@@ -13,6 +13,10 @@
     <string name="slide_2_title">Place your fingers on the screen!</string>
     <string name="slide_3_title">I\'ll pick one</string>
 
-    <string name="license_button">\?</string>
+    <string name="gather_people_content_description">The image of people gathered together</string>
+    <string name="put_finger_content_description">The image of Multiple people touching the screen with their fingers</string>
+    <string name="selected_content_description">The image of one finger selected</string>
+
+    <string name="license_button" translatable="false">\?</string>
 
 </resources>

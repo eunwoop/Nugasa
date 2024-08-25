@@ -2,7 +2,6 @@ package com.eee.www.nugasa.viewmodels
 
 import android.app.Application
 import androidx.lifecycle.*
-import androidx.lifecycle.Transformations.switchMap
 import com.eee.www.nugasa.MainActivity
 import com.eee.www.nugasa.data.getBooleanSharedPref
 import com.eee.www.nugasa.data.setBooleanSharedPref
@@ -36,7 +35,7 @@ class MainActivityViewModel(application: Application, private val savedStateHand
     val menuPosition: LiveData<Int>
         get() = savedStateHandle.getLiveData(MENU_POSITION_KEY, DEFAULT_MENU_POSITION)
     val fingerCount: LiveData<Int>
-        get() = switchMap(menuPosition) {
+        get() = menuPosition.switchMap {
             when (it) {
                 MENU_POSITION_PICK -> pickCount
                 MENU_POSITION_TEAM -> teamCount

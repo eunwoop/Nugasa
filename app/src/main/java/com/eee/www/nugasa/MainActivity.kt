@@ -15,7 +15,6 @@ import com.eee.www.nugasa.utils.TeamFingerPicker
 import com.eee.www.nugasa.utils.setFullScreen
 import com.eee.www.nugasa.viewmodels.MainActivityViewModel
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
-import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), Mediator {
     object Constants {
@@ -30,9 +29,11 @@ class MainActivity : AppCompatActivity(), Mediator {
     }
 
     private val viewModel: MainActivityViewModel by viewModels()
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
         if (!viewModel.getStartedOnce()) {
             showIntroActivity()
@@ -43,7 +44,7 @@ class MainActivity : AppCompatActivity(), Mediator {
         initMediator()
         initOnDataChanged()
 
-        licenseButton.setOnClickListener {
+        binding.licenseButton.setOnClickListener {
             val intent = Intent(this, OssLicensesMenuActivity::class.java)
             startActivity(intent)
         }
@@ -55,43 +56,40 @@ class MainActivity : AppCompatActivity(), Mediator {
     }
 
     private fun bindData() {
-        val binding: ActivityMainBinding =
-            DataBindingUtil.setContentView(this, R.layout.activity_main)
-
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
     }
 
     private fun initMediator() {
-        menuSpinner.mediator = this
-        pickCountSpinner.mediator = this
-        teamCountSpinner.mediator = this
-        canvasView.mediator = this
+        binding.menuSpinner.mediator = this
+        binding.pickCountSpinner.mediator = this
+        binding.teamCountSpinner.mediator = this
+        binding.canvasView.mediator = this
     }
 
     override fun initOnDataChanged() {
         val modeObserver = Observer<Int> { position ->
             when (position) {
                 Constants.MENU_PICK -> {
-                    canvasView.fingerPicker = PickFingerPicker(this, canvasView.fingerMap)
-                    pickCountSpinner.show()
-                    teamCountSpinner.gone()
+                    binding.canvasView.fingerPicker = PickFingerPicker(this, binding.canvasView.fingerMap)
+                    binding.pickCountSpinner.show()
+                    binding.teamCountSpinner.gone()
                 }
                 Constants.MENU_TEAM -> {
-                    canvasView.fingerPicker = TeamFingerPicker(this, canvasView.fingerMap)
-                    pickCountSpinner.gone()
-                    teamCountSpinner.show()
+                    binding.canvasView.fingerPicker = TeamFingerPicker(this, binding.canvasView.fingerMap)
+                    binding.pickCountSpinner.gone()
+                    binding.teamCountSpinner.show()
                 }
                 Constants.MENU_RANK -> {
-                    canvasView.fingerPicker = RankFingerPicker(this, canvasView.fingerMap)
-                    pickCountSpinner.hide()
-                    teamCountSpinner.hide()
+                    binding.canvasView.fingerPicker = RankFingerPicker(this, binding.canvasView.fingerMap)
+                    binding.pickCountSpinner.hide()
+                    binding.teamCountSpinner.hide()
                 }
             }
         }
         viewModel.menuPosition.observe(this, modeObserver)
 
-        val fingerCountObserver = Observer<Int> { count -> canvasView.fingerCount = count }
+        val fingerCountObserver = Observer<Int> { count -> binding.canvasView.fingerCount = count }
         viewModel.fingerCount.observe(this, fingerCountObserver)
     }
 
@@ -117,12 +115,12 @@ class MainActivity : AppCompatActivity(), Mediator {
     }
 
     override fun showPartyConfetti() {
-        konfettiViewLeft.start(viewModel.partyConfettiConfigLeft)
-        konfettiViewRight.start(viewModel.partyConfettiConfigRight)
+        binding.konfettiViewLeft.start(viewModel.partyConfettiConfigLeft)
+        binding.konfettiViewRight.start(viewModel.partyConfettiConfigRight)
     }
 
     override fun onDestroy() {
-        canvasView.destroy()
+        binding.canvasView.destroy()
         super.onDestroy()
     }
 }

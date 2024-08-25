@@ -191,7 +191,7 @@ class CanvasView : View, Handler.Callback, MediatedView {
 
     private fun movePoint(event: MotionEvent) {
         fingerMap.move(event)
-        Log.d(TAG, "movePoint")
+        //Log.d(TAG, "movePoint")
     }
 
     private fun removePoint(event: MotionEvent) {

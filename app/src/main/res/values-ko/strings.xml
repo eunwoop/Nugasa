@@ -14,4 +14,8 @@
     <string name="slide_2_title">화면에 손가락을 올려주세요</string>
     <string name="slide_3_title">제가 한명을 뽑아드릴게요!</string>
 
+    <string name="gather_people_content_description">사람들이 모여있는 이미지</string>
+    <string name="put_finger_content_description">여러 명이 동시에 화면에 손가락을 대고 있는 이미지</string>
+    <string name="selected_content_description">하나의 손가락이 선택된 이미지</string>
+
 </resources>
